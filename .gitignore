@@ -1,0 +1,4 @@
+node_modules/
+settings.py
+.idea/
+__pycache__/
