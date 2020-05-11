@@ -33,7 +33,6 @@ export function deletemodel(data) {
 }
 
 export function addmodel(data) {
-  console.log(data)
   return request({
     url: '/addmodel',
     method: 'get',

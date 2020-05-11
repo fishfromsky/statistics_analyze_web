@@ -17,3 +17,12 @@ class ModelsList(models.Model):
     author = models.CharField(max_length=255, default='')
     reference = models.IntegerField(default=0)
     star = models.IntegerField(default=0)
+
+
+class FactoryList(models.Model):
+    name = models.CharField(max_length=255, null=False)
+    address = models.CharField(max_length=255)
+    longitude = models.FloatField()
+    latitude = models.FloatField()
+    deal = models.IntegerField(default=0)
+

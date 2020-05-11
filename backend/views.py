@@ -1,4 +1,4 @@
-from .models import UserProfile, ModelsList
+from .models import UserProfile, ModelsList, FactoryList
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
@@ -267,3 +267,27 @@ def deletesuperuser(request):
         user = UserProfile.objects.get(id=id)
         user.delete()
         return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getFacorty(request):
+    response = {}
+    response['data'] = []
+    factorylist = FactoryList.objects.all()
+    for factory in factorylist:
+        response['data'].append(to_dict(factory))
+    response['code'] = 20000
+    response['message'] = 'success'
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getFactoryById(request):
+    response = {'code': 20000, 'message': 'success'}
+    id = request.GET.get('id')
+    response['data'] = []
+    factory = FactoryList.objects.get(id=id)
+    response['data'].append(to_dict(factory))
+    return JsonResponse(response, safe=False)

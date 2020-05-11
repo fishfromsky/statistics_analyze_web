@@ -13,5 +13,7 @@ urlpatterns = [
     url('amendmodel', views.amendmodel, name='amendmodel'),
     url('deletemodel', views.deletemodel, name='deletemodel'),
     url('addsuperuser', views.addsuperuser, name='addsuperuser'),
-    url('deletesuperuser', views.deletesuperuser, name='deleteSuperuser')
+    url('deletesuperuser', views.deletesuperuser, name='deleteSuperuser'),
+    url('getfactorylist', views.getFacorty, name='getFactory'),
+    url('getfactorybyid', views.getFactoryById, name='getFactoryById')
 ]

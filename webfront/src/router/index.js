@@ -60,21 +60,229 @@ export const constantRoutes = [
   {
     path: '/info',
     component: Layout,
-    redirect: '/info/economy',
+    redirect: '/info/economy/city',
     name: 'Info',
-    meta: { title: '基本信息', icon: 'chart' },
+    meta: { title: '经济人口', icon: 'money' },
     children: [
       {
         path: 'economy',
         name: 'Economy',
+        redirect: '/info/economy/city',
+        meta: { title: '经济信息' },
         component: () => import('@/views/economy/index'),
-        meta: { title: '经济信息' }
+        children: [
+          {
+            path: 'city',
+            name: 'City',
+            component: () => import('@/views/economy/City/index'),
+            meta: { title: '全市经济' }
+          },
+          {
+            path: 'district',
+            name: 'District',
+            component: () => import('@/views/economy/District/index'),
+            meta: { title: '各区经济' }
+          },
+          {
+            path: 'country',
+            name: 'country',
+            component: () => import('@/views/economy/Country/index'),
+            meta: { title: '乡镇经济' }
+          }
+        ]
       },
       {
         path: 'population',
         name: 'Population',
         component: () => import('@/views/population/index'),
-        meta: { title: '人口信息' }
+        meta: { title: '人口信息' },
+        children: [
+          {
+            path: 'city',
+            name: 'CityPopulation',
+            component: () => import('@/views/population/City/index'),
+            meta: { title: '全市人口' }
+          },
+          {
+            path: 'district',
+            name: 'DistrictPopulation',
+            component: () => import('@/views/population/District/index'),
+            meta: { title: '各区人口' }
+          },
+          {
+            path: 'country',
+            name: 'CountryPopulation',
+            component: () => import('@/views/population/Country/index'),
+            meta: { title: '乡镇人口' }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    path: '/garbage',
+    component: Layout,
+    name: 'Garbage',
+    meta: { title: '固废信息', icon: 'bug' },
+    redirect: '/garbage/production/city',
+    children: [
+      {
+        path: 'production',
+        name: 'Production',
+        redirect: '/garbage/production/city',
+        component: () => import('@/views/production/index'),
+        meta: { title: '固废产量' },
+        children: [
+          {
+            path: 'city',
+            name: 'CityProduction',
+            component: () => import('@/views/production/City/index'),
+            meta: { title: '全市固废信息' }
+          },
+          {
+            path: 'district',
+            name: 'DistrictProduction',
+            component: () => import('@/views/production/District/index'),
+            meta: { title: '各区固废信息' }
+          },
+          {
+            path: 'country',
+            name: 'CountryProduction',
+            component: () => import('@/views/production/Country/index'),
+            meta: { title: '乡镇固废信息' }
+          }
+        ]
+      },
+      {
+        path: 'element',
+        name: 'element',
+        component: () => import('@/views/element/index'),
+        meta: { title: '固废成分' }
+      },
+      {
+        path: 'dinner',
+        name: 'dinner',
+        meta: { title: '厨余垃圾' },
+        component: () => import('@/views/dinner/index'),
+        children: [
+          {
+            path: 'city',
+            name: 'dinner_city',
+            component: () => import('@/views/dinner/City/index'),
+            meta: { title: '全市情况' }
+          },
+          {
+            path: 'district',
+            name: 'dinner_district',
+            component: () => import('@/views/dinner/District/index'),
+            meta: { title: '各区情况' }
+          },
+          {
+            path: 'country',
+            name: 'dinner_country',
+            component: () => import('@/views/dinner/Country/index'),
+            meta: { title: '乡镇情况' }
+          }
+        ]
+      },
+      {
+        path: 'plastic',
+        name: 'plastic',
+        component: () => import('@/views/plastic/index'),
+        meta: { title: '废塑料' },
+        children: [
+          {
+            path: 'city',
+            name: 'plastic_city',
+            component: () => import('@/views/plastic/City/index'),
+            meta: { title: '全市情况' }
+          },
+          {
+            path: 'district',
+            name: 'plastic_district',
+            component: () => import('@/views/plastic/Country/index'),
+            meta: { title: '各区情况' }
+          },
+          {
+            path: 'country',
+            name: 'plastic_country',
+            component: () => import('@/views/plastic/Country/index'),
+            meta: { title: '城镇情况' }
+          }
+        ]
+      },
+      {
+        path: 'paper',
+        name: 'paper',
+        component: () => import('@/views/paper/index'),
+        meta: { title: '废纸品' },
+        children: [
+          {
+            path: 'city',
+            name: 'paper_city',
+            component: () => import('@/views/paper/City/index'),
+            meta: { title: '全市情况' }
+          },
+          {
+            path: 'district',
+            name: 'paper_district',
+            component: () => import('@/views/paper/District/index'),
+            meta: { title: '各区情况' }
+          },
+          {
+            path: 'country',
+            name: 'paper_country',
+            component: () => import('@/views/paper/Country/index'),
+            meta: { title: '城镇情况' }
+          }
+        ]
+      },
+      {
+        path: 'drypaper',
+        name: 'drypaper',
+        component: () => import('@/views/drypaper/index'),
+        meta: { title: '干垃圾' },
+        children: [
+          {
+            path: 'city',
+            name: 'drypaper_city',
+            component: () => import('@/views/drypaper/City/index'),
+            meta: { title: '全市情况' }
+          },
+          {
+            path: 'district',
+            name: 'drypaper_district',
+            component: () => import('@/views/drypaper/District/index'),
+            meta: { title: '各区情况' }
+          },
+          {
+            path: 'country',
+            name: 'drypaper_country',
+            component: () => import('@/views/drypaper/Country/index'),
+            meta: { title: '城镇情况' }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    path: '/factory',
+    component: Layout,
+    name: 'Factory',
+    redirect: '/factory/location',
+    meta: { title: '垃圾填埋', icon: 'garbage' },
+    children: [
+      {
+        path: 'location',
+        name: 'Factory_location',
+        component: () => import('@/views/factory/location/index'),
+        meta: { title: '分布位置' }
+      },
+      {
+        path: 'statistic',
+        name: 'Factory_Statistic',
+        component: () => import('@/views/factory/statistic/index'),
+        meta: { title: '处理数据' }
       }
     ]
   },
@@ -86,7 +294,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: '模型实验', icon: 'form' }
+        meta: { title: '指标预测', icon: 'form' }
       }
     ]
   }
