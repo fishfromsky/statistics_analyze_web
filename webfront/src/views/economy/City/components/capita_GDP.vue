@@ -4,7 +4,7 @@
 
 <script>
     import echarts from 'echarts'
-    require('echarts/theme/macarons') // echarts
+    require('echarts/theme/westeros') // echarts
     import resize from './mixins/resize'
     export default {
         name: "GDP",
@@ -58,7 +58,7 @@
         },
         methods: {
             initChart(){
-                this.chart = echarts.init(this.$el, 'macarons');
+                this.chart = echarts.init(this.$el, 'westeros');
                 this.setOptions(this.chartData)
             },
             setOptions(val){

@@ -39,3 +39,19 @@ export function addmodel(data) {
     params: data
   })
 }
+
+export function addcityeconomydata(data) {
+  return request({
+    url: '/addcityeconomy',
+    method: 'post',
+    data
+  })
+}
+
+export function addcitypopulationdata(data){
+  return request({
+    url: '/addcitypopulation',
+    method: 'post',
+    data
+  })
+}

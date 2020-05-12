@@ -15,5 +15,7 @@ urlpatterns = [
     url('addsuperuser', views.addsuperuser, name='addsuperuser'),
     url('deletesuperuser', views.deletesuperuser, name='deleteSuperuser'),
     url('getfactorylist', views.getFacorty, name='getFactory'),
-    url('getfactorybyid', views.getFactoryById, name='getFactoryById')
+    url('getfactorybyid', views.getFactoryById, name='getFactoryById'),
+    url('addcityeconomy', views.addEconomyCity, name='addEconomyCity'),
+    url('addcitypopulation', views.addPopulationCity, name='addPopulationCity')
 ]

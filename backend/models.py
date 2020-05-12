@@ -26,3 +26,84 @@ class FactoryList(models.Model):
     latitude = models.FloatField()
     deal = models.IntegerField(default=0)
 
+
+# 城市表
+class City(models.Model):
+    name = models.CharField(max_length=200)
+
+
+# 区表
+class District(models.Model):
+    name = models.CharField(max_length=255)
+    city_name = models.ForeignKey(to='City', on_delete=models.CASCADE)
+
+
+# 城镇表
+class Town(models.Model):
+    name = models.CharField(max_length=255)
+    district_name = models.ForeignKey(to='District', on_delete=models.CASCADE)
+
+
+# 全市经济情况表
+class Economy_Info_City(models.Model):
+    city = models.ForeignKey(to='City', on_delete=models.CASCADE)
+    year = models.CharField(max_length=200)  # 年份
+    gdp = models.CharField(max_length=200, null=True)
+    gdp_per_capita = models.CharField(max_length=200,null=True)
+    gdp_growth_rate = models.FloatField(null=True)
+    unemployment_rate = models.FloatField(null=True)   # 失业率
+
+
+# 全市人口信息表
+class Population_Info_City(models.Model):
+    city = models.ForeignKey(to='City', on_delete=models.CASCADE)
+    year = models.CharField(max_length=200)
+    population = models.CharField(max_length=200, null=True)
+    population_density = models.CharField(max_length=200, null=True)
+    population_rate = models.FloatField(null=True)
+    households = models.CharField(max_length=200, null=True)   # 户数
+    average_person_per_household = models.CharField(max_length=200, null=True)  # 每户平均人口
+
+
+# 全市生活垃圾表
+class Garbage_Info_City(models.Model):
+    city = models.ForeignKey(to='City', on_delete=models.CASCADE)
+    year = models.CharField(max_length=200)
+    total_garbage = models.CharField(max_length=200)
+    collect_transport_garbage = models.CharField(max_length=200)  # 生活垃圾清运量
+    volume_of_treated = models.CharField(max_length=200)   # 生活垃圾处理量
+
+
+# 全市无害化处理厂信息
+class Gargabe_Deal_City(models.Model):
+    city = models.ForeignKey(to='City', on_delete=models.CASCADE)
+    year = models.CharField(max_length=200)
+    factory_num_total = models.IntegerField()
+    landFill = models.IntegerField()  # 垃圾填埋厂数量
+    incineration = models.IntegerField()  # 垃圾焚烧厂数量
+    compost = models.IntegerField()  # 垃圾堆肥场数量
+    else_num = models.IntegerField()  # 其他
+
+
+# 全市无害化处理能力信息
+class Gargage_Deal_Capacity_City(models.Model):
+    city = models.ForeignKey(to='City', on_delete=models.CASCADE)
+    year = models.CharField(max_length=200)
+    deal_num_total = models.CharField(max_length=200)
+    landfill = models.CharField(max_length=200)
+    incineration = models.CharField(max_length=200)
+    compost = models.CharField(max_length=200)
+    else_num = models.CharField(max_length=200)
+
+
+# 全市无害化处理量表
+class Garbage_Deal_Volume_City(models.Model):
+    city = models.ForeignKey(to='City', on_delete=models.CASCADE)
+    year = models.CharField(max_length=200)
+    deal_volume_total = models.CharField(max_length=200)
+    landfill = models.CharField(max_length=200)
+    incineration = models.CharField(max_length=200)
+    compost = models.CharField(max_length=200)
+    else_num = models.CharField(max_length=200)
+
+

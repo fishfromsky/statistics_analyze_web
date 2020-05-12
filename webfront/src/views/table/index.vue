@@ -4,14 +4,20 @@
     <div v-else class="save-list">
       <div class="data-list">
         <div class="model-name">
-          <span class="name-span">模型名称</span>
-          <el-input v-model="modelname" class="name-input" placeholder="输入添加模型的名称"></el-input>
+          <span class="name-span">数据级别</span>
+          <el-select v-model="area" placeholder="选择数据级别" class="name-input">
+            <el-option v-for="item in level_list" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </div>
         <div class="model-name">
-          <span class="name-span">模型评分</span>
-          <el-rate v-model="star" :max="5" class="rate"></el-rate>
+          <span class="name-span">数据类型</span>
+          <el-select v-model="kind" placeholder="请输入具体表项类型" class="rate">
+            <el-option v-for="item in kind_list" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </div>
-        <el-button type="primary" icon="el-icon-circle-plus-outline" class="addmodel-btn" @click="AddModel">添加模型</el-button>
+        <el-button type="primary" icon="el-icon-document-add" class="addmodel-btn" @click="AddModel">导入数据</el-button>
       </div>
     </div>
     <el-table v-loading="table_loading" :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
@@ -23,7 +29,7 @@
 <script>
 import UploadExcelComponent from './components/UploadFile'
 import { getName } from '@/utils/auth'
-import { addmodel } from '@/api/model'
+import { addcityeconomydata, addcitypopulationdata } from '@/api/model'
 export default {
   name: 'UploadExcel',
   components: { UploadExcelComponent },
@@ -32,7 +38,48 @@ export default {
       tableData: [],
       tableHeader: [],
       hasData: false,
-      modelname: '',
+      area: '',
+      kind: '',
+      level_list:[
+          {
+              value: '1',
+              label: '市级'
+          },
+          // {
+          //     value: '2',
+          //     label: '区级'
+          // },
+          // {
+          //     value: '3',
+          //     label: '乡级'
+          // }
+      ],
+      kind_list: [
+          {
+              value: '1',
+              label: '经济数据'
+          },
+          {
+              value: '2',
+              label: '人口数据'
+          },
+          {
+              value: '3',
+              label: '生活垃圾处理'
+          },
+          {
+              value: '4',
+              label: '无害化处理厂数量'
+          },
+          {
+              value: '5',
+              label: '无害化处理能力'
+          },
+          {
+              value: '6',
+              label: '无害化处理量'
+          },
+      ],
       star: null,
       table_loading: false
     }
@@ -54,33 +101,63 @@ export default {
       this.tableData = results
       this.tableHeader = header
       this.hasData = true
+      console.log(this.tableData)
     },
     AddModel:function () {
       var that = this;
-      if (that.modelname === ''){
-          that.$message.error('模型名称不能为空')
+      if (that.area === ''){
+          that.$message.error('数据级别不能为空')
       }
-      else if (that.star === null || that.star === 0){
-          that.$message.error('模型评分至少为1星')
+      else if (that.kind === ''){
+          that.$message.error('数据表类型不能为空')
       }
       else{
-          let name = getName();
-          let data = {};
-          data['author'] = name;
-          data['name'] = that.modelname;
-          data['star'] = that.star;
-          addmodel(data).then(res=>{
+        if (that.area === '1' && that.kind === '1'){
+          this.table_loading = true
+          let table = []
+          for (let i=0; i<this.tableData.length; i++){
+              table.push(this.tableData[i])
+          }
+          let data = {}
+          data['data'] = table
+          addcityeconomydata(data).then(res=>{
+              that.table_loading = false
               if (res.code === 20000){
-                  that.table_loading = true;
-                  setTimeout(function () {
-                      that.table_loading = false;
-                      that.$message({
-                          message: '添加成功',
-                          type: 'success'
-                      })
-                  },1000)
+                  this.$message({
+                      type: 'success',
+                      message: '导入数据成功'
+                  })
               }
+              else{
+                  this.$message.error(res.message)
+              }
+          }).catch(res=>{
+              that.table_loading = false
           })
+        }
+        else if (that.area === '1' && that.kind === '2'){
+          this.table_loading = true
+          let table = []
+          for (let i=0; i<this.tableData.length; i++){
+            table.push(this.tableData[i])
+          }
+          let data = {}
+          data['data'] = table
+          addcitypopulationdata(data).then(res=>{
+            that.table_loading = false
+            if (res.code === 20000){
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            }
+            else{
+              this.$message.error(res.message)
+            }
+          }).catch(res=>{
+            that.table_loading = false
+          })
+        }
       }
     }
   }

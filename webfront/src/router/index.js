@@ -310,14 +310,14 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/example/table',
     name: 'Example',
-    meta: { title: '管理模型', icon: 'example' },
+    meta: { title: '管理数据', icon: 'example' },
     children: [
       {
         path: 'table',
         name: 'Table',
         component: () => import('@/views/table/index'),
         meta: {
-          title: '模型导入',
+          title: '数据导入',
           roles: ['超级管理员', '教师']
         }
       },
@@ -326,7 +326,7 @@ export const asyncRoutes = [
         name: 'Tree',
         component: () => import('@/views/tree/index'),
         meta: {
-          title: '模型列表',
+          title: '数据管理',
           roles: ['超级管理员']
         }
       }

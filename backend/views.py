@@ -1,4 +1,4 @@
-from .models import UserProfile, ModelsList, FactoryList
+from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
@@ -290,4 +290,56 @@ def getFactoryById(request):
     response['data'] = []
     factory = FactoryList.objects.get(id=id)
     response['data'].append(to_dict(factory))
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addEconomyCity(request):
+    response = {'code': 20000, 'message': 'success'}
+    city_id = 1
+    body = json.loads(request.body)
+    data = body.get('data')
+    for i in range(len(data)):
+        if data[i].__contains__('year') and data[i].__contains__('gdp') and data[i].__contains__('gdp_per_capita') and data[i].__contains__('gdp_growth_rate') and data[i].__contains__('unemployment_rate'):
+            year = data[i]['year']
+            gdp = data[i]['gdp']
+            gdp_per_capita = data[i]['gdp_per_capita']
+            gdp_growth_rate = data[i]['gdp_growth_rate']
+            unemployment_rate = data[i]['unemployment_rate']
+            list = Economy_Info_City.objects.create(
+                city=City(id=city_id), year=year, gdp=gdp, gdp_per_capita=gdp_per_capita, gdp_growth_rate=gdp_growth_rate,
+                unemployment_rate=unemployment_rate)
+            list.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头和数据不一致或者缺少数据!'
+            break
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addPopulationCity(request):
+    response = {'code': 20000, 'message': 'success'}
+    city_id = 1
+    body = json.loads(request.body)
+    data = body.get('data')
+    for i in range(len(data)):
+        print(data[i])
+        if data[i].__contains__('year') and data[i].__contains__('population') and data[i].__contains__('population_density') and data[i].__contains__('population_rate') and data[i].__contains__('households') and data[i].__contains__('average_person_per_household'):
+            year = data[i]['year']
+            population = data[i]['population']
+            population_density = data[i]['population_density']
+            population_rate = data[i]['population_rate']
+            households = data[i]['households']
+            average_person_per_household = data[i]['average_person_per_household']
+            list = Population_Info_City.objects.create(city=City(id=city_id), year=year, population=population, population_density=population_density,
+                                        population_rate=population_rate, households=households, average_person_per_household=average_person_per_household)
+            list.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头和数据不一致或者缺少数据!'
+            break
+
     return JsonResponse(response, safe=False)
