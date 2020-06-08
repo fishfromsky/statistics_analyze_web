@@ -1,4 +1,4 @@
-from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City
+from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City, Garbage_Info_City
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
@@ -326,7 +326,6 @@ def addPopulationCity(request):
     body = json.loads(request.body)
     data = body.get('data')
     for i in range(len(data)):
-        print(data[i])
         if data[i].__contains__('year') and data[i].__contains__('population') and data[i].__contains__('population_density') and data[i].__contains__('population_rate') and data[i].__contains__('households') and data[i].__contains__('average_person_per_household'):
             year = data[i]['year']
             population = data[i]['population']
@@ -342,4 +341,115 @@ def addPopulationCity(request):
             response['message'] = '表头和数据不一致或者缺少数据!'
             break
 
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def geteconomydata_city(request):
+    response = {'code': 20000, 'message': 'success'}
+    data = Economy_Info_City.objects.all()
+    response['data'] = []
+    for list in data:
+        response['data'].append(to_dict(list))
+    return JsonResponse(response, safe=False)
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getpopulation_city(request):
+    response = {'code': 20000, 'message': 'success'}
+    data = Population_Info_City.objects.all()
+    response['data'] = []
+    for list in data:
+        response['data'].append(to_dict(list))
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendeconomydata_city(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    year = body.get('year')
+    gdp = body.get('gdp')
+    gdp_per_capita = body.get('gdp_per_capita')
+    gdp_growth_rate = body.get('gdp_growth_rate')
+    unemployment_rate = body.get('unemployment_rate')
+    data = Economy_Info_City.objects.get(id=id)
+    data.year = year
+    data.gdp = gdp
+    data.gdp_per_capita = gdp_per_capita
+    data.gdp_growth_rate = gdp_growth_rate
+    data.unemployment_rate = unemployment_rate
+    data.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@ require_http_methods(['POST'])
+def deleteeconomydata_city(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    data = Economy_Info_City.objects.get(id=id)
+    data.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addsinglerow_cityeconomy(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    city_id = 1
+    year = body.get('year')
+    gdp = body.get('gdp')
+    gdp_per_capita = body.get('gdp_per_capita')
+    gdp_growth_rate = body.get('gdp_growth_rate')
+    unemployment_rate = body.get('unemployment_rate')
+    if Economy_Info_City.objects.filter(year=year).count() != 0:
+        response['code'] = 50000
+        response['message'] = '该年份数据已存在，请先删除'
+    else:
+        data = Economy_Info_City.objects.create(city=City(id=city_id),  year=year, gdp=gdp, gdp_per_capita=gdp_per_capita, gdp_growth_rate=gdp_growth_rate, unemployment_rate=unemployment_rate)
+        data.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addbatchgarbagedata_city(request):
+    response= {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    city_id = 1
+    data = body.get('data')
+    for i in range(len(data)):
+        if data[i].__contains__('year') and data[i].__contains__('total_garbage') and data[i].__contains__('collect_transport_garbage') and data[i].__contains__('volume_of_treated'):
+            year = data[i]['year']
+            total_garbage = data[i]['total_garbage']
+            collect_transport_garbage = data[i]['collect_transport_garbage']
+            volume_of_treated = data[i]['volume_of_treated']
+            if Garbage_Info_City.objects.filter(year=year).count() != 0:
+                response['code'] = 50000
+                response['message'] = '该年份数据已存在，请先删除'
+                break
+            else:
+                list = Garbage_Info_City.objects.create(city=City(id=city_id), year=year, total_garbage=total_garbage,
+                                                        collect_transport_garbage=collect_transport_garbage, volume_of_treated=volume_of_treated)
+                list.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头和数据不一致或者缺少数据!'
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getgarbagepropduction_city(request):
+    response = {'code': 20000, 'message': 'success'}
+    result = Garbage_Info_City.objects.all()
+    response['data'] = []
+    for list in result:
+        response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)

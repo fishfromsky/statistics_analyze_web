@@ -7,7 +7,7 @@
     require('echarts/theme/westeros') // echarts theme
     import resize from './mixins/resize'
     export default {
-        name: "GDP",
+        name: "population",
         mixins:[resize],
         props:{
             className: {
@@ -20,7 +20,7 @@
             },
             height: {
                 type: String,
-                default: '300px'
+                default: '250px'
             },
             autoResize: {
                 type: Boolean,
@@ -62,17 +62,16 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
-                let total = val.total
-                let rate = val.rate
+                let population_data = val.data
                 let year = val.year
                 this.chart.setOption({
                     title:{
-                        text: '上海市近20年GDP数据'
+                        text: '上海市近20年人口数据'
                     },
                     grid:{
                    
                     },
-                    tooltip: {
+                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {
                             type: 'cross',
@@ -90,7 +89,7 @@
                         }
                     },
                     legend: {
-                        data: ['GDP总量', 'GDP增长率']
+                        data: ['人口数量']
                     },
                     xAxis: [
                         {
@@ -104,35 +103,20 @@
                     yAxis: [
                         {
                             type: 'value',
-                            name: 'GDP总量 100 million',
-                            interval: 5000,
+                            name: '人口数量 / 10,000',
+                            interval: 200,
                             axisLabel: {
                                 formatter: '{value}'
                             }
                         },
-                        {
-                            type: 'value',
-                            name: 'GDP增长率 %',
-                            interval: 1,
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
-                        }
                     ],
                     series: [
                         {
-                            name: 'GDP总量',
+                            name: '人口数量',
                             type: 'bar',
-                            data: total
+                            data: population_data
                         },
-                        {
-                            name: 'GDP增长率',
-                            type: 'line',
-                            yAxisIndex: 1,
-                            data: rate
-                        }
                     ]
-
                 })
             }
         }

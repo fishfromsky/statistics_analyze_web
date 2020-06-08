@@ -4,10 +4,10 @@
 
 <script>
     import echarts from 'echarts'
-    require('echarts/theme/westeros') // echarts theme
+    require('echarts/theme/macarons') // echarts theme
     import resize from './mixins/resize'
     export default {
-        name: "GDP",
+        name: "compare",
         mixins:[resize],
         props:{
             className: {
@@ -20,7 +20,7 @@
             },
             height: {
                 type: String,
-                default: '300px'
+                default: '250px'
             },
             autoResize: {
                 type: Boolean,
@@ -58,81 +58,69 @@
         },
         methods: {
             initChart(){
-                this.chart = echarts.init(this.$el, 'westeros');
+                this.chart = echarts.init(this.$el, 'macarons');
                 this.setOptions(this.chartData)
             },
             setOptions(val){
-                let total = val.total
-                let rate = val.rate
+                let deal = val.deal
+                let handle = val.handle
                 let year = val.year
                 this.chart.setOption({
-                    title:{
-                        text: '上海市近20年GDP数据'
-                    },
-                    grid:{
-                   
+                    title: {
+                        text: '上海市垃圾清运量与处理量对比'
                     },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {
                             type: 'cross',
-                            crossStyle: {
-                                color: '#999'
+                            label: {
+                                backgroundColor: '#6a7985'
                             }
                         }
                     },
+                    legend: {
+                        data: ['垃圾清运量', '垃圾处理量']
+                    },
                     toolbox: {
                         feature: {
-                            dataView: {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore: {show: true},
-                            saveAsImage: {show: true}
+                            saveAsImage: {}
                         }
                     },
-                    legend: {
-                        data: ['GDP总量', 'GDP增长率']
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
                     },
                     xAxis: [
                         {
                             type: 'category',
-                            data: year,
-                            axisPointer: {
-                                type: 'shadow'
-                            }
+                            boundaryGap: false,
+                            data: year
                         }
                     ],
                     yAxis: [
                         {
-                            type: 'value',
-                            name: 'GDP总量 100 million',
-                            interval: 5000,
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
-                        },
-                        {
-                            type: 'value',
-                            name: 'GDP增长率 %',
-                            interval: 1,
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
+                            type: 'value'
                         }
                     ],
                     series: [
                         {
-                            name: 'GDP总量',
-                            type: 'bar',
-                            data: total
+                            name: '垃圾清运量',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: deal
                         },
                         {
-                            name: 'GDP增长率',
+                            name: '垃圾处理量',
                             type: 'line',
-                            yAxisIndex: 1,
-                            data: rate
-                        }
-                    ]
+                            stack: '总量',
+                            areaStyle: {},
+                            data: handle
+                        },
 
+                    ]
                 })
             }
         }

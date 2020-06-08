@@ -29,7 +29,7 @@
 <script>
 import UploadExcelComponent from './components/UploadFile'
 import { getName } from '@/utils/auth'
-import { addcityeconomydata, addcitypopulationdata } from '@/api/model'
+import { addcityeconomydata, addcitypopulationdata, addgarbagecity } from '@/api/model'
 export default {
   name: 'UploadExcel',
   components: { UploadExcelComponent },
@@ -156,6 +156,29 @@ export default {
             }
           }).catch(res=>{
             that.table_loading = false
+          })
+        }
+        else if (that.area === '1' && that.kind === '3'){
+          that.table_loading = true
+          let table = []
+          for (let i=0; i<this.tableData.length; i++){
+            table.push(this.tableData[i])
+          }
+          let data = {}
+          data['data'] = table
+          addgarbagecity(data).then(res=>{
+            that.table_loading = false
+            if (res.code === 20000){
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            }
+            else{
+              this.$message.error(res.message)
+            }
+          }).catch(res=>{
+            console.log(res)
           })
         }
       }

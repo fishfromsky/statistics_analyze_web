@@ -55,3 +55,49 @@ export function addcitypopulationdata(data){
     data
   })
 }
+
+export function getcityeconomydata(){
+  return request({
+    url: '/geteconomycity',
+    method: 'get'
+  })
+}
+
+
+export function getcitypopulationdata(){
+  return request({
+    url: '/getpopulationcity',
+    method: 'get'
+  })
+}
+
+export function amendcityeconomydata(data){
+  return request({
+    url: '/amendcityeconomydata',
+    method: 'post',
+    data
+  })
+}
+
+export function deletecityeconomydata(data){
+  return request({
+    url: '/deletecityeconomydata',
+    method: 'post',
+    data
+  })
+}
+
+export function addgarbagecity(data){
+  return request({
+    url: '/addbatchgarbagecity',
+    method: 'post',
+    data
+  })
+}
+
+export function getcitygarbage(){
+  return request({
+    url: '/getgarbagecity',
+    method: 'get'
+  })
+}

@@ -1,13 +1,13 @@
 <template>
-  <div :class="className" :style="{width: width,height: height}"></div>
+   <div :class="className" :style="{width: width,height: height}"></div>
 </template>
 
 <script>
     import echarts from 'echarts'
-    require('echarts/theme/westeros') // echarts
+    require('echarts/theme/westeros') // echarts theme
     import resize from './mixins/resize'
     export default {
-        name: "GDP",
+        name: "deal",
         mixins:[resize],
         props:{
             className: {
@@ -20,7 +20,7 @@
             },
             height: {
                 type: String,
-                default: '300px'
+                default: '250px'
             },
             autoResize: {
                 type: Boolean,
@@ -62,33 +62,46 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
-                let capital_gdp = val.capita_gdp
+                let data = val.data
                 let year = val.year
                 this.chart.setOption({
-                    title:{
-                        text: '上海市近20年人均GDP'
+                    title: {
+                        text: '上海市生活垃圾清运量'
                     },
                     tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'cross',
-                            crossStyle: {
-                                color: '#999'
-                            }
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['垃圾清运量']
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
                         }
                     },
                     xAxis: {
                         type: 'category',
+                        boundaryGap: false,
                         data: year
                     },
                     yAxis: {
-                        type: 'value',
-                        name: '人均GDP/元'
+                        type: 'value'
                     },
-                    series: [{
-                        data: capital_gdp,
-                        type: 'bar'
-                    }]
+                    series: [
+                        {
+                            name: '垃圾清运量',
+                            type: 'line',
+                            stack: '总量',
+                            data: data
+                        },
+                      
+                    ]
                 })
             }
         }

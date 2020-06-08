@@ -17,5 +17,12 @@ urlpatterns = [
     url('getfactorylist', views.getFacorty, name='getFactory'),
     url('getfactorybyid', views.getFactoryById, name='getFactoryById'),
     url('addcityeconomy', views.addEconomyCity, name='addEconomyCity'),
-    url('addcitypopulation', views.addPopulationCity, name='addPopulationCity')
+    url('addcitypopulation', views.addPopulationCity, name='addPopulationCity'),
+    url('geteconomycity', views.geteconomydata_city, name='geteconomycity'),
+    url('getpopulationcity', views.getpopulation_city, name='getpopulationcity'),
+    url('amendcityeconomydata', views.amendeconomydata_city, name='amendcityeconomydata'),
+    url('deletecityeconomydata', views.deleteeconomydata_city, name='deletecityeconomydata'),
+    url('addsinglerowdata', views.addsinglerow_cityeconomy, name=''),
+    url('addbatchgarbagecity', views.addbatchgarbagedata_city, name=''),
+    url('getgarbagecity', views.getgarbagepropduction_city)
 ]

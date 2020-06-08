@@ -7,7 +7,7 @@
     require('echarts/theme/westeros') // echarts theme
     import resize from './mixins/resize'
     export default {
-        name: "GDP",
+        name: "density",
         mixins:[resize],
         props:{
             className: {
@@ -20,7 +20,7 @@
             },
             height: {
                 type: String,
-                default: '300px'
+                default: '250px'
             },
             autoResize: {
                 type: Boolean,
@@ -62,77 +62,53 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
-                let total = val.total
-                let rate = val.rate
+                let density = val.data
                 let year = val.year
                 this.chart.setOption({
-                    title:{
-                        text: '上海市近20年GDP数据'
-                    },
-                    grid:{
-                   
+                    title: {
+                        text: '上海人口密度'
                     },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {
                             type: 'cross',
-                            crossStyle: {
-                                color: '#999'
+                            label: {
+                                backgroundColor: '#6a7985'
                             }
                         }
                     },
+                    legend: {
+                        data: ['户数']
+                    },
                     toolbox: {
                         feature: {
-                            dataView: {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore: {show: true},
-                            saveAsImage: {show: true}
+                            saveAsImage: {}
                         }
                     },
-                    legend: {
-                        data: ['GDP总量', 'GDP增长率']
+                    grid: {
+                        
+                        containLabel: true
                     },
                     xAxis: [
                         {
                             type: 'category',
-                            data: year,
-                            axisPointer: {
-                                type: 'shadow'
-                            }
+                            boundaryGap: false,
+                            data: year
                         }
                     ],
                     yAxis: [
                         {
-                            type: 'value',
-                            name: 'GDP总量 100 million',
-                            interval: 5000,
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
-                        },
-                        {
-                            type: 'value',
-                            name: 'GDP增长率 %',
-                            interval: 1,
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
+                            type: 'value'
                         }
                     ],
                     series: [
                         {
-                            name: 'GDP总量',
-                            type: 'bar',
-                            data: total
-                        },
-                        {
-                            name: 'GDP增长率',
+                            name: '人口密度',
                             type: 'line',
-                            yAxisIndex: 1,
-                            data: rate
-                        }
+                            stack: '总量',
+                            data: density
+                        },
                     ]
-
                 })
             }
         }

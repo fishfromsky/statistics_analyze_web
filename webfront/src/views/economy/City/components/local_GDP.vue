@@ -27,7 +27,7 @@
                 default: true
             },
             chartData: {
-                type: Array,
+                type: Object,
                 required: true
             }
         },
@@ -62,31 +62,83 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
+                let year = val.year
+                let unemployment_rate = val.unemployment_rate
+                let economy_rate = val.economy_rate
                 this.chart.setOption({
-                    title:{
-                      text:'2018年各区GDP占比'
+                    title: {
+                        text: 'GDP增长率和失业率对比图'
+                    },
+                    xAxis: {
+                    data: year,
+                    boundaryGap: false,
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel:{
+                        interval: 0,
+                        rotate: 60
+                    }
+                    },
+                    grid: {
+                    left: 10,
+                    right: 10,
+                    bottom: 20,
+                    top: 50,
+                    containLabel: true
                     },
                     tooltip: {
-                        trigger: 'item',
-                        formatter: '{a} <br/>{b} : {c} ({d}%)'
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
                     },
-                    // legend: {
-                    //     left: 'center',
-                    //     bottom: '10',
-                    //     data: ['浦东新区','嘉定区','黄浦区','闵行区','杨浦区','静安区','徐汇区','长宁区','宝山区','松江区','青浦区','普陀区','奉贤区','虹口区','金山区','崇明区']
-                    // },
-                    series: [
-                        {
-                            name: '实验学生来源',
-                            type: 'pie',
-                            roseType: 'radius',
-                            radius: [15, 95],
-                            center: ['50%', '50%'],
-                            data: val,
-                            animationEasing: 'cubicInOut',
-                            animationDuration: 2600
-                        }
-                    ]
+                    padding: [5, 10]
+                    },
+                    yAxis: {
+                    axisTick: {
+                        show: false
+                    }
+                    },
+                    legend: {
+                        data: ['失业率', 'GDP增长率']
+                    },
+                    series: [{
+                        name: 'GDP增长率',
+                         itemStyle: {
+                            normal: {
+                            color: '#FF005A',
+                            lineStyle: {
+                                color: '#FF005A',
+                                width: 2
+                            }
+                            }
+                        },
+                        smooth: true,
+                        type: 'line',
+                        data: economy_rate,
+                        animationDuration: 2800,
+                        animationEasing: 'quadraticOut'
+                    },
+                    {
+                        name: '失业率',
+                        smooth: true,
+                        type: 'line',
+                        itemStyle: {
+                            normal: {
+                            color: '#3888fa',
+                            lineStyle: {
+                                color: '#3888fa',
+                                width: 2
+                            },
+                            areaStyle: {
+                                color: '#f3f8ff'
+                            }
+                            }
+                        },
+                        data: unemployment_rate,
+                        animationDuration: 2800,
+                        animationEasing: 'quadraticOut'
+                    }]
                 })
             }
         }
