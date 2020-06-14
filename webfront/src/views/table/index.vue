@@ -6,15 +6,13 @@
         <div class="model-name">
           <span class="name-span">数据级别</span>
           <el-select v-model="area" placeholder="选择数据级别" class="name-input">
-            <el-option v-for="item in level_list" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+            <el-option v-for="item in level_list" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
         <div class="model-name">
           <span class="name-span">数据类型</span>
           <el-select v-model="kind" placeholder="请输入具体表项类型" class="rate">
-            <el-option v-for="item in kind_list" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+            <el-option v-for="item in kind_list" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </div>
         <el-button type="primary" icon="el-icon-document-add" class="addmodel-btn" @click="AddModel">导入数据</el-button>
@@ -29,7 +27,7 @@
 <script>
 import UploadExcelComponent from './components/UploadFile'
 import { getName } from '@/utils/auth'
-import { addcityeconomydata, addcitypopulationdata, addgarbagecity } from '@/api/model'
+import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume } from '@/api/model'
 export default {
   name: 'UploadExcel',
   components: { UploadExcelComponent },
@@ -40,45 +38,45 @@ export default {
       hasData: false,
       area: '',
       kind: '',
-      level_list:[
-          {
-              value: '1',
-              label: '市级'
-          },
-          // {
-          //     value: '2',
-          //     label: '区级'
-          // },
-          // {
-          //     value: '3',
-          //     label: '乡级'
-          // }
+      level_list: [
+        {
+          value: '1',
+          label: '市级'
+        }
+        // {
+        //     value: '2',
+        //     label: '区级'
+        // },
+        // {
+        //     value: '3',
+        //     label: '乡级'
+        // }
       ],
       kind_list: [
-          {
-              value: '1',
-              label: '经济数据'
-          },
-          {
-              value: '2',
-              label: '人口数据'
-          },
-          {
-              value: '3',
-              label: '生活垃圾处理'
-          },
-          {
-              value: '4',
-              label: '无害化处理厂数量'
-          },
-          {
-              value: '5',
-              label: '无害化处理能力'
-          },
-          {
-              value: '6',
-              label: '无害化处理量'
-          },
+        {
+          value: '1',
+          label: '经济数据'
+        },
+        {
+          value: '2',
+          label: '人口数据'
+        },
+        {
+          value: '3',
+          label: '生活垃圾处理'
+        },
+        {
+          value: '4',
+          label: '无害化处理厂数量'
+        },
+        {
+          value: '5',
+          label: '无害化处理能力'
+        },
+        {
+          value: '6',
+          label: '无害化处理量'
+        }
       ],
       star: null,
       table_loading: false
@@ -103,81 +101,137 @@ export default {
       this.hasData = true
       console.log(this.tableData)
     },
-    AddModel:function () {
-      var that = this;
-      if (that.area === ''){
-          that.$message.error('数据级别不能为空')
-      }
-      else if (that.kind === ''){
-          that.$message.error('数据表类型不能为空')
-      }
-      else{
-        if (that.area === '1' && that.kind === '1'){
+    AddModel: function() {
+      var that = this
+      if (that.area === '') {
+        that.$message.error('数据级别不能为空')
+      } else if (that.kind === '') {
+        that.$message.error('数据表类型不能为空')
+      } else {
+        if (that.area === '1' && that.kind === '1') {
           this.table_loading = true
-          let table = []
-          for (let i=0; i<this.tableData.length; i++){
-              table.push(this.tableData[i])
-          }
-          let data = {}
-          data['data'] = table
-          addcityeconomydata(data).then(res=>{
-              that.table_loading = false
-              if (res.code === 20000){
-                  this.$message({
-                      type: 'success',
-                      message: '导入数据成功'
-                  })
-              }
-              else{
-                  this.$message.error(res.message)
-              }
-          }).catch(res=>{
-              that.table_loading = false
-          })
-        }
-        else if (that.area === '1' && that.kind === '2'){
-          this.table_loading = true
-          let table = []
-          for (let i=0; i<this.tableData.length; i++){
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
             table.push(this.tableData[i])
           }
-          let data = {}
+          const data = {}
           data['data'] = table
-          addcitypopulationdata(data).then(res=>{
+          addcityeconomydata(data).then(res => {
             that.table_loading = false
-            if (res.code === 20000){
+            if (res.code === 20000) {
               this.$message({
                 type: 'success',
                 message: '导入数据成功'
               })
-            }
-            else{
+            } else {
               this.$message.error(res.message)
             }
-          }).catch(res=>{
+          }).catch(res => {
             that.table_loading = false
           })
-        }
-        else if (that.area === '1' && that.kind === '3'){
+        } else if (that.area === '1' && that.kind === '2') {
+          this.table_loading = true
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
+            table.push(this.tableData[i])
+          }
+          const data = {}
+          data['data'] = table
+          addcitypopulationdata(data).then(res => {
+            that.table_loading = false
+            if (res.code === 20000) {
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(res => {
+            that.table_loading = false
+          })
+        } else if (that.area === '1' && that.kind === '3') {
           that.table_loading = true
-          let table = []
-          for (let i=0; i<this.tableData.length; i++){
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
             table.push(this.tableData[i])
           }
-          let data = {}
+          const data = {}
           data['data'] = table
-          addgarbagecity(data).then(res=>{
+          addgarbagecity(data).then(res => {
             that.table_loading = false
-            if (res.code === 20000){
+            if (res.code === 20000) {
               this.$message({
                 type: 'success',
                 message: '导入数据成功'
               })
-            }
-            else{
+            } else {
               this.$message.error(res.message)
             }
-          }).catch(res=>{
+          }).catch(res => {
+            console.log(res)
+          })
+        } else if (that.area === '1' && that.kind === '4') {
+          that.table_loading = true
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
+            table.push(this.tableData[i])
+          }
+          const data = {}
+          data['data'] = table
+          addcitygarbagedeal(data).then(res => {
+            that.table_loading = false
+            if (res.code === 20000) {
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(res => {
+            console.log(res)
+          })
+        } else if (that.area === '1' && that.kind === '5') {
+          that.table_loading = true
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
+            table.push(this.tableData[i])
+          }
+          const data = {}
+          data['data'] = table
+          addcitygarbagecapacity(data).then(res => {
+            that.table_loading = false
+            if (res.code === 20000) {
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(res => {
+            console.log(res)
+          })
+        } else if (that.area === '1' && that.kind === '6') {
+          that.table_loading = true
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
+            table.push(this.tableData[i])
+          }
+          const data = {}
+          data['data'] = table
+          addcitygarbagevolume(data).then(res => {
+            that.table_loading = false
+            if (res.code === 20000) {
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(res => {
             console.log(res)
           })
         }
