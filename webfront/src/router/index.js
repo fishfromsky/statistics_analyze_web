@@ -297,6 +297,47 @@ export const constantRoutes = [
         meta: { title: '指标预测', icon: 'form' }
       }
     ]
+  },
+  {
+    path: '/repository',
+    component: Layout,
+    redirect: '/repository/p_median',
+    meta: { title: '算法仓库', icon: 'algo'},
+    children: [
+      {
+        path: 'p_median',
+        name: 'p_median',
+        redirect: '/repository/p_median',
+        meta: { title: '集散厂优化' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'manage',
+            component: () => import('@/views/repository/p_median/manageProject/index.vue'),
+            meta: { title: '管理项目'}
+          },
+          {
+            path: 'import',
+            name: 'import',
+            component: () => import('@/views/repository/p_median/importData/index.vue'),
+            meta: { title: '导入数据'}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    path: '/crawldata',
+    component: Layout,
+    children: [
+      {
+        path: 'garbagedata',
+        name: 'garbagedata',
+        component: () => import('@/views/crawldata/garbagedata/index'),
+        meta: { title: '数据获取', icon: 'crawldata' }
+      }
+    ]
   }
 ]
 

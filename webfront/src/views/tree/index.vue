@@ -12,17 +12,33 @@
         </el-select>
         <div class="divider"></div>
         <el-button type="primary" icon="el-icon-download" class="input-item">导出数据</el-button>
+        <el-button  type="info" icon="el-icon-upload2" @click="addData" style="text-align: center" plain>添加数据</el-button>
       </div>
-      <cityeconomy v-if="level == '1' && kind == '1'"></cityeconomy>
+      <cityeconomy v-if="level == '1' && kind == '1'" ref="economy"></cityeconomy>
+      <citypopulation v-if="level == '1' && kind == '2'" ref="population"></citypopulation>
+      <citygarbage v-if="level == '1' && kind == '3'" ref="garbage"></citygarbage>
+      <citygarbagedeal v-if="level == '1' && kind == '4'" ref="deal"></citygarbagedeal>
+      <citygarbagecapacity v-if="level == '1' && kind == '5'" ref="capacity"></citygarbagecapacity>
+      <citygarbagevolume v-if="level == '1' && kind == '6'" ref="volume"></citygarbagevolume>
     </div>
   </div>
 </template>
 
 <script>
 import cityeconomy from './components/cityeconomy'
+import citypopulation from './components/citypopulation'
+import citygarbage from './components/citygarbage'
+import citygarbagedeal from './components/citygarbagedeal'
+import citygarbagecapacity from './components/citygarbagecapacity'
+import citygarbagevolume from './components/citygarbagevolume'
 export default {
   components: {
-    cityeconomy
+    cityeconomy,
+    citypopulation,
+    citygarbage,
+    citygarbagedeal,
+    citygarbagecapacity,
+    citygarbagevolume
   },
   data() {
     return {
@@ -67,6 +83,28 @@ export default {
 
   },
   methods: {
+    addData() {
+      var that = this
+      if (that.level === '') {
+        that.$message.error('数据级别不能为空')
+      } else if (that.kind === '') {
+        that.$message.error('数据表类型不能为空')
+      } else {
+        if (that.level === '1' && that.kind === '1') {
+          this.$refs.economy.addData()
+        } else if (that.level === '1' && that.kind === '2') {
+          this.$refs.population.addData()
+        } else if (that.level === '1' && that.kind === '3') {
+          this.$refs.garbage.addData()
+        } else if (that.level === '1' && that.kind === '4') {
+          this.$refs.deal.addData()
+        } else if (that.level === '1' && that.kind === '5') {
+          this.$refs.capacity.addData()
+        } else if (that.level === '1' && that.kind === '6') {
+          this.$refs.volume.addData()
+        }
+      }
+    }
   
   },
   mounted() {

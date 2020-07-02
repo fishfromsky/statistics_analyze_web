@@ -308,3 +308,100 @@ export function addsinglevolumegarbage(data) {
     data
   })
 }
+// 添加一个p_median项目
+export function addpmedianproject(data) {
+  return request({
+    url: '/addpmedianproject',
+    method: 'post',
+    data
+  })
+}
+// 导入basic表
+export function addbasic(data) {
+  return request({
+    url: '/addbasic',
+    method: 'post',
+    data
+  })
+}
+// 导入ts表
+export function addts(data) {
+  return request({
+    url: '/addts',
+    method: 'post',
+    data
+  })
+}
+// 导入rrc表
+export function addrrc(data) {
+  return request({
+    url: '/addrrc',
+    method: 'post',
+    data
+  })
+}
+// 导入cost_matrix表
+export function addcostmatrix(data) {
+  return request({
+    url: '/addcostmatrix',
+    method: 'post',
+    data
+  })
+}
+// 请求p_median项目
+export function getpmedianproject() {
+  return request({
+    url: '/getpmedianproject',
+    method: 'get'
+  })
+}
+// 修改p_median项目
+export function amendpmedianproject(data) {
+  return request({
+    url: '/amendpmedianproject',
+    method: 'post',
+    data
+  })
+}
+// 集散厂优化
+export function getplotlocation(data) {
+  return request({
+    url: '/getplotlocation',
+    method: 'post',
+    data
+  })
+}
+// 爬取国内空气污染数据
+export function getnationpm(data) {
+  return request({
+    url: '/getnationpm',
+    method: 'post',
+    data
+  })
+}
+// 爬取国内水体污染数据
+export function getnationwaterpollution(data) {
+  return request({
+    url: '/getnationwaterpollution',
+    method: 'post',
+    data
+  })
+}
+// 爬取国内固体废弃物数据
+export function getnationsolidpollution(data){
+  return request({
+    url: '/getnationsolidpollution',
+    method: 'post',
+    data
+  })
+}
+// 爬取世界空气污染数据
+export function getworldpm(data){
+  return request({
+    url: '/getworldpm',
+    method: 'post',
+    data
+  })
+}
+
+

@@ -60,6 +60,29 @@
                 <el-button type="danger" @click="DeleteDataConfirm">确 定</el-button>
             </div>
        </el-dialog>
+        <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
+           <el-form :model="form">
+           <el-form-item label="年份">
+                   <el-input v-model="form.year" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="GDP总量">
+                   <el-input v-model="form.gdp" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="人均生产总值">
+                   <el-input v-model="form.gdp_per_capita" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="GDP增长率">
+                   <el-input v-model="form.gdp_growth_rate" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="失业率">
+                   <el-input v-model="form.unemployment_rate" auto-complete="off"></el-input>
+               </el-form-item>
+           </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="add_dialog = false">取 消</el-button>
+                <el-button type="primary" @click="addDataConfirm">确 定</el-button>
+            </div>
+       </el-dialog>
        <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -74,7 +97,7 @@
 </template>
 
 <script>
-import { getcityeconomydata, amendcityeconomydata, deletecityeconomydata } from '@/api/model'
+import { getcityeconomydata, amendcityeconomydata, deletecityeconomydata, addsinglerowdata } from '@/api/model'
 export default {
     data(){
         return{
@@ -88,6 +111,7 @@ export default {
             page_size: 10,
             amend_dialog: false,
             delete_dialog: false,
+            add_dialog: false,
             form: {},
             delete_form: {
                 id: ''
@@ -149,6 +173,24 @@ export default {
                     that.getData()
                 }
             })
+        },
+        addData(){
+        this.add_dialog = true
+        },
+        addDataConfirm(){
+            let data = this.form
+            let that = this
+            addsinglerowdata(data).then(res=>{
+                if (res.code === 20000){
+                    this.$message({
+                        type: 'success',
+                        message: '添加成功'
+                    })
+                    that.page_data = []
+                    that.getData()
+                }
+            })
+            this.add_dialog = false
         },
         handleSizeChange(val){
             this.table_loading = true

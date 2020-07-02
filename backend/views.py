@@ -1,13 +1,19 @@
-from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City, Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City
+from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City, Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City, p_median_project, basic, ts, rrc, cost_matrix
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
 import json
+import pandas as pd
 from rest_framework.authtoken.models import Token
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+import os
+import datetime
+from scrapy import cmdline
+
+from scrapy.cmdline import execute
 from django.core import serializers
 
 
@@ -521,6 +527,9 @@ def addGarbageDealVolumeCity(request):
     return JsonResponse(response, safe=False)
 
 
+
+
+
 # 请求城市经济表数据
 @csrf_exempt
 @require_http_methods(['GET'])
@@ -589,6 +598,34 @@ def getgarbagevolume_city(request):
 
 
 
+# 请求p_median项目
+@csrf_exempt
+@require_http_methods(['GET'])
+def getpmedianproject(request):
+    response = {'code': 20000, 'message': 'success'}
+    data = p_median_project.objects.all()
+    response['data'] = []
+    for list in data:
+        response['data'].append(to_dict(list))
+    return JsonResponse(response, safe=False)
+
+# 修改p_median项目
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendpmedianproject(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    print(body)
+    project_id = body.get('project_id')
+    data = p_median_project.objects.get(project_id=project_id)
+    data.project_id = body.get('project_id')
+    data.name = body.get('name')
+    data.basic_size = body.get('basic_size')
+    data.ts_size = body.get('ts_size')
+    data.rrc_size = body.get('rrc_size')
+    data.cost_matrix_size = body.get('cost_matrix_size')
+    data.save()
+    return JsonResponse(response, safe=False)
 
 # 修改经济表数据
 @csrf_exempt
@@ -628,6 +665,7 @@ def deleteeconomydata_city(request):
 def amendpopulationdata_city(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
+    print(body)
     id = body.get('id')
     data = Population_Info_City.objects.get(id=id)
     data.year = body.get('year')
@@ -635,7 +673,7 @@ def amendpopulationdata_city(request):
     data.population_density = body.get('population_density')
     data.population_rate = body.get('population_rate')
     data.households = body.get('households')
-    data.average_per_person_household = body.get('average_person_per_household')
+    data.average_person_per_household = body.get('average_person_per_household')
     data.save()
     return JsonResponse(response, safe=False)
 
@@ -816,11 +854,12 @@ def addsinglegarbageinfocity(request):
     volume_of_treated = body.get('volume_of_treated')
     if Garbage_Info_City.objects.filter(year=year).count() != 0:
         response['code'] = 50000
-        response['message'] = '该年份数据已存在，请先删除'
+        response['message'] = '该年份数据已存在，请先删除！'
     else:
         data = Garbage_Info_City.objects.create(city=City(id=city_id), year=year, total_garbage=total_garbage, collect_transport_garbage=collect_transport_garbage, volume_of_treated=volume_of_treated)
         data.save()
     return JsonResponse(response, safe=False)
+
 
 # 添加一条无害化处理厂表数据
 @csrf_exempt
@@ -885,7 +924,294 @@ def addsinglegarbagedealvolume(request):
         data.save()
     return JsonResponse(response, safe=False)
 
+# 区域集散厂优化
+@csrf_exempt
+@require_http_methods(['POST'])
+def getlocation(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    plot_num = body.get('plot_num')
+    print('---------------')
+    print(project_id)
+    print('------------')
+    print(plot_num)
+    basic_list = basic.objects.filter(project_id_id=project_id)
+    ts_list = ts.objects.filter(project_id_id=project_id)
+    rrc_list = rrc.objects.filter(project_id_id=project_id)
+    cost_matrix_list = cost_matrix.objects.filter(project_id_id=project_id)
+    new_path = 'static/plot_allocation_' + str(project_id) + '_' + str(plot_num) + '.png'
+    print(os.path.exists(new_path))
+    if len(basic_list) == 0 & len(ts_list) == 0 & len(rrc_list) == 0 & len(cost_matrix_list) == 0:
+        response['code'] = 50000
+        response['message'] = '请先导入相应表格！'
+    elif os.path.exists(new_path) is False:
+        basic_rows = []
+        ts_rows = []
+        rrc_rows = []
+        cost_matrix_rows = []
+        for l in basic_list:
+            basic_rows.append([l.name, l.value, l.unit, l.note])
+        for l in ts_list:
+            ts_rows.append([l.sub_names, l.weight_percentage, l.lng, l.lat, l.district])
+        for l in rrc_list:
+            rrc_rows.append(
+                [l.district, l.sub_district, l.location, l.lng, l.lat, l.max_load, l.has_selected, l.district_no])
+        for l in cost_matrix_list:
+            cost_matrix_rows.append([l.Euclid_distance])
+        writer = pd.ExcelWriter('backend/p_median/input/P-median-input.xlsx')
+        basic_rows = pd.DataFrame(basic_rows, columns='name, value, unit, note'.split(', '))
+        ts_rows = pd.DataFrame(ts_rows, columns='sub_names, weight_percentage, lng, lat, district '.split(', '))
+        rrc_rows = pd.DataFrame(rrc_rows,
+                                columns='district, sub_district, location, lng, lat, max_load(千吨/年), has_selected, district_no'.split(
+                                    ', '))
+        cost_matrix_rows = pd.DataFrame(cost_matrix_rows, columns='Euclid-几何距离'.split(', '))
+        basic_rows.to_excel(writer, index=False, encoding='gbk', sheet_name='basic')
+        ts_rows.to_excel(writer, index=False, encoding='gbk', sheet_name='ts')
+        rrc_rows.to_excel(writer, index=False, encoding='gbk', sheet_name='rrc')
+        cost_matrix_rows.to_excel(writer, index=False, encoding='gbk', sheet_name='cost_matrix')
+        writer.save()
+        writer.close()
+        os.system("python backend/p_median/main.py")
+        os.system("python backend/p_median/plot_allocation.py " + plot_num)
+        os.rename("static/plot_allocation_geofig01.png", new_path)
+        response['image_url'] = 'http://127.0.0.1:8000/' + new_path
+    else:
+        response['image_url'] = 'http://127.0.0.1:8000/' + new_path
+    return JsonResponse(response, safe=False)
 
+# 添加basic表
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_basic(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    if data[0].__contains__('project_id'):
+        if p_median_project.objects.filter(project_id=data[0]['project_id']).count() == 0:
+            response['code'] = 50000
+            response['message'] = '请先创建项目！'
+        else:
+            project = p_median_project.objects.get(project_id=data[0]['project_id'])
+            if project.basic_size != 0:
+                response['code'] = 50000
+                response['message'] = '该项目此表数据已存在！'
+            else:
+                for i in range(len(data)):
+                    if data[i].__contains__('project_id') and data[i].__contains__('name') and data[i].__contains__(
+                            'value') and data[i].__contains__('unit') and data[i].__contains__('note'):
+                        project_id = data[i]['project_id']
+                        name = data[i]['name']
+                        value = data[i]['value']
+                        unit = data[i]['unit']
+                        note = data[i]['note']
+                        list = basic.objects.create(project_id=p_median_project(project_id=project_id), name=name,
+                                                    value=value, unit=unit, note=note)
+                        list.save()
+                        project.basic_size = len(data)
+                        project.save()
+                    else:
+                        response['code'] = 50000
+                        response['message'] = '表头与数据不一致或者缺少数据！'
+
+    else:
+        response['code'] = 50000
+        response['message'] = '表头与数据不一致或者缺少数据！'
+    return JsonResponse(response, safe=False)
+
+# 添加ts表
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_ts(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    if data[0].__contains__('project_id'):
+        if p_median_project.objects.filter(project_id=data[0]['project_id']).count() == 0:
+            response['code'] = 50000
+            response['message'] = '请先创建项目！'
+        else:
+            project = p_median_project.objects.get(project_id=data[0]['project_id'])
+            if project.ts_size != 0:
+                response['code'] = 50000
+                response['message'] = '该项目此表数据已存在！'
+            else:
+                for i in range(len(data)):
+                    if data[i].__contains__('project_id') and data[i].__contains__('sub_names') and data[
+                        i].__contains__('weight_percentage') and data[i].__contains__('lng') and data[i].__contains__(
+                            'lat') and data[i].__contains__('district'):
+                        project_id = data[i]['project_id']
+                        sub_names = data[i]['sub_names']
+                        weight_percentage = data[i]['weight_percentage']
+                        lng = data[i]['lng']
+                        lat = data[i]['lat']
+                        district = data[i]['district']
+                        list = ts.objects.create(project_id=p_median_project(project_id=project_id),
+                                                 sub_names=sub_names,
+                                                 weight_percentage=weight_percentage, lng=lng, lat=lat,
+                                                 district=district)
+                        list.save()
+                        project.ts_size = len(data)
+                        project.save()
+                    else:
+                        response['code'] = 50000
+                        response['message'] = '表头与数据不一致或者缺少数据！'
+    else:
+        response['code'] = 50000
+        response['message'] = '表头与数据不一致或者缺少数据！'
+    return JsonResponse(response, safe=False)
+
+# 添加rrc表
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_rrc(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    if data[0].__contains__('project_id'):
+        if p_median_project.objects.filter(project_id=data[0]['project_id']).count() == 0:
+            response['code'] = 50000
+            response['message'] = '请先创建项目！'
+        else:
+            project = p_median_project.objects.get(project_id=data[0]['project_id'])
+            if project.rrc_size != 0:
+                response['code'] = 50000
+                response['message'] = '该项目此表数据已存在'
+            else:
+                for i in range(len(data)):
+                    if data[i].__contains__('project_id') and data[i].__contains__('district') and data[i].__contains__(
+                            'sub_district') and data[i].__contains__('location') and data[i].__contains__('lng') and \
+                            data[i].__contains__('lat') and data[i].__contains__('max_load') and data[i].__contains__(
+                            'has_selected') and data[i].__contains__('district_no'):
+                        project_id = data[i]['project_id']
+                        district = data[i]['district']
+                        sub_district = data[i]['sub_district']
+                        location = data[i]['location']
+                        lng = data[i]['lng']
+                        lat = data[i]['lat']
+                        max_load = data[i]['max_load']
+                        has_selected = data[i]['has_selected']
+                        district_no = data[i]['district_no']
+                        list = rrc.objects.create(project_id=p_median_project(project_id=project_id), district=district,
+                                                  sub_district=sub_district, location=location, lng=lng, lat=lat,
+                                                  max_load=max_load, has_selected=has_selected, district_no=district_no)
+                        list.save()
+                        project.rrc_size = len(data)
+                        project.save()
+                    else:
+                        response['code'] = 50000
+                        response['message'] = '表头与数据不一致或者缺少数据！'
+    else:
+        response['code'] = 50000
+        response['message'] = '表头与数据不一致或者缺少数据！'
+    return JsonResponse(response, safe=False)
+
+
+# 添加cost_matrix表
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_cost_matrix(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    print(data)
+    if data[0].__contains__('project_id'):
+        if p_median_project.objects.filter(project_id=data[0]['project_id']) == 0:
+            response['code'] = 50000
+            response['message'] = '请先创建项目！'
+        else:
+            project = p_median_project.objects.get(project_id=data[0]['project_id'])
+            if project.cost_matrix_size != 0:
+                response['code'] = 50000
+                response['message'] = '该项目此表数据已存在'
+            else:
+                for i in range(len(data)):
+                    if data[i].__contains__('project_id') and data[i].__contains__('Euclid_distance'):
+                        project_id = data[i]['project_id']
+                        Euclid_distance = data[i]['Euclid_distance']
+                        list = cost_matrix.objects.create(project_id=p_median_project(project_id=project_id),
+                                                          Euclid_distance=Euclid_distance)
+                        list.save()
+                        project.cost_matrix_size = len(data)
+                        project.save()
+                    else:
+                        response['code'] = 50000
+                        response['message'] = '表头与数据不一致或者缺少数据！'
+    else:
+        response['code'] = 50000
+        response['message'] = '表头与数据不一致或者缺少数据！'
+    return JsonResponse(response, safe=False)
+
+
+# 添加一个p_median项目
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_p_median_project(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    name = body.get('name')
+    if p_median_project.objects.filter(project_id=project_id).count() != 0:
+        response['code'] = 50000
+        response['message'] = '该项目已存在，请先删除！'
+    else:
+        data = p_median_project.objects.create(name=name, basic_size=0, ts_size=0, rrc_size=0, cost_matrix_size=0, project_id=project_id)
+        data.save()
+    return JsonResponse(response, safe=False)
+
+# 爬取国内水体污染实时数据
+@csrf_exempt
+@require_http_methods(['POST'])
+def get_water_pollution(request):
+    response = {'code': 20000, 'message': 'success'}
+    os.system('python backend/start_crawl.py ' + 'nation_water')
+    date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
+    path = os.path.join("static/" + date + '国内水体污染实时数据.xlsx')
+    os.renames("static/国内水体污染实时数据.xlsx", path)
+    response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    return JsonResponse(response, safe=False)
+
+
+# 爬取国内空气污染实时数据
+@csrf_exempt
+@require_http_methods(['POST'])
+def get_nation_pm(request):
+    response = {'code': 20000, 'message': 'success'}
+    os.system('python backend/start_crawl.py ' + 'nation_pm')
+    date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
+    path = os.path.join("static/" + date + '国内空气污染实时数据.xlsx')
+    os.renames("static/国内空气污染实时数据.xlsx", path)
+    response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    return JsonResponse(response, safe=False)
+
+# 爬取国内固体废弃物数据
+@csrf_exempt
+@require_http_methods(['POST'])
+def get_nation_solid_pollution(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    print(body)
+    key_word = body.get('key_word')
+    year = body.get('year')
+    date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
+    os.system('python backend/start_crawl.py ' + 'nation_solid_pollution ' + key_word + " " + year)
+    path = os.path.join("static/" + date + '国内固体废物实时数据.xlsx')
+    os.renames("static/国内固体废物实时数据.xlsx", path)
+    response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    return JsonResponse(response, safe=False)
+
+
+# 爬取世界空气污染数据
+@csrf_exempt
+@require_http_methods(['POST'])
+def get_world_pm(request):
+    response = {'code': 20000, 'message': 'success'}
+    date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
+    os.system('python backend/start_crawl.py ' + 'world_pm')
+    path = os.path.join("static/" + date + '世界空气污染实时数据.xlsx')
+    os.renames("static/世界空气污染实时数据.xlsx", path)
+    response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    return JsonResponse(response, safe=False)
 
 
 @csrf_exempt
@@ -897,3 +1223,6 @@ def getgarbagepropduction_city(request):
     for list in result:
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
+
+
+

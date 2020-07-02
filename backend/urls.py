@@ -49,5 +49,19 @@ urlpatterns = [
     url('addsinglecapacitygarbage', views.addsinglegarbagedealcapacity, name='addsinglegarbagecapacity'),  # 添加一条无害化处理能力表数据
     url('addsinglevolumegarbage', views.addsinglegarbagedealvolume, name='addsinglegarbagevolume'),  # 添加一条无害化处理量表数据
     url('addsinglerowdata', views.addsinglerow_cityeconomy, name='addsinglerowdata'),  # 添加一条经济表数据
-    url('getgarbagecity', views.getgarbagepropduction_city)
+    url('getgarbagecity', views.getgarbagepropduction_city),
+    url('addpmedianproject', views.add_p_median_project, name='addpmedianproject'),  # 添加p_median项目
+    url('addbasic', views.add_basic, name='addbasic'),  # 添加p_median项目basic表
+    url('addts', views.add_ts, name='addts'),  # 添加p_median项目ts表
+    url('addrrc', views.add_rrc, name='addrrc'),  # 添加p_median项目rrc表
+    url('addcostmatrix', views.add_cost_matrix, name='addcostmatrix'),  # 添加p_median项目cost_matrix表
+    url('getpmedianproject', views.getpmedianproject, name='getpmedianproject'),  # 请求p_median项目
+    url('amendpmedianproject', views.amendpmedianproject, name='amendpmedianproject'),  # 修改p_median项目
+    url('getplotlocation', views.getlocation, name='getlocation'),  # 集散厂位置优化
+    url('getnationwaterpollution', views.get_water_pollution, name='getwaterpollution'),  # 爬取国内水体污染数据
+    url('getnationpm', views.get_nation_pm, name='getnationpm'),  # 爬取国内空气污染数据
+    url('getnationsolidpollution', views.get_nation_solid_pollution, name='getnationsolidpollution'),  # 爬取国内固废垃圾数据
+    url('getworldpm', views.get_world_pm, name='getworldpm')  # 爬取世界空气污染数据
+
+
 ]

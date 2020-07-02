@@ -49,7 +49,7 @@ class Economy_Info_City(models.Model):
     city = models.ForeignKey(to='City', on_delete=models.CASCADE)
     year = models.CharField(max_length=200)  # 年份
     gdp = models.CharField(max_length=200, null=True)
-    gdp_per_capita = models.CharField(max_length=200,null=True)
+    gdp_per_capita = models.CharField(max_length=200, null=True)
     gdp_growth_rate = models.FloatField(null=True)
     unemployment_rate = models.FloatField(null=True)   # 失业率
 
@@ -105,5 +105,54 @@ class Garbage_Deal_Volume_City(models.Model):
     incineration = models.CharField(max_length=200)
     compost = models.CharField(max_length=200)
     else_num = models.CharField(max_length=200)
+
+class p_median_project(models.Model):
+    project_id = models.CharField(max_length=200, primary_key=True)
+    name = models.CharField(max_length=200)
+    basic_size = models.IntegerField()
+    ts_size = models.IntegerField()
+    rrc_size = models.IntegerField()
+    cost_matrix_size = models.IntegerField()
+
+class basic(models.Model):
+    project_id = models.ForeignKey(to="p_median_project", on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    value = models.FloatField()
+    unit = models.CharField(max_length=200)
+    note = models.CharField(max_length=200)
+
+
+class ts(models.Model):
+    project_id = models.ForeignKey(to="p_median_project", on_delete=models.CASCADE)
+    sub_names = models.CharField(max_length=200)
+    weight_percentage = models.FloatField()
+    lng = models.FloatField()
+    lat = models.FloatField()
+    district = models.CharField(max_length=200)
+
+
+class rrc(models.Model):
+    project_id = models.ForeignKey(to="p_median_project", on_delete=models.CASCADE)
+    district = models.CharField(max_length=200)
+    sub_district = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)
+    lng = models.FloatField()
+    lat = models.FloatField()
+    max_load = models.IntegerField()
+    has_selected = models.IntegerField()
+    district_no = models.IntegerField()
+
+
+class cost_matrix(models.Model):
+    project_id = models.ForeignKey(to="p_median_project", on_delete=models.CASCADE)
+    Euclid_distance = models.FloatField()
+
+
+
+
+
+
+
+
 
 
