@@ -1,89 +1,71 @@
 <template>
-  <div ref="map" class="map-container">
-  </div>
+    <div ref="map" class="map-container"></div>
 </template>
-
 <script>
-    import { getfactorylist } from '@/api/model'
-    import echarts from 'echarts'
-    import 'echarts/extension/bmap/bmap'
-
-    export default {
-        name: "amap",
-        components: {
-        },
-        data(){
-            return{
-              bmap: {},
-              mapZoom: 10,
-              chart: echarts.ECharts,
-              data0: [],  // 其他
-              data1: [],  //焚烧厂
-              data2: [],  //填埋场
-              geoCoordMap: {}
-            }
-        },
-        methods: {
-            convertData(data){
-                var res = [];
-                for (var i = 0; i < data.length; i++) {
-                    var geoCoord = this.geoCoordMap[data[i].name];
-                    if (geoCoord) {
-                        res.push({
-                            name: data[i].name,
-                            value: geoCoord.concat(data[i].value)
-                        });
+import echarts from 'echarts'
+import 'echarts/extension/bmap/bmap'
+import { gettransferfactory } from '@/api/model'
+import da from 'element-ui/src/locale/lang/da'
+export default {
+    data(){
+        return{
+            chart: echarts.ECharts,
+            data: [],
+            geoCoordMap: {}
+        }
+    },
+    methods: {
+        getData(){
+            var that = this
+            gettransferfactory().then(res=>{
+                if (res.code === 20000){
+                    let data = res.data
+                    for (let i=0; i<data.length; i++){
+                        let name = data[i]['name']
+                        let value = data[i]['capacity']
+                        let longitude = data[i]['longitude']
+                        let latitude = data[i]['latitude']
+                        that.data.push({name: name, value: value})
+                        that.geoCoordMap[name] = [longitude, latitude]
                     }
+                    that.initChart()
                 }
-                return res;
-            },
-            getData(){
-                var that = this
-                getfactorylist().then(res=>{
-                    if (res.code === 20000){
-                        let fac_data = res.data
-                        console.log(fac_data)
-                        for (let i=0; i<fac_data.length; i++){
-                            let f_name = fac_data[i]['name']
-                            let f_value = fac_data[i]['deal']
-                            let f_longitude = fac_data[i]['longitude']
-                            let f_latitude = fac_data[i]['latitude']
-                            if (fac_data[i]['typeId'] === 0){
-                                that.data0.push({name: f_name, value: f_value})
-                            }
-                            else if (fac_data[i]['typeId'] === 1){
-                                that.data1.push({name: f_name, value: f_value})
-                            }
-                            else if (fac_data[i]['typeId'] === 2){
-                                that.data2.push({name: f_name, value: f_value})
-                            }
-                            that.geoCoordMap[f_name] = [f_longitude, f_latitude]
-                        }
-                        that.initChart()
-                    }
-                })
-            },
-            initChart(){
+            })
+        },
+        convertData(data){
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+                var geoCoord = this.geoCoordMap[data[i].name];
+                if (geoCoord) {
+                    res.push({
+                        name: data[i].name,
+                        value: geoCoord.concat(data[i].value)
+                    });
+                }
+            }
+            return res;
+        },
+        initChart(){
             this.chart = echarts.init(this.$refs.map)
             this.chart.setOption({
               title: {
-                  text: '上海市无害化固废垃圾处理厂信息表',
+                  text: '上海市垃圾中转站信息表',
                   subtext: '截至2019年数据',
                   left: 'center',
-                  top: 20,
                   textStyle: {
                       color: '#fff'
-                  }
+                  },
+                  top: 20
               },
               tooltip : {
                   trigger: 'item'
               },
               bmap: {
-                  center: [121.478423, 31.222243],
-                  zoom: 11,
-                  roam: true,
-                  mapStyle: {
-                      styleJson: [
+                    center: [121.478423, 31.222243],
+                    zoom: 11,
+                    roam: true,
+                    mapStyle: {
+                        styleJson: [
                         {
                             "featureType": "water",
                             "elementType": "all",
@@ -212,20 +194,20 @@
                                 "visibility": "off"
                             }
                         }
-                      ]
+                    ]
                   }
               },
               series : [
                 {
-                    name: '其他(万吨)',
+                    name: '垃圾中转站',
                     type: 'effectScatter',
                     coordinateSystem: 'bmap',
-                    data: this.convertData(this.data0),
+                    data: this.convertData(this.data),
                     encode: {
                         value: 2
                     },
                     symbolSize: function (val) {
-                        return val[2] / 3;
+                        return val[2] / 15;
                     },
                     showEffectOn: 'emphasis',
                     rippleEffect: {
@@ -244,76 +226,19 @@
                     },
                     zlevel: 1
                 },
-                {
-                    name: '焚烧厂(万吨)',
-                    type: 'effectScatter',
-                    coordinateSystem: 'bmap',
-                    data: this.convertData(this.data1),
-                    encode: {
-                        value: 2
-                    },
-                    symbolSize: function (val) {
-                        return val[2] / 3;
-                    },
-                    showEffectOn: 'emphasis',
-                    rippleEffect: {
-                        brushType: 'stroke'
-                    },
-                    hoverAnimation: true,
-                    label: {
-                        formatter: '{b}',
-                        position: 'top',
-                        show: true
-                    },
-                    itemStyle: {
-                        color: '#ff33cc',
-                        shadowBlur: 10,
-                        shadowColor: '#333'
-                    },
-                    zlevel: 1
-                },
-                {
-                    name: '填埋场(万吨)',
-                    type: 'effectScatter',
-                    coordinateSystem: 'bmap',
-                    data: this.convertData(this.data2),
-                    encode: {
-                        value: 2
-                    },
-                    symbolSize: function (val) {
-                        return val[2] / 3;
-                    },
-                    showEffectOn: 'emphasis',
-                    rippleEffect: {
-                        brushType: 'stroke'
-                    },
-                    hoverAnimation: true,
-                    label: {
-                        formatter: '{b}',
-                        position: 'top',
-                        show: true
-                    },
-                    itemStyle: {
-                        color: '#00ff00',
-                        shadowBlur: 10,
-                        shadowColor: '#333'
-                    },
-                    zlevel: 1
-                },
               ]
             })
-          }
-        },
-        mounted(){
-          this.getData()
         }
+    },
+    mounted(){
+        this.getData()
     }
+}
 </script>
 
-<style scoped>
+<style lang="less" scoped>
     .map-container{
         width: 100%;
         height: 95vh;
     }
- 
 </style>

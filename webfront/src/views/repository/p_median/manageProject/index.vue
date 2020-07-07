@@ -70,7 +70,7 @@ export default {
   }
   .input-item{
     float: left;
-    margin-left: 20px;
+    margin-left: 35px;
   }
   .divider{
     width: 0;

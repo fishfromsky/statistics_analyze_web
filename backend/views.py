@@ -1,4 +1,6 @@
-from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City, Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City, p_median_project, basic, ts, rrc, cost_matrix
+from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City,\
+    Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
+    p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -276,29 +278,6 @@ def deletesuperuser(request):
         return JsonResponse(response, safe=False)
 
 
-@csrf_exempt
-@require_http_methods(['GET'])
-def getFacorty(request):
-    response = {}
-    response['data'] = []
-    factorylist = FactoryList.objects.all()
-    for factory in factorylist:
-        response['data'].append(to_dict(factory))
-    response['code'] = 20000
-    response['message'] = 'success'
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['GET'])
-def getFactoryById(request):
-    response = {'code': 20000, 'message': 'success'}
-    id = request.GET.get('id')
-    response['data'] = []
-    factory = FactoryList.objects.get(id=id)
-    response['data'].append(to_dict(factory))
-    return JsonResponse(response, safe=False)
-
 # 批量导入城市表
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -313,7 +292,7 @@ def addCity(request):
             list.save()
         else:
             response['code'] = 50000
-            response['message'] = "表头和数据不一致或者缺少数据！"
+            response['message'] = "表头和数据表不一致或者缺少数据！"
             break
     return JsonResponse(response,safe = False)
 
@@ -332,7 +311,7 @@ def addDistrict(request):
             list.save()
         else:
             response['code'] = 50000
-            response['message'] = "表头和数据不一致或缺少数据！"
+            response['message'] = "表头和数据表不一致或缺少数据！"
             break
     return JsonResponse(response, safe=False)
 
@@ -351,7 +330,7 @@ def addTown(request):
             list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头和数据不一致或缺少数据'
+            response['message'] = '表头和数据表不一致或缺少数据'
             break
     return JsonResponse(response, safe=False)
 
@@ -381,7 +360,7 @@ def addEconomyCity(request):
                 list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头和数据不一致或者缺少数据!'
+            response['message'] = '表头和数据表不一致或者缺少数据!'
             break
     return JsonResponse(response, safe=False)
 
@@ -411,7 +390,7 @@ def addPopulationCity(request):
                 list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头和数据不一致或者缺少数据!'
+            response['message'] = '表头和数据表不一致或者缺少数据!'
             break
     return JsonResponse(response, safe=False)
 
@@ -439,7 +418,7 @@ def addbatchgarbagedata_city(request):
                 list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头和数据不一致或者缺少数据!'
+            response['message'] = '表头和数据表不一致或者缺少数据!'
     return JsonResponse(response, safe=False)
 
 # 批量导入全市无害化处理厂表
@@ -467,7 +446,7 @@ def addGarbageDealCity(request):
                 list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头和数据不一致或者缺少数据!'
+            response['message'] = '表头和数据表不一致或者缺少数据!'
             break
     return JsonResponse(response, safe = False)
 
@@ -495,7 +474,7 @@ def addGarbageDealCapacityCity(request):
                 list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头与数据不一致或者缺少数据！'
+            response['message'] = '表头与数据表不一致或者缺少数据！'
             break
     return JsonResponse(response, safe=False)
 
@@ -523,11 +502,125 @@ def addGarbageDealVolumeCity(request):
                 list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头与数据不一致或者缺少数据！'
+            response['message'] = '表头与数据表不一致或者缺少数据！'
     return JsonResponse(response, safe=False)
 
 
+@csrf_exempt
+@require_http_methods(['POST'])
+def addFactoryListCity(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    for i in range(len(data)):
+        if data[i].__contains__('name') and data[i].__contains__('district') and data[i].__contains__('company') and data[i].__contains__('address') and data[i].__contains__('type') and data[i].__contains__('typeId') and data[i].__contains__('longitude') and data[i].__contains__('latitude') and data[i].__contains__('deal'):
+            name = data[i]['name']
+            district = data[i]['district']
+            company = data[i]['company']
+            address = data[i]['address']
+            type = data[i]['type']
+            typeId = data[i]['typeId']
+            longitude = data[i]['longitude']
+            latitude = data[i]['latitude']
+            deal = data[i]['deal']
+            list = FactoryList(name=name, district=district, address=address, company=company, type=type, typeId=typeId, longitude=longitude, latitude=latitude, deal=deal)
+            list.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据表不一致或缺少数据'
+    return JsonResponse(response, safe=False)
 
+
+# 批量导入垃圾中转站信息
+@csrf_exempt
+@require_http_methods(['POST'])
+def addTransferFactory(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    for i in range(len(data)):
+        if data[i].__contains__('district') and data[i].__contains__('name') and data[i].__contains__('address') and data[i].__contains__('longitude') and data[i].__contains__('latitude') and data[i].__contains__('capacity'):
+            district = data[i]['district']
+            name = data[i]['name']
+            address = data[i]['address']
+            longitude = data[i]['longitude']
+            latitude = data[i]['latitude']
+            capacity = data[i]['capacity']
+            list = TransferFactoryList(district=district, name=name, address=address, longitude=longitude, latitude=latitude, capacity=capacity)
+            list.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据表不一致或者缺少数据'
+
+    return JsonResponse(response, safe=False)
+
+
+# 获取垃圾中转站信息
+@csrf_exempt
+@require_http_methods(['GET'])
+def getTransferFactory(request):
+    response = {'code': 20000, 'message': 'success'}
+    data = TransferFactoryList.objects.all()
+    response['data'] = []
+    for list in data:
+        response['data'].append(to_dict(list))
+
+    return JsonResponse(response, safe=False)
+
+
+# 请求无害化处理厂信息
+@csrf_exempt
+@require_http_methods(['GET'])
+def getfacotylist(request):
+    response = {'code': 20000, 'message': 'success'}
+    data = FactoryList.objects.all()
+    response['data'] = []
+    for list in data:
+        response['data'].append(to_dict(list))
+
+    return JsonResponse(response, safe=False)
+
+
+# 删除指定无害化处理厂信息
+@csrf_exempt
+@require_http_methods(['POST'])
+def deletefactorylist(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    record = FactoryList.objects.get(id=id)
+    record.delete()
+    return JsonResponse(response, safe=False)
+
+
+# 修改无害化处理信息表
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendfactorylist(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    name = body.get('name')
+    address = body.get('address')
+    longitude = body.get('longitude')
+    latitude = body.get('latitude')
+    deal = body.get('deal')
+    type = body.get('type')
+    typeId = body.get('typeId')
+    company = body.get('company')
+    district = body.get('district')
+    record = FactoryList.objects.get(id=id)
+    record.name = name
+    record.address = address
+    record.longitude = longitude
+    record.latitude = latitude
+    record.deal = deal
+    record.type = type
+    record.typeId = typeId
+    record.company = company
+    record.district = district
+    record.save()
+    return JsonResponse(response, safe=False)
 
 
 # 请求城市经济表数据

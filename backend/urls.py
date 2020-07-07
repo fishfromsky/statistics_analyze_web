@@ -14,8 +14,6 @@ urlpatterns = [
     url('deletemodel', views.deletemodel, name='deletemodel'),
     url('addsuperuser', views.addsuperuser, name='addsuperuser'),
     url('deletesuperuser', views.deletesuperuser, name='deleteSuperuser'),
-    url('getfactorylist', views.getFacorty, name='getFactory'),
-    url('getfactorybyid', views.getFactoryById, name='getFactoryById'),
     url('add_city', views.addCity, name='addCity'),  # 批量导入城市
     url('adddistrict', views.addDistrict, name='addDistrict'),  # 批量导入区
     url('addtown', views.addTown, name='addTown'),  # 批量导入城镇
@@ -61,7 +59,11 @@ urlpatterns = [
     url('getnationwaterpollution', views.get_water_pollution, name='getwaterpollution'),  # 爬取国内水体污染数据
     url('getnationpm', views.get_nation_pm, name='getnationpm'),  # 爬取国内空气污染数据
     url('getnationsolidpollution', views.get_nation_solid_pollution, name='getnationsolidpollution'),  # 爬取国内固废垃圾数据
-    url('getworldpm', views.get_world_pm, name='getworldpm')  # 爬取世界空气污染数据
-
-
+    url('getworldpm', views.get_world_pm, name='getworldpm'),  # 爬取世界空气污染数据
+    url('addcityfactorylist', views.addFactoryListCity, name='addFactoryListCity'),  # 批量导入处理厂信息
+    url('getfactorylist', views.getfacotylist, name='getFactorylist'),     # 获取处理厂信息
+    url('addtransferfactory', views.addTransferFactory, name='addTransferFacory'),   # 批量导入中转站信息
+    url('gettransferfactory', views.getTransferFactory, name='getTransferFactory'),   # 获取垃圾中转站信息
+    url('amendfactorylist', views.amendfactorylist, name='amendFactoryList'),     # 修改无害化处理厂信息表
+    url('deletefactorylist', views.deletefactorylist, name='deletefactorylist')  # 删除无害化处理厂信息
 ]

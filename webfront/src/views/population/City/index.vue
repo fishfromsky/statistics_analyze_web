@@ -69,7 +69,7 @@
                     { name: '青浦区', value: 1799 },
                     { name: '奉贤区', value: 1681 },
                     { name: '金山区', value: 1367 },
-                    { name: '崇明县', value: 586}
+                    { name: '崇明区', value: 586}
                   ],
                   population: {
                     data: [],

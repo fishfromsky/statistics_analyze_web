@@ -175,7 +175,7 @@ export default {
             let that = this
             deletecitypopulationdata(this.delete_form).then(res=>{
                 if (res.code === 20000){
-                    this.$message({
+                    that.$message({
                         type: 'success',
                         message: '删除成功'
                     })

@@ -71,6 +71,51 @@ export function addcitygarbagedeal(data) {
     data
   })
 }
+//批量导入处理厂具体信息
+export function addfacorylist(data){
+  return request({
+    url: '/addcityfactorylist',
+    method: 'post',
+    data
+  })
+}
+// 获取无害化处理厂具体信息表
+export function getfactorylist(){
+  return request({
+    url: '/getfactorylist',
+    method: 'get'
+  })
+}
+// 删除无害化处理厂信息
+export function deletefactorylist(data){
+  return request({
+    url: '/deletefactorylist',
+    method: 'post',
+    data
+  })
+}
+export function amendfactorylist(data){
+  return request({
+    url: '/amendfactorylist',
+    method: 'post',
+    data
+  })
+}
+// 批量导入中转站信息表
+export function addtransferfactory(data){
+  return request({
+    url: '/addtransferfactory',
+    method: 'post',
+    data
+  })
+}
+// 获取中转站信息
+export function gettransferfactory(){
+  return request({
+    url: '/gettransferfactory',
+    method: 'get'
+  })
+}
 // 批量导入无害化处理能力信息
 export function addcitygarbagecapacity(data) {
   return request({

@@ -18,9 +18,6 @@ from shapely.geometry import Polygon
 from copy import deepcopy
 
 
-
-
-
 def point_to_geo(df, lon, lat):                                                 # pandas批量画点
     df['geometry'] = gpd.GeoSeries(list(zip(df[lon], df[lat]))).apply(Point)    # 识别经纬度，转换点数据
     df = gpd.GeoDataFrame(df)                                                   # 转换Geodataframe格式

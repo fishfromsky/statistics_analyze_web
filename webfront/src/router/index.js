@@ -269,32 +269,20 @@ export const constantRoutes = [
     path: '/factory',
     component: Layout,
     name: 'Factory',
+    meta: { title: '地图可视化', icon: 'map' },
     redirect: '/factory/location',
-    meta: { title: '垃圾填埋', icon: 'garbage' },
     children: [
       {
         path: 'location',
         name: 'Factory_location',
         component: () => import('@/views/factory/location/index'),
-        meta: { title: '分布位置' }
+        meta: { title: '无害化处理厂' }
       },
       {
-        path: 'statistic',
-        name: 'Factory_Statistic',
-        component: () => import('@/views/factory/statistic/index'),
-        meta: { title: '处理数据' }
-      }
-    ]
-  },
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: '指标预测', icon: 'form' }
+        path: 'collect',
+        name: 'Garbage_Collect',
+        component: () => import('@/views/factory/collect/index'),
+        meta: { title: '垃圾收集点'}
       }
     ]
   },

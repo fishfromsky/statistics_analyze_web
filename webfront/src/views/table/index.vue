@@ -27,7 +27,7 @@
 <script>
 import UploadExcelComponent from './components/UploadFile'
 import { getName } from '@/utils/auth'
-import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume } from '@/api/model'
+import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory } from '@/api/model'
 export default {
   name: 'UploadExcel',
   components: { UploadExcelComponent },
@@ -76,6 +76,14 @@ export default {
         {
           value: '6',
           label: '无害化处理量'
+        },
+        {
+          value: '7',
+          label: '无害化处理厂信息'
+        },
+        {
+          value: '8',
+          label: '垃圾中转站信息'
         }
       ],
       star: null,
@@ -101,6 +109,31 @@ export default {
       this.hasData = true
       console.log(this.tableData)
     },
+    DataInput(func){
+      var that = this;
+      this.table_loading = true
+      const table = []
+      for (let i = 0; i < this.tableData.length; i++) {
+        table.push(this.tableData[i])
+      }
+      const data = {}
+      data['data'] = table
+      func(data).then(res => {
+        that.table_loading = false
+        if (res.code === 20000) {
+          this.$message({
+            type: 'success',
+            message: '导入数据成功'
+          })
+        } else {
+          this.$message.error(res.message)
+          that.table_loading = false
+        }
+      }).catch(res => {
+        console.log(res)
+        that.table_loading = false
+      })
+    },
     AddModel: function() {
       var that = this
       if (that.area === '') {
@@ -109,131 +142,28 @@ export default {
         that.$message.error('数据表类型不能为空')
       } else {
         if (that.area === '1' && that.kind === '1') {
-          this.table_loading = true
-          const table = []
-          for (let i = 0; i < this.tableData.length; i++) {
-            table.push(this.tableData[i])
-          }
-          const data = {}
-          data['data'] = table
-          addcityeconomydata(data).then(res => {
-            that.table_loading = false
-            if (res.code === 20000) {
-              this.$message({
-                type: 'success',
-                message: '导入数据成功'
-              })
-            } else {
-              this.$message.error(res.message)
-            }
-          }).catch(res => {
-            that.table_loading = false
-          })
-        } else if (that.area === '1' && that.kind === '2') {
-          this.table_loading = true
-          const table = []
-          for (let i = 0; i < this.tableData.length; i++) {
-            table.push(this.tableData[i])
-          }
-          const data = {}
-          data['data'] = table
-          addcitypopulationdata(data).then(res => {
-            that.table_loading = false
-            if (res.code === 20000) {
-              this.$message({
-                type: 'success',
-                message: '导入数据成功'
-              })
-            } else {
-              this.$message.error(res.message)
-            }
-          }).catch(res => {
-            that.table_loading = false
-          })
-        } else if (that.area === '1' && that.kind === '3') {
-          that.table_loading = true
-          const table = []
-          for (let i = 0; i < this.tableData.length; i++) {
-            table.push(this.tableData[i])
-          }
-          const data = {}
-          data['data'] = table
-          addgarbagecity(data).then(res => {
-            that.table_loading = false
-            if (res.code === 20000) {
-              this.$message({
-                type: 'success',
-                message: '导入数据成功'
-              })
-            } else {
-              this.$message.error(res.message)
-            }
-          }).catch(res => {
-            console.log(res)
-          })
-        } else if (that.area === '1' && that.kind === '4') {
-          that.table_loading = true
-          const table = []
-          for (let i = 0; i < this.tableData.length; i++) {
-            table.push(this.tableData[i])
-          }
-          const data = {}
-          data['data'] = table
-          addcitygarbagedeal(data).then(res => {
-            that.table_loading = false
-            if (res.code === 20000) {
-              this.$message({
-                type: 'success',
-                message: '导入数据成功'
-              })
-            } else {
-              this.$message.error(res.message)
-            }
-          }).catch(res => {
-            console.log(res)
-          })
-        } else if (that.area === '1' && that.kind === '5') {
-          that.table_loading = true
-          const table = []
-          for (let i = 0; i < this.tableData.length; i++) {
-            table.push(this.tableData[i])
-          }
-          const data = {}
-          data['data'] = table
-          addcitygarbagecapacity(data).then(res => {
-            that.table_loading = false
-            if (res.code === 20000) {
-              this.$message({
-                type: 'success',
-                message: '导入数据成功'
-              })
-            } else {
-              this.$message.error(res.message)
-            }
-          }).catch(res => {
-            console.log(res)
-          })
-        } else if (that.area === '1' && that.kind === '6') {
-          that.table_loading = true
-          const table = []
-          for (let i = 0; i < this.tableData.length; i++) {
-            table.push(this.tableData[i])
-          }
-          const data = {}
-          data['data'] = table
-          addcitygarbagevolume(data).then(res => {
-            that.table_loading = false
-            if (res.code === 20000) {
-              this.$message({
-                type: 'success',
-                message: '导入数据成功'
-              })
-            } else {
-              this.$message.error(res.message)
-            }
-          }).catch(res => {
-            console.log(res)
-          })
+          this.DataInput(addcityeconomydata)
+        } 
+        else if (that.area === '1' && that.kind === '2') {
+          this.DataInput(addcitypopulationdata)
+        } 
+        else if (that.area === '1' && that.kind === '3') {
+          this.DataInput(addgarbagecity)
+        } 
+        else if (that.area === '1' && that.kind === '4') {
+          this.DataInput(addcitygarbagedeal)
+        } 
+        else if (that.area === '1' && that.kind === '5') {
+          this.DataInput(addcitygarbagecapacity)
+        } 
+        else if (that.area === '1' && that.kind === '6') {
+          this.DataInput(addcitygarbagevolume)
+        }
+        else if (that.area === '1' && that.kind === '7'){
+          this. DataInput(addfacorylist)
+        }
+        else if (that.area === '1' && that.kind === '8'){
+          this.DataInput(addtransferfactory)
         }
       }
     }

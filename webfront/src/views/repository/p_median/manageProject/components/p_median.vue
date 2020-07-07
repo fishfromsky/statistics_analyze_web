@@ -6,35 +6,35 @@
                    <span>{{row.project_id}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="项目名称" align="center">
+           <el-table-column label="项目名称" align="center" min-width="80">
                <template slot-scope="{row}">
                    <span>{{row.name}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="basic表长度" align="center">
+           <el-table-column label="basic表长度" align="center" min-width="50">
                <template slot-scope="{row}">
                    <span>{{row.basic_size}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="ts表长度" align="center">
+           <el-table-column label="ts表长度" align="center" min-width="50">
                <template slot-scope="{row}">
                    <span>{{row.ts_size}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="rrc表长度" align="center">
+           <el-table-column label="rrc表长度" align="center" min-width="50">
                <template slot-scope="{row}">
                    <span>{{row.rrc_size}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="cost_matrix表长度" align="center">
+           <el-table-column label="cost_matrix表长度" align="center" min-width="50">
                <template slot-scope="{row}">
                    <span>{{row.cost_matrix_size}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="数据操作" align="center">
+           <el-table-column label="数据操作" align="center" min-width="100">
                <template slot-scope="scope">
                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
-                   <el-button size="mini" type="danger" @click="GetLocation(scope.$index)" style="margin-left: 30px">获取位置</el-button>
+                   <el-button size="mini" type="danger" @click="GetLocation(scope.$index)" style="margin-left: 30px">模型实验</el-button>
                </template>
            </el-table-column>
        </el-table>
@@ -154,7 +154,7 @@ export default {
         },
         GetLocation(index){
         if (this.page_data[index].basic_size === 0 || this.page_data[index].ts_size === 0 || this.page_data[index].rrc_size === 0 || this.page_data[index].cost_matrix_size === 0) {
-          this.$message.error('请先导入表')
+          this.$message.error('请先导入实验参数表')
         } else {
             this.get_dialog = true
             this.get_form.project_id = this.page_data[index].project_id

@@ -19,12 +19,27 @@ class ModelsList(models.Model):
     star = models.IntegerField(default=0)
 
 
+# 垃圾处理厂具体信息
 class FactoryList(models.Model):
     name = models.CharField(max_length=255, null=False)
-    address = models.CharField(max_length=255)
+    district = models.CharField(max_length=255, default='')
+    address = models.CharField(max_length=255, default='')
+    company = models.CharField(max_length=255, default='')
+    type = models.CharField(max_length=255, null=False, default='')
+    typeId = models.IntegerField(null=False, default=0)
     longitude = models.FloatField()
     latitude = models.FloatField()
-    deal = models.IntegerField(default=0)
+    deal = models.FloatField(default=0)
+
+
+# 垃圾中转站信息
+class TransferFactoryList(models.Model):
+    district = models.CharField(max_length=255, null=False)
+    name = models.CharField(max_length=255, null=False)
+    address = models.CharField(max_length=255, null=False)
+    longitude = models.FloatField(null=False)
+    latitude = models.FloatField(null=False)
+    capacity = models.FloatField()
 
 
 # 城市表
@@ -106,6 +121,7 @@ class Garbage_Deal_Volume_City(models.Model):
     compost = models.CharField(max_length=200)
     else_num = models.CharField(max_length=200)
 
+
 class p_median_project(models.Model):
     project_id = models.CharField(max_length=200, primary_key=True)
     name = models.CharField(max_length=200)
@@ -113,6 +129,7 @@ class p_median_project(models.Model):
     ts_size = models.IntegerField()
     rrc_size = models.IntegerField()
     cost_matrix_size = models.IntegerField()
+
 
 class basic(models.Model):
     project_id = models.ForeignKey(to="p_median_project", on_delete=models.CASCADE)

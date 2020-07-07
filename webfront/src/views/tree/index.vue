@@ -20,6 +20,7 @@
       <citygarbagedeal v-if="level == '1' && kind == '4'" ref="deal"></citygarbagedeal>
       <citygarbagecapacity v-if="level == '1' && kind == '5'" ref="capacity"></citygarbagecapacity>
       <citygarbagevolume v-if="level == '1' && kind == '6'" ref="volume"></citygarbagevolume>
+      <factorylist v-if="level == '1' && kind == '7'" ref="fatorylist"></factorylist>
     </div>
   </div>
 </template>
@@ -31,6 +32,7 @@ import citygarbage from './components/citygarbage'
 import citygarbagedeal from './components/citygarbagedeal'
 import citygarbagecapacity from './components/citygarbagecapacity'
 import citygarbagevolume from './components/citygarbagevolume'
+import factorylist from './components/factorylist'
 export default {
   components: {
     cityeconomy,
@@ -38,7 +40,8 @@ export default {
     citygarbage,
     citygarbagedeal,
     citygarbagecapacity,
-    citygarbagevolume
+    citygarbagevolume,
+    factorylist
   },
   data() {
     return {
@@ -75,6 +78,10 @@ export default {
         {
           value: '6',
           label: '无害化处理量'
+        },
+        {
+          value: '7',
+          label: '无害化处理厂信息'
         }
       ],
     }

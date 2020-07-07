@@ -3,7 +3,7 @@
     <input ref="excel-upload-input" class="excel-upload-input" type="file" accept=".xlsx, .xls" @change="handleClick">
     <div class="drop" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover" @click="handleUpload">
       <i class="el-icon-upload"></i>
-      <span>将模型文件拖曳至此或者点击此处选择文件(仅限Excel)</span>
+      <span>将数据文件拖曳至此或者点击此处选择文件(仅限Excel)</span>
     </div>
   </div>
 </template>
