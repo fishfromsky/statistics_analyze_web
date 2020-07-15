@@ -21,39 +21,29 @@
                     <span>{{row.latitude}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="处理量(吨/天)" align="center">
+            <el-table-column label="转运量" align="center">
                 <template slot-scope="{row}">
-                    <span>{{row.deal}}</span>
+                    <span>{{row.capacity}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="所属公司" align="center">
-                <template slot-scope="{row}">
-                    <span>{{row.company}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="类型" align="center">
-                <template slot-scope="{row}">
-                    <span>{{row.type}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="所属区" align="center">
+            <el-table-column label="所属区域" align="center">
                 <template slot-scope="{row}">
                     <span>{{row.district}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="数据操作" align="center" min-width="80">
+            <el-table-column label="数据操作" align="center">
                 <template slot-scope="scope">
-                   <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
-                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)" style="margin-left: 30px">删除</el-button>
-               </template>
+                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
+                    <el-button size="mini" type="danger" @click="DeleteData(scope.$index)" style="margin-left: 30px">删除</el-button>
+                </template>
             </el-table-column>
         </el-table>
-        <el-dialog title="修改无害化处理厂数据" :visible.sync="amend_dialog" width="30%">
+        <el-dialog :visible.sync="amend_dialog" title="修改中转站信息" width="30%">
             <el-form :model="form">
-                <el-form-item label="处理厂名称">
+                <el-form-item label="名称">
                     <el-input v-model="form.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="处理厂地址">
+                <el-form-item label="地址">
                     <el-input v-model="form.address" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="经度">
@@ -62,38 +52,11 @@
                 <el-form-item label="纬度">
                     <el-input v-model="form.latitude" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="处理量(吨/天)">
-                    <el-input v-model="form.deal"></el-input>
-                </el-form-item>
-                <el-form-item label="处理厂类型">
-                    <el-select v-model="form.type">
-                        <el-option label="焚烧" value="焚烧"></el-option>
-                        <el-option label="填埋" value="填埋"></el-option>
-                        <el-option label="其他" value="其他"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="所属公司">
-                    <el-input v-model="form.company" auto-complete="off"></el-input>
+                <el-form-item label="转运量">
+                    <el-input v-model="form.capacity" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="所属区域">
-                    <el-select v-model="form.district">
-                        <el-option label="黄浦区" value="黄浦区"></el-option>
-                        <el-option label="静安区" value="静安区"></el-option>
-                        <el-option label="长宁区" value="长宁区"></el-option>
-                        <el-option label="徐汇区" value="徐汇区"></el-option>
-                        <el-option label="普陀区" value="普陀区"></el-option>
-                        <el-option label="虹口区" value="虹口区"></el-option>
-                        <el-option label="杨浦区" value="杨浦区"></el-option>
-                        <el-option label="宝山区" value="宝山区"></el-option>
-                        <el-option label="嘉定区" value="嘉定区"></el-option>
-                        <el-option label="闵行区" value="闵行区"></el-option>
-                        <el-option label="浦东新区" value="浦东新区"></el-option>
-                        <el-option label="金山区" value="金山区"></el-option>
-                        <el-option label="松江区" value="松江区"></el-option>
-                        <el-option label="青浦区" value="青浦区"></el-option>
-                        <el-option label="崇明区" value="崇明区"></el-option>
-                        <el-option label="奉贤区" value="奉贤区"></el-option>
-                    </el-select>
+                    <el-input v-model="form.district" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -101,60 +64,33 @@
                 <el-button type="primary" @click="AmendDataConfirm">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="删除无害化处理厂信息" :visible.sync="delete_dialog" width="30%">
-            <span>确定删除该无害化处理厂信息吗？删除后不可恢复</span>
+        <el-dialog title="删除中转站信息" width="30%" :visible.sync="delete_dialog">
+            <span>确定删除该数据吗？删除后不可恢复</span>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="delete_dialog = false">取 消</el-button>
                 <el-button type="danger" @click="DeleteDataConfirm">确 定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="增加无害化处理厂信息" :visible.sync="add_dialog" width="30%">
+        <el-dialog title="添加中转站信息" :visible.sync="add_dialog" width="30%">
             <el-button style="margin-left: 16.5%; margin-bottom: 20px" type="primary" @click="showmap">点击选择，一键生成地理位置信息</el-button>
             <el-form v-model="add_form">
-                <el-form-item label="处理厂名称" :label-width="labelwidth">
+                <el-form-item label="中转站名称">
                     <el-input v-model="add_form.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="处理厂地址" :label-width="labelwidth">
+                <el-form-item label="中转站地址">
                     <el-input v-model="add_form.address" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="经度" :label-width="labelwidth">
+                <el-form-item label="经度">
                     <el-input v-model="add_form.longitude" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="纬度" :label-width="labelwidth">
+                <el-form-item label="纬度">
                     <el-input v-model="add_form.latitude" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="处理量(吨/天)" :label-width="labelwidth">
-                    <el-input v-model="add_form.deal"></el-input>
+                <el-form-item label="转运量">
+                    <el-input v-model="add_form.capacity" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="处理厂类型" :label-width="labelwidth">
-                    <el-select v-model="add_form.type">
-                        <el-option label="焚烧" value="焚烧"></el-option>
-                        <el-option label="填埋" value="填埋"></el-option>
-                        <el-option label="其他" value="其他"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="所属公司" :label-width="labelwidth">
-                    <el-input v-model="add_form.company" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="所属区域" :label-width="labelwidth">
-                    <el-select v-model="add_form.district">
-                        <el-option label="黄浦区" value="黄浦区"></el-option>
-                        <el-option label="静安区" value="静安区"></el-option>
-                        <el-option label="长宁区" value="长宁区"></el-option>
-                        <el-option label="徐汇区" value="徐汇区"></el-option>
-                        <el-option label="普陀区" value="普陀区"></el-option>
-                        <el-option label="虹口区" value="虹口区"></el-option>
-                        <el-option label="杨浦区" value="杨浦区"></el-option>
-                        <el-option label="宝山区" value="宝山区"></el-option>
-                        <el-option label="嘉定区" value="嘉定区"></el-option>
-                        <el-option label="闵行区" value="闵行区"></el-option>
-                        <el-option label="浦东新区" value="浦东新区"></el-option>
-                        <el-option label="金山区" value="金山区"></el-option>
-                        <el-option label="松江区" value="松江区"></el-option>
-                        <el-option label="青浦区" value="青浦区"></el-option>
-                        <el-option label="崇明区" value="崇明区"></el-option>
-                        <el-option label="奉贤区" value="奉贤区"></el-option>
-                    </el-select>
+                <el-form-item label="所属区域">
+                    <el-input v-model="add_form.district" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -182,7 +118,7 @@
 </template>
 
 <script>
-import { getfactorylist, amendfactorylist, deletefactorylist, addfactorylistbyrow } from '@/api/model'
+import { gettransferfactory, amendtransferfactory, deletetransferfactory, addtransferfactorybyrow } from '@/api/model'
 import VueAMap from 'vue-amap'
 import Vue from 'vue'
 Vue.use(VueAMap)
@@ -191,36 +127,29 @@ VueAMap.initAMapApiLoader({
     plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor', 'AMap.Geolocation', 'Geocoder']
 })
 export default {
-    name: 'factorylist',
     data(){
         const self = this
-        return {
-            table_loading: true,
+        return{
+            table_loading: false,
             tablekey: 0,
             tableData: [],
             page_data: [],
-            formData: [],
             total_size: 0,
             currentPage: 1,
             page_size: 10,
             amend_dialog: false,
-            delete_dialog: false,
-            add_dialog: false,
             form: {},
-            delete_form: {
-                id: ''
-            },
+            delete_form: {},
+            delete_dialog: false,
             add_dialog: false,
             add_form: {
                 name: '',
                 address: '',
-                logitude: '',
+                longitude: '',
                 latitude: '',
-                deal: '',
-                type: '',
+                capacity: '',
                 district: ''
             },
-            labelwidth: '120px',
             map_dialog: false,
             zoom: 15,
             center: [121.456848, 31.274044],
@@ -263,7 +192,7 @@ export default {
             },
         }
     },
-    methods:{
+    methods: {
         onSearchResult(pois) {
           let latSum = 0;
           let lngSum = 0;
@@ -280,15 +209,34 @@ export default {
                 this.center = [cent.lng, cent.lat];
             }
         },
-        showmap:function(){
-            this.map_dialog = true
-        },
         addData(){
             this.add_dialog = true
         },
+        AddDataConfirm(){
+            let that = this
+            if (this.add_form.name === '' || this.add_form.address === '' || this.add_form.longitude === '' || this.add_form.latitude === '' || this.add_form.capacity === '' || this.add_form.district === ''){
+                this.$message.error('表格信息不完整，请完善信息')
+            }
+            else{
+                addtransferfactorybyrow(this.add_form).then(res=>{
+                    if (res.code === 20000){
+                        this.$message({
+                            type: 'success',
+                            message: '添加成功'
+                        })
+                        that.page_data = []
+                        that.add_dialog = false
+                        that.getData()
+                    }
+                })
+            }
+        },
+        showmap(){
+            this.map_dialog = true
+        },
         getData(){
-            var that = this
-            getfactorylist().then(res=>{
+            let that = this
+            gettransferfactory().then(res=>{
                 if (res.code === 20000){
                     that.table_loading = false
                     that.tableData = res.data
@@ -320,37 +268,27 @@ export default {
             this.form = this.page_data[val]
             this.amend_dialog = true
         },
+        DeleteData(val){
+            this.delete_dialog = true
+            this.delete_form.id = this.page_data[val].id
+        },
         AmendDataConfirm(){
             var that = this
-            let type = this.form['type']
-            if (type === '焚烧'){
-                this.form['typeId'] = 1
-            }
-            else if (type === '填埋'){
-                this.form['typeId'] = 2
-            }
-            else{
-                this.form['typeId'] = 0
-            }
-            amendfactorylist(this.form).then(res=>{
+            amendtransferfactory(this.form).then(res=>{
                 if (res.code === 20000){
-                    that.$message({
+                    this.$message({
                         type: 'success',
                         message: '修改成功'
                     })
                     that.page_data = []
                     that.getData()
+                    that.amend_dialog = false
                 }
-                that.amend_dialog = false
             })
         },
-         DeleteData(index){
-            this.delete_dialog = true
-            this.delete_form.id = this.page_data[index].id
-        },
         DeleteDataConfirm(){
-            var that = this
-            deletefactorylist(this.delete_form).then(res=>{
+            let that = this
+            deletetransferfactory(this.delete_form).then(res=>{
                 if (res.code === 20000){
                     that.$message({
                         type: 'success',
@@ -361,36 +299,6 @@ export default {
                     that.getData()
                 }
             })
-        },
-        AddDataConfirm(){
-            let that = this
-            if (this.add_form.name === '' || this.add_form.address === '' || this.add_form.longitude === '' || this.add_form.latitude === ''
-             || this.add_form.type === '' || this.add_form.district === '' || this.add_form.company === '' || this.add_form.deal === ''){
-                 this.$message.error('表格信息不完整，请完善信息')
-            }
-            else{
-                 let type = this.add_form.type
-                if (type === '焚烧'){
-                    this.add_form.typeId = 1
-                }
-                else if (type === '填埋'){
-                    this.add_form.typeId = 2
-                }
-                else{
-                    this.add_form.typeId = 0
-                }
-                addfactorylistbyrow(this.add_form).then(res=>{
-                    if (res.code === 20000){
-                        that.$message({
-                            type: 'success',
-                            message: '添加成功'
-                        })
-                        that.page_data = []
-                        that.add_dialog = false
-                        that.getData()
-                    }
-                })
-            }
         }
     },
     mounted(){
@@ -398,6 +306,7 @@ export default {
     }
 }
 </script>
+
 <style lang="less" scoped>
     .amap-page-container{
         position: relative;

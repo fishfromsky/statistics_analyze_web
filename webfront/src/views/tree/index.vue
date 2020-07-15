@@ -20,7 +20,8 @@
       <citygarbagedeal v-if="level == '1' && kind == '4'" ref="deal"></citygarbagedeal>
       <citygarbagecapacity v-if="level == '1' && kind == '5'" ref="capacity"></citygarbagecapacity>
       <citygarbagevolume v-if="level == '1' && kind == '6'" ref="volume"></citygarbagevolume>
-      <factorylist v-if="level == '1' && kind == '7'" ref="fatorylist"></factorylist>
+      <factorylist v-if="level == '1' && kind == '7'" ref="factorylist"></factorylist>
+      <transfer v-if="level == '1' && kind == '8'" ref="transfer"></transfer>
     </div>
   </div>
 </template>
@@ -33,6 +34,7 @@ import citygarbagedeal from './components/citygarbagedeal'
 import citygarbagecapacity from './components/citygarbagecapacity'
 import citygarbagevolume from './components/citygarbagevolume'
 import factorylist from './components/factorylist'
+import transfer from './components/transfer'
 export default {
   components: {
     cityeconomy,
@@ -41,7 +43,8 @@ export default {
     citygarbagedeal,
     citygarbagecapacity,
     citygarbagevolume,
-    factorylist
+    factorylist,
+    transfer
   },
   data() {
     return {
@@ -82,6 +85,10 @@ export default {
         {
           value: '7',
           label: '无害化处理厂信息'
+        },
+        {
+          value: '8',
+          label: '垃圾中转站信息'
         }
       ],
     }
@@ -109,6 +116,10 @@ export default {
           this.$refs.capacity.addData()
         } else if (that.level === '1' && that.kind === '6') {
           this.$refs.volume.addData()
+        }else if (that.level === '1' && that.kind === '7'){
+          this.$refs.factorylist.addData()
+        }else if (that.level === '1' && that.kind === '8'){
+          this.$refs.transfer.addData()
         }
       }
     }

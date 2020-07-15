@@ -3,7 +3,7 @@ import requests
 
 
 def read_csv():
-    dataset = pd.read_csv('C:\\Users\\cyy\\Desktop\\collect.csv')
+    dataset = pd.read_csv('C:\\Users\\Administrator\\Desktop\\collect1.csv')
     return dataset.values, dataset.columns.values
 
 
@@ -12,28 +12,32 @@ def tranfer(geo):
     base_url = 'https://restapi.amap.com/v3/geocode/geo'
     response = requests.get(base_url, params)
     answer = response.json()
-    location = answer['geocodes'][0]['location'].split(',')
-    return location[0], location[1]
+    if len(answer['geocodes']) != 0:
+        location = answer['geocodes'][0]['location'].split(',')
+        return location[0], location[1]
+    else:
+        return None, None
 
 
 def transfer_csv():
     data, cols = read_csv()
     for i in range(0, len(data)):
+        if data[i][0] != '宝山区':
+            break
         print('转换中，第%d个地址' % (i+1))
-        longitude, latitude = tranfer(data[i][2])
-        data[i][3] = longitude
-        data[i][4] = latitude
+        longitude, latitude = tranfer(data[i][1])
+        if longitude is not None and latitude is not None:
+            data[i][2] = longitude
+            data[i][3] = latitude
 
     dataframe = pd.DataFrame({
         cols[0]: data[:, 0],
         cols[1]: data[:, 1],
         cols[2]: data[:, 2],
-        cols[3]: data[:, 3],
-        cols[4]: data[:, 4],
-        cols[5]: data[:, 5]
+        cols[3]: data[:, 3]
     })
     print(dataframe)
-    dataframe.to_csv('C:\\Users\\cyy\\Desktop\\collect_new.csv', encoding='utf_8_sig')
+    dataframe.to_csv('C:\\Users\\Administrator\\Desktop\\collect_new.csv', encoding='utf_8_sig')
 
 
 if __name__ == '__main__':

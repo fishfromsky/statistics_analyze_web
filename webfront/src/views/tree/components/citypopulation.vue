@@ -62,7 +62,7 @@
             </div>
        </el-dialog>
        <el-dialog :visible.sync="delete_dialog" title="删除数据" width="30%">
-           <span>确定删除改数据吗？删除后不可恢复</span>
+           <span>确定删除该数据吗？删除后不可恢复</span>
            <div slot="footer" class="dialog-footer">
                 <el-button @click="delete_dialog = false">取 消</el-button>
                 <el-button type="danger" @click="DeleteDataConfirm">确 定</el-button>

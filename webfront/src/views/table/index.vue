@@ -27,7 +27,7 @@
 <script>
 import UploadExcelComponent from './components/UploadFile'
 import { getName } from '@/utils/auth'
-import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory } from '@/api/model'
+import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory, addcollectfactory } from '@/api/model'
 export default {
   name: 'UploadExcel',
   components: { UploadExcelComponent },
@@ -84,6 +84,10 @@ export default {
         {
           value: '8',
           label: '垃圾中转站信息'
+        },
+        {
+          value: '9',
+          label: '垃圾收集点信息'
         }
       ],
       star: null,
@@ -107,7 +111,6 @@ export default {
       this.tableData = results
       this.tableHeader = header
       this.hasData = true
-      console.log(this.tableData)
     },
     DataInput(func){
       var that = this;
@@ -164,6 +167,9 @@ export default {
         }
         else if (that.area === '1' && that.kind === '8'){
           this.DataInput(addtransferfactory)
+        }
+        else if (that.area === '1' && that.kind === '9'){
+          this.DataInput(addcollectfactory)
         }
       }
     }

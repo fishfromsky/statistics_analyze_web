@@ -1,5 +1,12 @@
 <template>
-  <div ref="map" class="map-container">
+  <div>
+        <div ref="map" class="map-container"></div>
+        <div class="control-panel">
+            <div class="button-list">
+                <span>是否显示标签：</span>
+                <el-switch v-model="labelstatus" @change="labelchange"></el-switch>
+            </div>
+        </div>
   </div>
 </template>
 
@@ -20,10 +27,14 @@
               data0: [],  // 其他
               data1: [],  //焚烧厂
               data2: [],  //填埋场
-              geoCoordMap: {}
+              geoCoordMap: {},
+              labelstatus: false
             }
         },
         methods: {
+            labelchange:function(){
+                this.initChart()
+            },
             convertData(data){
                 var res = [];
                 for (var i = 0; i < data.length; i++) {
@@ -42,7 +53,6 @@
                 getfactorylist().then(res=>{
                     if (res.code === 20000){
                         let fac_data = res.data
-                        console.log(fac_data)
                         for (let i=0; i<fac_data.length; i++){
                             let f_name = fac_data[i]['name']
                             let f_value = fac_data[i]['deal']
@@ -225,7 +235,7 @@
                         value: 2
                     },
                     symbolSize: function (val) {
-                        return val[2] / 3;
+                        return val[2] / 5;
                     },
                     showEffectOn: 'emphasis',
                     rippleEffect: {
@@ -235,7 +245,7 @@
                     label: {
                         formatter: '{b}',
                         position: 'right',
-                        show: true
+                        show: this.labelstatus
                     },
                     itemStyle: {
                         color: '#f4e925',
@@ -253,7 +263,7 @@
                         value: 2
                     },
                     symbolSize: function (val) {
-                        return val[2] / 3;
+                        return val[2] / 5;
                     },
                     showEffectOn: 'emphasis',
                     rippleEffect: {
@@ -263,7 +273,7 @@
                     label: {
                         formatter: '{b}',
                         position: 'top',
-                        show: true
+                        show: this.labelstatus
                     },
                     itemStyle: {
                         color: '#ff33cc',
@@ -281,7 +291,7 @@
                         value: 2
                     },
                     symbolSize: function (val) {
-                        return val[2] / 3;
+                        return val[2] / 5;
                     },
                     showEffectOn: 'emphasis',
                     rippleEffect: {
@@ -291,7 +301,7 @@
                     label: {
                         formatter: '{b}',
                         position: 'top',
-                        show: true
+                        show: this.labelstatus
                     },
                     itemStyle: {
                         color: '#00ff00',
@@ -315,5 +325,26 @@
         width: 100%;
         height: 95vh;
     }
- 
+    .control-panel{
+        width: 250px;
+        height: 60px;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 100
+    }
+    .button-list{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+    }
+    .button-list span{
+        font-size: 15px;
+        color: #fff;
+    }
+</style>
 </style>

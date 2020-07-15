@@ -39,7 +39,7 @@
           </template>
         </el-table-column>
         <el-table-column width="250" label="操作" align="center">
-          <template slot-scope="{row, $index}">
+          <template slot-scope="{row}">
             <el-button type="primary" size="mini" icon="el-icon-edit">
               编辑
             </el-button>

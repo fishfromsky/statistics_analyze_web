@@ -279,10 +279,16 @@ export const constantRoutes = [
         meta: { title: '无害化处理厂' }
       },
       {
+        path: 'transfer',
+        name: 'Garbage_Transfer',
+        component: () => import('@/views/factory/collect/index'),
+        meta: { title: '垃圾中转站'}
+      },
+      {
         path: 'collect',
         name: 'Garbage_Collect',
-        component: () => import('@/views/factory/collect/index'),
-        meta: { title: '垃圾收集点'}
+        component: () => import('@/views/factory/garbage_collect/index'),
+        meta: { title: '垃圾收集点' }
       }
     ]
   },

@@ -42,6 +42,14 @@ class TransferFactoryList(models.Model):
     capacity = models.FloatField()
 
 
+# 垃圾收集点信息
+class CollectFactoryList(models.Model):
+    district = models.CharField(max_length=255, null=False)
+    address = models.CharField(max_length=255, null=False)
+    longitude = models.FloatField(null=False)
+    latitude = models.FloatField(null=False)
+
+
 # 城市表
 class City(models.Model):
     name = models.CharField(max_length=200)

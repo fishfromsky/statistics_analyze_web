@@ -79,6 +79,14 @@ export function addfacorylist(data){
     data
   })
 }
+// 单独添加无害化处理厂信息
+export function addfactorylistbyrow(data){
+  return request({
+    url: '/addfactorylist',
+    method: 'post',
+    data
+  })
+}
 // 获取无害化处理厂具体信息表
 export function getfactorylist(){
   return request({
@@ -114,6 +122,46 @@ export function gettransferfactory(){
   return request({
     url: '/gettransferfactory',
     method: 'get'
+  })
+}
+// 修改中转站信息
+export function amendtransferfactory(data){
+  return request({
+    url: '/amendtransferfactory',
+    method: 'post',
+    data
+  })
+}
+// 删除中转站信息
+export function deletetransferfactory(data){
+  return request({
+    url: '/deletetransferfactory',
+    method: 'post',
+    data
+  })
+}
+// 添加中转站信息
+export function addtransferfactorybyrow(data){
+  return request({
+    url: '/addtransferbyrow',
+    method: 'post',
+    data
+  })
+}
+// 批量导入收集点信息
+export function addcollectfactory(data){
+  return request({
+    url: '/addcollectfactory',
+    method: 'post',
+    data
+  })
+}
+// 获取指定区域收集点信息
+export function getcollectfactorybyarea(data){
+  return request({
+    url: '/getcollectfactorybyarea',
+    method: 'get',
+    params: data
   })
 }
 // 批量导入无害化处理能力信息

@@ -65,5 +65,11 @@ urlpatterns = [
     url('addtransferfactory', views.addTransferFactory, name='addTransferFacory'),   # 批量导入中转站信息
     url('gettransferfactory', views.getTransferFactory, name='getTransferFactory'),   # 获取垃圾中转站信息
     url('amendfactorylist', views.amendfactorylist, name='amendFactoryList'),     # 修改无害化处理厂信息表
-    url('deletefactorylist', views.deletefactorylist, name='deletefactorylist')  # 删除无害化处理厂信息
+    url('deletefactorylist', views.deletefactorylist, name='deletefactorylist'),  # 删除无害化处理厂信息
+    url('addfactorylist', views.addfactorylistbyrow, name='addfactorylist'),   # 增加无害化处理厂信息
+    url('amendtransferfactory', views.AmendTransferFactory, name='AmendTransferFactory'),   # 修改中转站信息
+    url('deletetransferfactory', views.DeleteTransferFactory, name='DeleteTransferFactory'),   # 删除中转站信息
+    url('addtransferbyrow', views.addtransferbyrow, name='AddTransferFactoryByRow'),  # 添加中转站信息
+    url('addcollectfactory', views.AddCollectFactory, name='AddCollectFactory'),   # 批量导入收集点数据
+    url('getcollectfactorybyarea', views.GetCollectFactoryByArea, name='GetCollectFactoryByArea'),   # 根据区域获得指定收集点信息
 ]
