@@ -1,5 +1,15 @@
 from django.conf.urls import url
 from . import views
+import backend.modelview.mockarticle_v as mockarticleviews
+import backend.modelview.mockarticle1_v as mockarticle1views
+import backend.modelview.myprojectprocess_v as myprojectprocessviews
+import backend.modelview.pmedianbasic_v as pmedianbasicviews
+import backend.modelview.pmediancostmatrix_v as pmediancostmatrixviews
+import backend.modelview.pmedianoutputallocationmatrix_v as pmedianoutputallocationmatrixviews
+import backend.modelview.pmedianoutputbuildscale_v as pmedianoutputbuildscaleviews
+import backend.modelview.pmedianoutputcostmatrix_v as pmedianoutputcostmatrixviews
+import backend.modelview.pmedianrecyclingcenter_v as pmedianrecyclingcenterviews
+import backend.modelview.pmediantransferstation_v as pmediantransferstationviews
 
 urlpatterns = [
     url('login', views.login, name='login'),
@@ -72,4 +82,118 @@ urlpatterns = [
     url('addtransferbyrow', views.addtransferbyrow, name='AddTransferFactoryByRow'),  # 添加中转站信息
     url('addcollectfactory', views.AddCollectFactory, name='AddCollectFactory'),   # 批量导入收集点数据
     url('getcollectfactorybyarea', views.GetCollectFactoryByArea, name='GetCollectFactoryByArea'),   # 根据区域获得指定收集点信息
+
+url('article/list', mockarticleviews.article_list_get, name='article_list_get'),
+    url('article/download', mockarticleviews.article_download_get, name='article_create_get'),
+    url('article/create', mockarticleviews.article_create_post, name='article_create_post'),
+    url('article/update', mockarticleviews.article_update_post, name='article_update_post'),
+    url('article/delete', mockarticleviews.article_delete_post, name='article_delete_post'),
+    url('article/upload', mockarticleviews.article_upload_post, name='article_upload_post'),
+    url('article/clear', mockarticleviews.article_clear_post, name='article_clear_post'),
+
+    url('article1/list', mockarticle1views.article1_list_get, name='article1_list_get'),
+    url('article1/download', mockarticle1views.article1_download_get, name='article1_create_get'),
+    url('article1/create', mockarticle1views.article1_create_post, name='article1_create_post'),
+    url('article1/update', mockarticle1views.article1_update_post, name='article1_update_post'),
+    url('article1/delete', mockarticle1views.article1_delete_post, name='article1_delete_post'),
+    url('article1/upload', mockarticle1views.article1_upload_post, name='article1_upload_post'),
+    url('article1/clear', mockarticle1views.article1_clear_post, name='article1_clear_post'),
+
+    url('myprojectpr/list', myprojectprocessviews.myprojectpr_list_get, name='myprojectpr_list_get'),
+    url('myprojectpr/download', myprojectprocessviews.myprojectpr_download_get, name='myprojectpr_create_get'),
+    url('myprojectpr/create', myprojectprocessviews.myprojectpr_create_post, name='myprojectpr_create_post'),
+    url('myprojectpr/update', myprojectprocessviews.myprojectpr_update_post, name='myprojectpr_update_post'),
+    url('myprojectpr/delete', myprojectprocessviews.myprojectpr_delete_post, name='myprojectpr_delete_post'),
+    url('myprojectpr/upload', myprojectprocessviews.myprojectpr_upload_post, name='myprojectpr_upload_post'),
+    url('myprojectpr/clear', myprojectprocessviews.myprojectpr_clear_post, name='myprojectpr_clear_post'),
+
+
+    url('myprojectpr/list', myprojectprocessviews.myprojectpr_list_get, name='myprojectpr_list_get'),
+    url('myprojectpr/download', myprojectprocessviews.myprojectpr_download_get, name='myprojectpr_create_get'),
+    url('myprojectpr/create', myprojectprocessviews.myprojectpr_create_post, name='myprojectpr_create_post'),
+    url('myprojectpr/update', myprojectprocessviews.myprojectpr_update_post, name='myprojectpr_update_post'),
+    url('myprojectpr/delete', myprojectprocessviews.myprojectpr_delete_post, name='myprojectpr_delete_post'),
+    url('myprojectpr/upload', myprojectprocessviews.myprojectpr_upload_post, name='myprojectpr_upload_post'),
+    url('myprojectpr/clear', myprojectprocessviews.myprojectpr_clear_post, name='myprojectpr_clear_post'),
+
+    url('pmedianbs/list', pmedianbasicviews.pmedianbs_list_get, name='pmedianbs_list_get'),
+    url('pmedianbs/download', pmedianbasicviews.pmedianbs_download_get, name='pmedianbs_create_get'),
+    url('pmedianbs/create', pmedianbasicviews.pmedianbs_create_post, name='pmedianbs_create_post'),
+    url('pmedianbs/update', pmedianbasicviews.pmedianbs_update_post, name='pmedianbs_update_post'),
+    url('pmedianbs/delete', pmedianbasicviews.pmedianbs_delete_post, name='pmedianbs_delete_post'),
+    url('pmedianbs/upload', pmedianbasicviews.pmedianbs_upload_post, name='pmedianbs_upload_post'),
+    url('pmedianbs/clear', pmedianbasicviews.pmedianbs_clear_post, name='pmedianbs_clear_post'),
+
+    url('pmediancstmtr/list', pmediancostmatrixviews.pmediancstmtr_list_get, name='pmediancstmtr_list_get'),
+    url('pmediancstmtr/download', pmediancostmatrixviews.pmediancstmtr_download_get, name='pmediancstmtr_create_get'),
+    url('pmediancstmtr/create', pmediancostmatrixviews.pmediancstmtr_create_post, name='pmediancstmtr_create_post'),
+    url('pmediancstmtr/update', pmediancostmatrixviews.pmediancstmtr_update_post, name='pmediancstmtr_update_post'),
+    url('pmediancstmtr/delete', pmediancostmatrixviews.pmediancstmtr_delete_post, name='pmediancstmtr_delete_post'),
+    url('pmediancstmtr/upload', pmediancostmatrixviews.pmediancstmtr_upload_post, name='pmediancstmtr_upload_post'),
+    url('pmediancstmtr/clear', pmediancostmatrixviews.pmediancstmtr_clear_post, name='pmediancstmtr_clear_post'),
+
+    url('utputallocation/list', pmedianoutputallocationmatrixviews.utputallocation_list_get,
+        name='utputallocation_list_get'),
+    url('utputallocation/download', pmedianoutputallocationmatrixviews.utputallocation_download_get,
+        name='utputallocation_create_get'),
+    url('utputallocation/create', pmedianoutputallocationmatrixviews.utputallocation_create_post,
+        name='utputallocation_create_post'),
+    url('utputallocation/update', pmedianoutputallocationmatrixviews.utputallocation_update_post,
+        name='utputallocation_update_post'),
+    url('utputallocation/delete', pmedianoutputallocationmatrixviews.utputallocation_delete_post,
+        name='utputallocation_delete_post'),
+    url('utputallocation/upload', pmedianoutputallocationmatrixviews.utputallocation_upload_post,
+        name='utputallocation_upload_post'),
+    url('utputallocation/clear', pmedianoutputallocationmatrixviews.utputallocation_clear_post,
+        name='utputallocation_clear_post'),
+
+    url('dianoutputbuilds/list', pmedianoutputbuildscaleviews.dianoutputbuilds_list_get,
+        name='dianoutputbuilds_list_get'),
+    url('dianoutputbuilds/download', pmedianoutputbuildscaleviews.dianoutputbuilds_download_get,
+        name='dianoutputbuilds_create_get'),
+    url('dianoutputbuilds/create', pmedianoutputbuildscaleviews.dianoutputbuilds_create_post,
+        name='dianoutputbuilds_create_post'),
+    url('dianoutputbuilds/update', pmedianoutputbuildscaleviews.dianoutputbuilds_update_post,
+        name='dianoutputbuilds_update_post'),
+    url('dianoutputbuilds/delete', pmedianoutputbuildscaleviews.dianoutputbuilds_delete_post,
+        name='dianoutputbuilds_delete_post'),
+    url('dianoutputbuilds/upload', pmedianoutputbuildscaleviews.dianoutputbuilds_upload_post,
+        name='dianoutputbuilds_upload_post'),
+    url('dianoutputbuilds/clear', pmedianoutputbuildscaleviews.dianoutputbuilds_clear_post,
+        name='dianoutputbuilds_clear_post'),
+
+    url('pmedianoutputcomx/list', pmedianoutputcostmatrixviews.pmedianoutputcomx_list_get,
+        name='pmedianoutputcomx_list_get'),
+    url('pmedianoutputcomx/download', pmedianoutputcostmatrixviews.pmedianoutputcomx_download_get,
+        name='pmedianoutputcomx_create_get'),
+    url('pmedianoutputcomx/create', pmedianoutputcostmatrixviews.pmedianoutputcomx_create_post,
+        name='pmedianoutputcomx_create_post'),
+    url('pmedianoutputcomx/update', pmedianoutputcostmatrixviews.pmedianoutputcomx_update_post,
+        name='pmedianoutputcomx_update_post'),
+    url('pmedianoutputcomx/delete', pmedianoutputcostmatrixviews.pmedianoutputcomx_delete_post,
+        name='pmedianoutputcomx_delete_post'),
+    url('pmedianoutputcomx/upload', pmedianoutputcostmatrixviews.pmedianoutputcomx_upload_post,
+        name='pmedianoutputcomx_upload_post'),
+    url('pmedianoutputcomx/clear', pmedianoutputcostmatrixviews.pmedianoutputcomx_clear_post,
+        name='pmedianoutputcomx_clear_post'),
+
+    url('pmedianreccen/list', pmedianrecyclingcenterviews.pmedianreccen_list_get, name='pmedianreccen_list_get'),
+    url('pmedianreccen/download', pmedianrecyclingcenterviews.pmedianreccen_download_get,name='pmedianreccen_create_get'),
+    url('pmedianreccen/create', pmedianrecyclingcenterviews.pmedianreccen_create_post,
+        name='pmedianreccen_create_post'),
+    url('pmedianreccen/update', pmedianrecyclingcenterviews.pmedianreccen_update_post,
+        name='pmedianreccen_update_post'),
+    url('pmedianreccen/delete', pmedianrecyclingcenterviews.pmedianreccen_delete_post,
+        name='pmedianreccen_delete_post'),
+    url('pmedianreccen/upload', pmedianrecyclingcenterviews.pmedianreccen_upload_post,
+        name='pmedianreccen_upload_post'),
+    url('pmedianreccen/clear', pmedianrecyclingcenterviews.pmedianreccen_clear_post, name='pmedianreccen_clear_post'),
+
+    url('pmediants/list', pmediantransferstationviews.pmediants_list_get, name='pmediants_list_get'),
+    url('pmediants/download', pmediantransferstationviews.pmediants_download_get, name='pmediants_create_get'),
+    url('pmediants/create', pmediantransferstationviews.pmediants_create_post, name='pmediants_create_post'),
+    url('pmediants/update', pmediantransferstationviews.pmediants_update_post, name='pmediants_update_post'),
+    url('pmediants/delete', pmediantransferstationviews.pmediants_delete_post, name='pmediants_delete_post'),
+    url('pmediants/upload', pmediantransferstationviews.pmediants_upload_post, name='pmediants_upload_post'),
+    url('pmediants/clear', pmediantransferstationviews.pmediants_clear_post, name='pmediants_clear_post'),
 ]

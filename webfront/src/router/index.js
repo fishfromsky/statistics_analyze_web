@@ -5,6 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+import a_table_listRouter from './modules/a_table_list'
 
 
 /**
@@ -292,6 +293,7 @@ export const constantRoutes = [
       }
     ]
   },
+  a_table_listRouter,
   {
     path: '/repository',
     component: Layout,
@@ -316,6 +318,68 @@ export const constantRoutes = [
             name: 'import',
             component: () => import('@/views/repository/p_median/importData/index.vue'),
             meta: { title: '导入数据'}
+          },
+          {
+            path: 'importData',
+            name: 'importData',
+            meta: { title: '数据导入'},
+            component: () => import('@/views/repository/index'),
+            children: [
+              {
+                path: 'pmedianbs-table',
+                component: () => import('@/views/a_table_list/pmedianbs-table'),
+                name: 'Pmedian基本参数',
+                meta: { title: 'Pmedian基本参数' }
+              },
+              {
+                path: 'pmediancstmtr-table',
+                component: () => import('@/views/a_table_list/pmediancstmtr-table'),
+                name: 'cost矩阵表',
+                meta: { title: 'cost矩阵表' }
+              },
+              {
+                path: 'pmedianreccen-table',
+                component: () => import('@/views/a_table_list/pmedianreccen-table'),
+                name: '集散场',
+                meta: { title: '集散场' }
+              },
+              {
+                path: 'pmediants-table',
+                component: () => import('@/views/a_table_list/pmediants-table'),
+                name: '中转站',
+                meta: { title: '中转站' }
+              }
+            ]
+          },
+          {
+            path: 'query',
+            name: 'query',
+            component: () => import("@/views/repository/index"),
+            meta: { title: '结果查询'},
+            children: [
+
+            {
+              path: 'utputallocation-table',
+              component: () => import('@/views/a_table_list/utputallocation-table'),
+              name: 'Pmedian分配表',
+              meta: { title: 'Pmedian分配表' }
+            },
+
+            {
+              path: 'dianoutputbuilds-table',
+              component: () => import('@/views/a_table_list/dianoutputbuilds-table'),
+              name: 'Pmedian建设规模',
+              meta: { title: 'Pmedian建设规模' }
+            },
+
+            {
+              path: 'pmedianoutputcomx-table',
+              component: () => import('@/views/a_table_list/pmedianoutputcomx-table'),
+              name: 'Pmedian输出Cost',
+              meta: { title: 'Pmedian_Cost' }
+            }
+
+            ]
           }
         ]
       }

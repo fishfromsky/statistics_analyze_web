@@ -113,3 +113,27 @@ class NationalSolidPollutionPipeline(object):
             self.national_solidpollution.to_excel(writer, '固体废弃物-全国', index=None)
         writer.save()
         writer.close()
+
+# class NationalSolidPollutionPipeline(object):
+#     national_solidpollution = None
+#     def open_spider(self, spider):
+#         self.national_solidpollution = pd.DataFrame(columns=('年份', '地区', '指标', '数值', '单位', '来源'),index=None)
+#
+#     def process_item(self, item, spider):
+#         self.national_solidpollution.loc[self.national_solidpollution.shape[0]] = [i for i in item.values()]
+#         return item
+#
+#     def close_spider(self, spider):
+#         date = datetime.date.today().strftime('%y%m%d')
+#         path = os.path.join(os.getcwd() + "\\" +date+'废弃物实时数据.xlsx')
+#         p1 = os.path.exists(path)
+#         if p1:
+#             writer = pd.ExcelWriter(date+'废弃物实时数据.xlsx',engine='openpyxl')
+#             book = load_workbook(writer.path)
+#             writer.book = book
+#             self.national_solidpollution.to_excel(writer,'固体废弃物-全国',index=None)
+#         else:
+#             writer = pd.ExcelWriter(date + '废弃物实时数据.xlsx')
+#             self.national_solidpollution.to_excel(writer, '固体废弃物-全国', index=None)
+#         writer.save()
+#         writer.close()

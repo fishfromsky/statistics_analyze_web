@@ -1391,9 +1391,17 @@ def get_nation_solid_pollution(request):
     body = json.loads(request.body)
     print(body)
     key_word = body.get('key_word')
-    year = body.get('year')
+    count = body.get('count')
+    startYear = int(body.get('startYear')[0:4])+1
+    endYear = int(body.get('endYear')[0:4])+1
+    district = body.get('district')
+    print(startYear)
+    print(endYear)
+    print(district)
+    print(key_word)
+    print(count)
     date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
-    os.system('python backend/start_crawl.py ' + 'nation_solid_pollution ' + key_word + " " + year)
+    os.system('python backend/start_crawl.py ' + 'nation_solid_pollution ' + count + " " + key_word + " " + district + " " + str(startYear) + " " + str(endYear))
     path = os.path.join("static/" + date + '国内固体废物实时数据.xlsx')
     os.renames("static/国内固体废物实时数据.xlsx", path)
     response['excel_url'] = 'http://127.0.0.1:8000/' + path
