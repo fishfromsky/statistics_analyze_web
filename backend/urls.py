@@ -1,8 +1,5 @@
 from django.conf.urls import url
 from . import views
-import backend.modelview.mockarticle_v as mockarticleviews
-import backend.modelview.mockarticle1_v as mockarticle1views
-import backend.modelview.myprojectprocess_v as myprojectprocessviews
 import backend.modelview.pmedianbasic_v as pmedianbasicviews
 import backend.modelview.pmediancostmatrix_v as pmediancostmatrixviews
 import backend.modelview.pmedianoutputallocationmatrix_v as pmedianoutputallocationmatrixviews
@@ -82,39 +79,12 @@ urlpatterns = [
     url('addtransferbyrow', views.addtransferbyrow, name='AddTransferFactoryByRow'),  # 添加中转站信息
     url('addcollectfactory', views.AddCollectFactory, name='AddCollectFactory'),   # 批量导入收集点数据
     url('getcollectfactorybyarea', views.GetCollectFactoryByArea, name='GetCollectFactoryByArea'),   # 根据区域获得指定收集点信息
+    url('getcrawlrecord', views.get_crawl_record, name='getcrawlrecord'),  # 获取使用爬虫历史记录
+    url('deletecrawldata', views.delete_crawl_data, name='deletecrawldata'),  # 删除爬取的数据
+    url('getcrawl_select', views.get_crawl_record_select, name='getcrawl_select'),  # 筛选历史爬虫数据
+    url('getlstmproject', views.get_lstm_project, name='getlstmproject'),  # 获取lstm项目
+    url('addlstmproject', views.add_lstm_project, name='addlstmproject'),  # 添加lstm项目
 
-url('article/list', mockarticleviews.article_list_get, name='article_list_get'),
-    url('article/download', mockarticleviews.article_download_get, name='article_create_get'),
-    url('article/create', mockarticleviews.article_create_post, name='article_create_post'),
-    url('article/update', mockarticleviews.article_update_post, name='article_update_post'),
-    url('article/delete', mockarticleviews.article_delete_post, name='article_delete_post'),
-    url('article/upload', mockarticleviews.article_upload_post, name='article_upload_post'),
-    url('article/clear', mockarticleviews.article_clear_post, name='article_clear_post'),
-
-    url('article1/list', mockarticle1views.article1_list_get, name='article1_list_get'),
-    url('article1/download', mockarticle1views.article1_download_get, name='article1_create_get'),
-    url('article1/create', mockarticle1views.article1_create_post, name='article1_create_post'),
-    url('article1/update', mockarticle1views.article1_update_post, name='article1_update_post'),
-    url('article1/delete', mockarticle1views.article1_delete_post, name='article1_delete_post'),
-    url('article1/upload', mockarticle1views.article1_upload_post, name='article1_upload_post'),
-    url('article1/clear', mockarticle1views.article1_clear_post, name='article1_clear_post'),
-
-    url('myprojectpr/list', myprojectprocessviews.myprojectpr_list_get, name='myprojectpr_list_get'),
-    url('myprojectpr/download', myprojectprocessviews.myprojectpr_download_get, name='myprojectpr_create_get'),
-    url('myprojectpr/create', myprojectprocessviews.myprojectpr_create_post, name='myprojectpr_create_post'),
-    url('myprojectpr/update', myprojectprocessviews.myprojectpr_update_post, name='myprojectpr_update_post'),
-    url('myprojectpr/delete', myprojectprocessviews.myprojectpr_delete_post, name='myprojectpr_delete_post'),
-    url('myprojectpr/upload', myprojectprocessviews.myprojectpr_upload_post, name='myprojectpr_upload_post'),
-    url('myprojectpr/clear', myprojectprocessviews.myprojectpr_clear_post, name='myprojectpr_clear_post'),
-
-
-    url('myprojectpr/list', myprojectprocessviews.myprojectpr_list_get, name='myprojectpr_list_get'),
-    url('myprojectpr/download', myprojectprocessviews.myprojectpr_download_get, name='myprojectpr_create_get'),
-    url('myprojectpr/create', myprojectprocessviews.myprojectpr_create_post, name='myprojectpr_create_post'),
-    url('myprojectpr/update', myprojectprocessviews.myprojectpr_update_post, name='myprojectpr_update_post'),
-    url('myprojectpr/delete', myprojectprocessviews.myprojectpr_delete_post, name='myprojectpr_delete_post'),
-    url('myprojectpr/upload', myprojectprocessviews.myprojectpr_upload_post, name='myprojectpr_upload_post'),
-    url('myprojectpr/clear', myprojectprocessviews.myprojectpr_clear_post, name='myprojectpr_clear_post'),
 
     url('pmedianbs/list', pmedianbasicviews.pmedianbs_list_get, name='pmedianbs_list_get'),
     url('pmedianbs/download', pmedianbasicviews.pmedianbs_download_get, name='pmedianbs_create_get'),
@@ -176,6 +146,7 @@ url('article/list', mockarticleviews.article_list_get, name='article_list_get'),
         name='pmedianoutputcomx_upload_post'),
     url('pmedianoutputcomx/clear', pmedianoutputcostmatrixviews.pmedianoutputcomx_clear_post,
         name='pmedianoutputcomx_clear_post'),
+    url('pmedianoutputcomx/cost', pmedianoutputcostmatrixviews.pmedianoutputcomx_get_cost, name='pmedianoutputcomx_get_cost'),
 
     url('pmedianreccen/list', pmedianrecyclingcenterviews.pmedianreccen_list_get, name='pmedianreccen_list_get'),
     url('pmedianreccen/download', pmedianrecyclingcenterviews.pmedianreccen_download_get,name='pmedianreccen_create_get'),
@@ -196,4 +167,6 @@ url('article/list', mockarticleviews.article_list_get, name='article_list_get'),
     url('pmediants/delete', pmediantransferstationviews.pmediants_delete_post, name='pmediants_delete_post'),
     url('pmediants/upload', pmediantransferstationviews.pmediants_upload_post, name='pmediants_upload_post'),
     url('pmediants/clear', pmediantransferstationviews.pmediants_clear_post, name='pmediants_clear_post'),
+
+
 ]

@@ -24,6 +24,14 @@ export function fetchPv(pv) {
   })
 }
 
+export function fetchCost(project_id) {
+  return request({
+    url: '/api/pmedianoutputcomx/cost',
+    method: 'get',
+    params: { project_id }
+  })
+}
+
 export function createpmedianoutputcomx(data) {
   return request({
     url: '/api/pmedianoutputcomx/create',

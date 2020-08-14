@@ -32,7 +32,7 @@ def to_dict(self, fields=None, exclude=None):
 @csrf_exempt
 @require_http_methods(['GET'])
 def pmedianoutputcomx_list_get(request):
-	response = {'code': 20000, 'message': 'success'}
+	response = {'code': 20000, 'message': 'success', 'unique_project_id': []}
 
 	### 筛选的字段
 	project_id = request.GET.get('project_id')
@@ -54,6 +54,9 @@ def pmedianoutputcomx_list_get(request):
 	if sort == '-id':
 		pmedianoutputcomx_obj = pmedianoutputcomx_obj.order_by("-id")
 
+	project_id_list = [i.project_id for i in pmedianoutputcomx_obj]
+	unique_project_id = list(set(project_id_list))
+	response['unique_project_id'] = unique_project_id
 	# 分页
 	paginator = Paginator(pmedianoutputcomx_obj, limit)       # 分页
 	pmedianoutputcomx_obj_page = paginator.get_page(page)
@@ -92,6 +95,24 @@ def pmedianoutputcomx_delete_post(request):
 	PmedianOutputCostMatrix.objects.filter(id=post_id).delete()
 	return JsonResponse(response, safe=False)
 
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def pmedianoutputcomx_get_cost(request):
+	response = {'code': 20000, 'message': 'success', 'transport_cost': [], 'scale_cost': [], 'p': []}
+	project_id = request.GET.get('project_id')
+	data = PmedianOutputCostMatrix.objects.filter(project_id=project_id)
+	transport_cost = []
+	scale_cost = []
+	p = []
+	for item in data:
+		transport_cost.append(to_dict(item).get('transport_cost'))
+		scale_cost.append(to_dict(item).get('scale_cost'))
+		p.append(to_dict(item).get('p'))
+	response['transport_cost'] = transport_cost
+	response['scale_cost'] = scale_cost
+	response['p'] = p
+	return JsonResponse(response, safe=False)
 
 @csrf_exempt
 @require_http_methods(['GET'])
@@ -139,6 +160,7 @@ def pmedianoutputcomx_upload_post(request):
 		createsetlist.append(obj_i)
 	PmedianOutputCostMatrix.objects.bulk_create(createsetlist)
 	return JsonResponse(response, safe=False)
+
 
 @csrf_exempt
 @require_http_methods(['POST'])

@@ -1,6 +1,6 @@
 from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City,\
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
-    p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList
+    p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, lstm_project
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -13,10 +13,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 import os
 import datetime
-from scrapy import cmdline
+import time
+from apscheduler.schedulers.background import BackgroundScheduler
 
-from scrapy.cmdline import execute
-from django.core import serializers
+
+
+
+
+
+
 
 
 def to_dict(self, fields=None, exclude=None):
@@ -1364,10 +1369,20 @@ def add_p_median_project(request):
 def get_water_pollution(request):
     response = {'code': 20000, 'message': 'success'}
     os.system('python backend/start_crawl.py ' + 'nation_water')
-    date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
-    path = os.path.join("static/" + date + '国内水体污染实时数据.xlsx')
-    os.renames("static/国内水体污染实时数据.xlsx", path)
+    date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    path = os.path.join("static/国内水体污染数据/" + date + '国内水体污染实时数据.xlsx')
+    os.renames("static/国内水体污染数据/国内水体污染实时数据.xlsx", path)
     response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    table_type = '国内水体污染数据'
+    dateTime = str(date)
+    hour = dateTime[8:10]
+    minute = dateTime[10:12]
+    second = dateTime[12:]
+    time = hour + ':' + minute + ':' + second
+    key_words = '-'
+    file_location = path
+    data = Crawl_Data_Record.objects.create(table_type=table_type, time=time, key_words=key_words, file_location=file_location)
+    data.save()
     return JsonResponse(response, safe=False)
 
 
@@ -1377,10 +1392,22 @@ def get_water_pollution(request):
 def get_nation_pm(request):
     response = {'code': 20000, 'message': 'success'}
     os.system('python backend/start_crawl.py ' + 'nation_pm')
-    date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
-    path = os.path.join("static/" + date + '国内空气污染实时数据.xlsx')
-    os.renames("static/国内空气污染实时数据.xlsx", path)
+    date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    path = os.path.join("static/国内空气污染数据/" + date + '国内空气污染实时数据.xlsx')
+    os.renames("static/国内空气污染数据/国内空气污染实时数据.xlsx", path)
     response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    table_type = '国内空气污染数据'
+    dateTime = str(date)
+    hour = dateTime[8:10]
+    minute = dateTime[10:12]
+    second = dateTime[12:]
+    time = hour + ':' + minute + ':' + second
+    key_words = '-'
+    city = '-'
+    file_location = path
+    data = Crawl_Data_Record.objects.create(table_type=table_type, time=time, key_words=key_words, city=city,
+                                            file_location=file_location)
+    data.save()
     return JsonResponse(response, safe=False)
 
 # 爬取国内固体废弃物数据
@@ -1389,7 +1416,6 @@ def get_nation_pm(request):
 def get_nation_solid_pollution(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
-    print(body)
     key_word = body.get('key_word')
     count = body.get('count')
     startYear = int(body.get('startYear')[0:4])+1
@@ -1400,11 +1426,23 @@ def get_nation_solid_pollution(request):
     print(district)
     print(key_word)
     print(count)
-    date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
+    date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     os.system('python backend/start_crawl.py ' + 'nation_solid_pollution ' + count + " " + key_word + " " + district + " " + str(startYear) + " " + str(endYear))
-    path = os.path.join("static/" + date + '国内固体废物实时数据.xlsx')
-    os.renames("static/国内固体废物实时数据.xlsx", path)
+    path = os.path.join("static/国内固体废物数据/" + date + '国内固体废物实时数据.xlsx')
+    os.renames("static/国内固体废物数据/国内固体废物实时数据.xlsx", path)
     response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    table_type = '国内固体废物数据'
+    dateTime = str(date)
+    hour = dateTime[8:10]
+    minute = dateTime[10:12]
+    second = dateTime[12:]
+    time = hour + ':' + minute + ':' + second
+    key_words = key_word
+    file_location = path
+    city = district
+    data = Crawl_Data_Record.objects.create(table_type=table_type, time=time, key_words=key_words, city=city,
+                                            file_location=file_location)
+    data.save()
     return JsonResponse(response, safe=False)
 
 
@@ -1413,11 +1451,24 @@ def get_nation_solid_pollution(request):
 @require_http_methods(['POST'])
 def get_world_pm(request):
     response = {'code': 20000, 'message': 'success'}
-    date = datetime.datetime.now().strftime('%y%m%d%H%M%S')
+    date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     os.system('python backend/start_crawl.py ' + 'world_pm')
-    path = os.path.join("static/" + date + '世界空气污染实时数据.xlsx')
+    path = os.path.join("static/世界空气污染数据/" + date + '世界空气污染实时数据.xlsx')
     os.renames("static/世界空气污染实时数据.xlsx", path)
     response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    table_type = '世界空气污染数据'
+    dateTime = str(date)
+
+    hour = dateTime[8:10]
+    minute = dateTime[10:12]
+    second = dateTime[12:]
+    time = hour + ':' + minute + ':' + second
+    key_words = '-'
+    city = '-'
+    file_location = path
+    data = Crawl_Data_Record.objects.create(table_type=table_type, time=time, key_words=key_words, city=city,
+                                            file_location=file_location)
+    data.save()
     return JsonResponse(response, safe=False)
 
 
@@ -1430,6 +1481,164 @@ def getgarbagepropduction_city(request):
     for list in result:
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
+
+# 获取历史爬虫数据
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_crawl_record(request):
+    response = {'code': 20000, 'message': 'success', 'data': [], 'unique_year_list': [], 'unique_kw_list': [], 'unique_city_list':[]}
+    table_type = request.GET.get('type')
+    data = Crawl_Data_Record.objects.filter(table_type=table_type)
+    for item in data:
+        dic = {'id': '', 'date': '', 'time': '', 'table_type': '', 'key_words': '', 'file_location': '', 'city': ''}
+        dic['id'] = to_dict(item)['id']
+        dic['date'] = to_dict(item)['date']
+        dic['time'] = to_dict(item)['time']
+        dic['table_type'] = to_dict(item)['table_type']
+        dic['key_words'] = to_dict(item)['key_words']
+        dic['city'] = to_dict(item)['city']
+        dic['file_location'] = 'http://127.0.0.1:8000/' + to_dict(item)['file_location']
+        response['data'].append(dic)
+    year_list = [str(i.date)[0:4] for i in data]
+    unique_year_list = list(set(year_list))
+    response['unique_year_list'] = unique_year_list
+
+    kw_list = [i.key_words for i in data]
+    unique_kw_list = list(set(kw_list))
+    response['unique_kw_list'] = unique_kw_list
+
+    city_list = [i.city for i in data]
+    unique_city_list = list(set(city_list))
+    response['unique_city_list'] = unique_city_list
+    return JsonResponse(response, safe=False)
+
+# 筛选爬虫历史数据
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_crawl_record_select(request):
+    response = {'code': 20000, 'message': 'success', 'data': [], 'unique_year_list': [], 'unique_kw_list': [], 'unique_city_list':[]}
+    table_type = request.GET.get('table_type')
+    year = request.GET.get('year')
+    key_words = request.GET.get('key_words')
+    city = request.GET.get('city')
+
+    obj = Crawl_Data_Record.objects.all()
+
+    if table_type != None and table_type != '':
+        obj = obj.filter(table_type=table_type)
+    if year != None and year != '':
+        obj = obj.filter(date__year=year)
+    if table_type == '国内固体废物数据':
+        obj = obj.filter(key_words=str(key_words))
+        obj = obj.filter(city=str(city))
+    year_list = [str(i.date)[0:4] for i in obj]
+    unique_year_list = list(set(year_list))
+    response['unique_year_list'] = unique_year_list
+
+    kw_list = [i.key_words for i in obj]
+    unique_kw_list = list(set(kw_list))
+    response['unique_kw_list'] = unique_kw_list
+
+    city_list = [i.city for i in obj]
+    unique_city_list = list(set(city_list))
+    response['unique_city_list'] = unique_city_list
+
+    for item in obj:
+        dic = {'id': '', 'date': '', 'time': '', 'table_type': '', 'key_words': '', 'file_location': '', 'city': ''}
+        dic['id'] = to_dict(item)['id']
+        dic['date'] = to_dict(item)['date']
+        dic['time'] = to_dict(item)['time']
+        dic['table_type'] = to_dict(item)['table_type']
+        dic['key_words'] = to_dict(item)['key_words']
+        dic['city'] = to_dict(item)['city']
+        dic['file_location'] = 'http://127.0.0.1:8000/' + to_dict(item)['file_location']
+        response['data'].append(dic)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def delete_crawl_data(request):
+    response = {'code': 20000, 'message': 'success'}
+    id = request.GET.get('id')
+    data = Crawl_Data_Record.objects.get(id=id)
+    print(data.file_location)
+    os.remove(data.file_location)
+    data.delete()
+    return JsonResponse(response, safe=False)
+
+# 获取lstm项目
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_lstm_project(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = lstm_project.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+    return JsonResponse(response, safe=False)
+
+
+# 添加lstm项目
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_lstm_project(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    name = body.get('name')
+    data = lstm_project.objects.create(project_id=project_id, name=name, table_size=0, project_state='未运行')
+    data.save()
+    return JsonResponse(response, safe=False)
+
+
+
+
+
+def crawl_water_pollution_data():
+    os.system('python backend/start_crawl.py ' + 'nation_water')
+    date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    path = os.path.join("static/国内水体污染数据/" + date + '国内水体污染实时数据.xlsx')
+    os.renames("static/国内水体污染数据/国内水体污染实时数据.xlsx", path)
+    table_type = '国内水体污染数据'
+    dateTime = str(date)
+    hour = dateTime[8:10]
+    minute = dateTime[10:12]
+    second = dateTime[12:]
+    time = hour + ':' + minute + ':' + second
+    key_words = '-'
+    file_location = path
+    city = '-'
+    data = Crawl_Data_Record.objects.create(table_type=table_type, time=time, key_words=key_words, city=city,
+                                            file_location=file_location)
+    data.save()
+
+
+def crawl_nation_air_pllution_data():
+    os.system('python backend/start_crawl.py ' + 'nation_pm')
+    date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    path = os.path.join("static/国内空气污染数据/" + date + '国内空气污染实时数据.xlsx')
+    os.renames("static/国内空气污染数据/国内空气污染实时数据.xlsx", path)
+    table_type = '国内空气污染数据'
+    dateTime = str(date)
+    hour = dateTime[8:10]
+    minute = dateTime[10:12]
+    second = dateTime[12:]
+    time = hour + ':' + minute + ':' + second
+    key_words = '-'
+    file_location = path
+    city = '-'
+    data = Crawl_Data_Record.objects.create(table_type=table_type, time=time, key_words=key_words, city=city,
+                                            file_location=file_location)
+    data.save()
+
+
+
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(crawl_water_pollution_data, 'cron', day_of_week='mon-sun', hour='11', minute='27', second='40')
+scheduler.add_job(crawl_nation_air_pllution_data, 'cron', day_of_week='mon-sun', hour='10', minute='10', second='10')
+scheduler.start()
 
 
 

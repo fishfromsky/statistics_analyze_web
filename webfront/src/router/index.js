@@ -5,7 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-import a_table_listRouter from './modules/a_table_list'
+
 
 
 /**
@@ -293,7 +293,6 @@ export const constantRoutes = [
       }
     ]
   },
-  a_table_listRouter,
   {
     path: '/repository',
     component: Layout,
@@ -327,25 +326,25 @@ export const constantRoutes = [
             children: [
               {
                 path: 'pmedianbs-table',
-                component: () => import('@/views/a_table_list/pmedianbs-table'),
+                component: () => import('@/views/repository/p_median/importData1/pmedianbs-table'),
                 name: 'Pmedian基本参数',
                 meta: { title: 'Pmedian基本参数' }
               },
               {
                 path: 'pmediancstmtr-table',
-                component: () => import('@/views/a_table_list/pmediancstmtr-table'),
+                component: () => import('@/views/repository/p_median/importData1/pmediancstmtr-table'),
                 name: 'cost矩阵表',
                 meta: { title: 'cost矩阵表' }
               },
               {
                 path: 'pmedianreccen-table',
-                component: () => import('@/views/a_table_list/pmedianreccen-table'),
+                component: () => import('@/views/repository/p_median/importData1/pmedianreccen-table'),
                 name: '集散场',
                 meta: { title: '集散场' }
               },
               {
                 path: 'pmediants-table',
-                component: () => import('@/views/a_table_list/pmediants-table'),
+                component: () => import('@/views/repository/p_median/importData1/pmediants-table'),
                 name: '中转站',
                 meta: { title: '中转站' }
               }
@@ -360,26 +359,53 @@ export const constantRoutes = [
 
             {
               path: 'utputallocation-table',
-              component: () => import('@/views/a_table_list/utputallocation-table'),
+              component: () => import('@/views/repository/p_median/result/utputallocation-table'),
               name: 'Pmedian分配表',
               meta: { title: 'Pmedian分配表' }
             },
 
             {
               path: 'dianoutputbuilds-table',
-              component: () => import('@/views/a_table_list/dianoutputbuilds-table'),
+              component: () => import('@/views/repository/p_median/result/dianoutputbuilds-table'),
               name: 'Pmedian建设规模',
               meta: { title: 'Pmedian建设规模' }
             },
 
             {
               path: 'pmedianoutputcomx-table',
-              component: () => import('@/views/a_table_list/pmedianoutputcomx-table'),
+              component: () => import('@/views/repository/p_median/result/pmedianoutputcomx-table'),
               name: 'Pmedian输出Cost',
               meta: { title: 'Pmedian_Cost' }
             }
 
             ]
+          }
+        ]
+      },
+      {
+        path: 'lstmModel',
+        name: 'lstmModel',
+        redirect: '/repository/lstmModel',
+        meta: { title: 'LSTM模型'},
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'manage',
+            component: () => import('@/views/repository/lstmModel/manageProject/index'),
+            meta: { title: '管理项目'}
+          },
+          {
+            path: 'import',
+            name: 'import',
+            component: () => import('@/views/repository/lstmModel/importData/garbage_table'),
+            meta: { title: '数据导入'}
+          },
+          {
+            path: 'import',
+            name: 'import',
+            component: () => import('@/views/repository/lstmModel/result/index'),
+            meta: { title: '结果查询'}
           }
         ]
       }

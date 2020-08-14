@@ -496,5 +496,61 @@ export function getworldpm(data){
     data
   })
 }
+//获取爬虫爬取记录
+export function getCrawlDataRecord(type) {
+  return request({
+    url:'/getcrawlrecord',
+    method: 'get',
+    params: { type }
+  })
+}
+//删除已爬取文件
+export function deleteCrawlData(id) {
+  return request({
+    url:'/deletecrawldata',
+    method:'get',
+    params: { id }
+  })
+}
+//筛选爬虫历史记录
+export function selectCrawlRecord(query) {
+  return request({
+    url: '/getcrawl_select',
+    method: 'get',
+    params: query
+  })
+}
+//获取LSTM项目
+export function getLstmProject() {
+  return request({
+    url: '/getlstmproject',
+    method: 'get',
+
+  })
+}
+//添加LSTM项目
+export function addLstmProject(data) {
+  return request({
+    url: '/addlstmproject',
+    method: 'POST',
+    data
+  })
+}
+//修改LSTM项目
+export function amendLstmProject(data) {
+  return request({
+    url: '/amendlstmproject',
+    method:'post',
+    data
+  })
+}
+//LSTM项目模型实验
+export function LstmProjectStart(data) {
+  return request({
+    url: '/lstmprojectstart',
+    method: 'post',
+    data
+  })
+}
 
 

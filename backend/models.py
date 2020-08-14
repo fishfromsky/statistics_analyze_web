@@ -129,6 +129,14 @@ class Garbage_Deal_Volume_City(models.Model):
     compost = models.CharField(max_length=200)
     else_num = models.CharField(max_length=200)
 
+class Crawl_Data_Record(models.Model):
+    table_type = models.CharField(max_length=200)
+    date = models.DateField(auto_now_add=True)
+    time = models.CharField(max_length=200, default='08:30:00')
+    key_words = models.CharField(max_length=200)
+    city = models.CharField(max_length=200, default='-')
+    file_location = models.CharField(max_length=200)
+
 
 class p_median_project(models.Model):
     project_id = models.CharField(max_length=200, primary_key=True)
@@ -137,6 +145,12 @@ class p_median_project(models.Model):
     ts_size = models.IntegerField()
     rrc_size = models.IntegerField()
     cost_matrix_size = models.IntegerField()
+
+class lstm_project(models.Model):
+    project_id = models.CharField(max_length=200, primary_key=True)
+    name = models.CharField(max_length=200)
+    table_size = models.IntegerField()
+    project_state = models.CharField(max_length=200)
 
 
 class basic(models.Model):
