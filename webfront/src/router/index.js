@@ -313,12 +313,6 @@ export const constantRoutes = [
             meta: { title: '管理项目'}
           },
           {
-            path: 'import',
-            name: 'import',
-            component: () => import('@/views/repository/p_median/importData/index.vue'),
-            meta: { title: '导入数据'}
-          },
-          {
             path: 'importData',
             name: 'importData',
             meta: { title: '数据导入'},
@@ -398,14 +392,41 @@ export const constantRoutes = [
           {
             path: 'import',
             name: 'import',
-            component: () => import('@/views/repository/lstmModel/importData/garbage_table'),
+            component: () => import('@/views/repository/lstmModel/importData/index'),
             meta: { title: '数据导入'}
           },
           {
-            path: 'import',
-            name: 'import',
+            path: 'result',
+            name: 'result',
             component: () => import('@/views/repository/lstmModel/result/index'),
             meta: { title: '结果查询'}
+          }
+        ]
+      },
+      {
+        path: 'multiregression',
+        name: 'multiregression',
+        redirect: '/repository/regression',
+        meta: { title: '多元线性回归' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'manage',
+            component: () => import('@/views/repository/regression/programe/index'),
+            meta: { title: '管理项目' }
+          },
+          {
+            path: 'data',
+            name: 'data',
+            component: () => import('@/views/repository/regression/data/index'),
+            meta: { title: '数据导入' }
+          },
+          {
+            path: 'experiment',
+            name: 'experiment',
+            component: () => import('@/views/repository/regression/result/index'),
+            meta: { title: '结果查询' }
           }
         ]
       }

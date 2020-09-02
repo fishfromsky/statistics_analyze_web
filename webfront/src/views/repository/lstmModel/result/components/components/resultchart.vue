@@ -7,7 +7,6 @@
     require('echarts/theme/westeros') // echarts theme
     import resize from './mixins/resize'
     export default {
-        name: "population",
         mixins:[resize],
         props:{
             className: {
@@ -37,11 +36,8 @@
             }
         },
         watch: {
-            chartData: {
-                deep: true,
-                handler(val) {
-                    this.setOptions(val)
-                }
+            chartData: function(a, _) {
+                console.log(a)
             }
         },
         mounted() {
@@ -62,59 +58,47 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
-                let population_data = val.data
-                let year = val.year
                 this.chart.setOption({
-                    title:{
-                        text: '上海市近20年人口数据'
+                    title: {
+                        text: 'LSTM模型运行结果'
                     },
-                    grid:{
-                   
+                    tooltip: {
+                        trigger: 'axis'
                     },
-                     tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'cross',
-                            crossStyle: {
-                                color: '#999'
-                            }
-                        }
+                    legend: {
+                        data: ['实际值', '预测值']
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
                     },
                     toolbox: {
                         feature: {
-                            dataView: {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore: {show: true},
-                            saveAsImage: {show: true}
+                            saveAsImage: {}
                         }
                     },
-                    legend: {
-                        data: ['人口数量']
+                    // xAxis: {
+                    //     type: 'category',
+                    //     boundaryGap: false,
+                    //     data: val.year
+                    // },
+                    yAxis: {
+                        type: 'value'
                     },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: year,
-                            axisPointer: {
-                                type: 'shadow'
-                            }
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            name: '人口数量 / 10,000',
-                            interval: 10,
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
-                        },
-                    ],
                     series: [
                         {
-                            name: '人口数量',
-                            type: 'bar',
-                            data: population_data
+                            name: '实际值',
+                            type: 'line',
+                            stack: '实际值',
+                            data: val.real
+                        },
+                        {
+                            name: '预测值',
+                            type: 'line',
+                            stack: '预测值',
+                            data: val.pred
                         },
                     ]
                 })

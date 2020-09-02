@@ -4,10 +4,9 @@
 
 <script>
     import echarts from 'echarts'
-    require('echarts/theme/westeros') // echarts theme
+    require('echarts/theme/roma') // echarts theme
     import resize from './mixins/resize'
     export default {
-        name: "population",
         mixins:[resize],
         props:{
             className: {
@@ -58,63 +57,64 @@
         },
         methods: {
             initChart(){
-                this.chart = echarts.init(this.$el, 'westeros');
+                this.chart = echarts.init(this.$el, 'roma');
                 this.setOptions(this.chartData)
             },
             setOptions(val){
-                let population_data = val.data
-                let year = val.year
                 this.chart.setOption({
-                    title:{
-                        text: '上海市近20年人口数据'
+                    title: {
+                        text: '多元回归模型运行结果'
                     },
-                    grid:{
-                   
+                    legend: {
+                        data: ['实际值', '预测值']
                     },
-                     tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'cross',
-                            crossStyle: {
-                                color: '#999'
-                            }
-                        }
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
                     },
                     toolbox: {
                         feature: {
-                            dataView: {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore: {show: true},
-                            saveAsImage: {show: true}
+                            saveAsImage: {}
                         }
                     },
-                    legend: {
-                        data: ['人口数量']
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: val.year
                     },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: year,
-                            axisPointer: {
-                                type: 'shadow'
-                            }
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            name: '人口数量 / 10,000',
-                            interval: 10,
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
-                        },
-                    ],
+                    yAxis: {
+                        type: 'value'
+                    },
                     series: [
                         {
-                            name: '人口数量',
-                            type: 'bar',
-                            data: population_data
+                            name: '实际值',
+                            type: 'scatter',
+                            stack: '实际值',
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    position: 'left',
+                                    color: 'red',
+                                    fontSize: 16
+                                }
+                            },
+                            data: val.real
+                        },
+                        {
+                            name: '预测值',
+                            type: 'line',
+                            stack: '预测值',
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    position: 'left',
+                                    color: 'blue',
+                                    fontSize: 16
+                                }
+                            },
+                            data: val.pred
                         },
                     ]
                 })

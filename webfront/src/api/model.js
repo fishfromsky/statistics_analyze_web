@@ -536,6 +536,7 @@ export function addLstmProject(data) {
     data
   })
 }
+
 //修改LSTM项目
 export function amendLstmProject(data) {
   return request({
@@ -544,13 +545,117 @@ export function amendLstmProject(data) {
     data
   })
 }
-//LSTM项目模型实验
+
+//LSTM项目开始模型实验
 export function LstmProjectStart(data) {
   return request({
-    url: '/lstmprojectstart',
+    url: '/experiment_lstm_start',
     method: 'post',
     data
   })
 }
 
+// 获取lstm项目编号
+export function lstmprojectid() {
+  return request({
+    url: '/lstm_project_id',
+    method: 'get'
+  })
+}
 
+// 获取lstm参数表
+export function getlstmparameter(data){
+  return request({
+    url: '/get_parameter_lstm',
+    method: 'get',
+    params: data
+  })
+}
+
+// 批量导入lstm数据
+export function inputlstmparameter(data){
+  return request({
+    url: '/input_parameter_lstm',
+    method: 'post',
+    data
+  })
+}
+
+// 获取lstm实验结果
+export function getlstmresult(data){
+  return request({
+    url: '/get_lstm_result',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取多元回归项目
+export function getregression(){
+  return request({
+    url: '/get_regression',
+    method: 'get'
+  })
+}
+
+// 添加多元回归项目
+export function addregression(data){
+  return request({
+    url: '/add_regression',
+    method: 'post',
+    data
+  })
+}
+
+// 修改多元回归模型
+export function amendregression(data){
+  return request({
+    url: '/amend_regression',
+    method: 'post',
+    data
+  })
+}
+
+// 获得多元回归项目编号
+export function regressionid(){
+  return request({
+    url: '/get_id_regression',
+    method: 'get'
+  })
+}
+
+// 批量导入多元回归参数
+export function inputregressionparameter(data){
+  return request({
+    url: '/add_parameter_regression',
+    method: 'post',
+    data
+  })
+}
+
+// 获得多元回归参数列表
+export function getregressionpara(data){
+  return request({
+    url: '/get_parameter_regression',
+    method: 'get',
+    params: data
+  })
+}
+
+// 开始多元回归实验
+export function  startregression(data) {
+  return request({
+    url: '/start_regression_experiment',
+    method: 'post',
+    data
+  })
+}
+
+// 获取多元回归实验结果
+export function getregressionresult(data){
+  return request({
+    url: '/get_result_regression',
+    method: 'get',
+    params: data
+  })
+}

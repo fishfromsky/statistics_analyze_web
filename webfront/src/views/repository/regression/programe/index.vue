@@ -28,7 +28,7 @@ export default {
       kind_option: [
         {
           value: '1',
-          label: 'LSTM模型项目'
+          label: '多元回归拟合'
         }
       ],
     }

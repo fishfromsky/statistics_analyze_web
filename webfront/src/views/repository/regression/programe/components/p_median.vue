@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { getLstmProject, addLstmProject, amendLstmProject, LstmProjectStart } from '@/api/model'
+import { getregression, addregression, amendregression, startregression, judgeregression } from '@/api/model'
 export default {
     data(){
         return{
@@ -109,7 +109,7 @@ export default {
             let that = this
             let data = {}
             data['project_id'] = this.page_data[val].project_id
-            LstmProjectStart(data).then(res=>{
+            startregression(data).then(res=>{
                 if (res.code === 20000){
                     that.$message({
                         type: 'success',
@@ -124,7 +124,7 @@ export default {
         },
         getData(){
             let that = this
-            getLstmProject().then(res=>{
+            getregression().then(res=>{
                 if (res.code === 20000){
                     that.table_loading = false
                     that.tableData = res.data
@@ -143,12 +143,11 @@ export default {
         AmendData(index){
            this.form = this.page_data[index]
            this.amend_dialog = true
-           
         },
         AmendDataConfirm(){
             let data = this.form
             let that = this
-            amendLstmProject(data).then(res=>{
+            amendregression(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -159,27 +158,6 @@ export default {
                 }
             })
             this.amend_dialog = false
-        },
-        Project_start(index){
-        if (this.page_data[index].lstm_project_table_size === 0) {
-          this.$message.error('请先导入实验参数表')
-        } else {
-            let that = this
-            LstmProjectStart(this.page_data[index].project_id).then(res=>{
-              if(res.code === 20000) {
-                this.$message({
-                  type: 'success',
-                  message: '模型开始运行'
-                })
-              } else if (res.code === 50000) {
-                this.$message({
-                  type: 'error',
-                  message: '模型已在运行中！'
-                })
-              }
-            }
-            )
-        }
         },
         addPrograme(){
           this.add_dialog = true
@@ -193,8 +171,8 @@ export default {
                 this.$message.error('请输入项目名称')
             }
             else{
-                 let that = this
-                addLstmProject(data).then(res=>{
+                let that = this
+                addregression(data).then(res=>{
                     if (res.code === 20000){
                         this.$message({
                             type: 'success',

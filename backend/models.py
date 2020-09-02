@@ -129,6 +129,7 @@ class Garbage_Deal_Volume_City(models.Model):
     compost = models.CharField(max_length=200)
     else_num = models.CharField(max_length=200)
 
+
 class Crawl_Data_Record(models.Model):
     table_type = models.CharField(max_length=200)
     date = models.DateField(auto_now_add=True)
@@ -146,11 +147,12 @@ class p_median_project(models.Model):
     rrc_size = models.IntegerField()
     cost_matrix_size = models.IntegerField()
 
+
 class lstm_project(models.Model):
     project_id = models.CharField(max_length=200, primary_key=True)
     name = models.CharField(max_length=200)
-    table_size = models.IntegerField()
-    project_state = models.CharField(max_length=200)
+    table_size = models.IntegerField(default=0)
+    status = models.CharField(max_length=255, default='未运行')
 
 
 class basic(models.Model):
@@ -182,18 +184,65 @@ class rrc(models.Model):
     district_no = models.IntegerField()
 
 
+class lstm_parameter(models.Model):
+    project_id = models.ForeignKey(to="lstm_project", on_delete=models.CASCADE)
+    year = models.CharField(max_length=255, null=False)
+    population = models.FloatField(max_length=255, null=False)
+    population_density = models.FloatField(max_length=255, null=False)
+    total_households = models.FloatField(max_length=255, null=False)
+    average_person_per_household = models.FloatField(max_length=255, null=False)
+    gdp = models.FloatField(max_length=255, null=False)
+    per_capita_gdp = models.FloatField(max_length=255, null=False)
+    residential_garbage = models.FloatField(max_length=255, null=False, default=0.0)
+
+
+class lstm_result(models.Model):
+    project_id = models.ForeignKey(to='lstm_project', on_delete=models.CASCADE)
+    year = models.CharField(max_length=255, null=False)
+    real = models.FloatField(null=False)
+    pred = models.FloatField(null=False)
+    time = models.DateTimeField(auto_now_add=True)
+    sort = models.IntegerField(default=1)
+
+
 class cost_matrix(models.Model):
     project_id = models.ForeignKey(to="p_median_project", on_delete=models.CASCADE)
     Euclid_distance = models.FloatField()
 
 
+class multi_regression_project(models.Model):
+    project_id = models.CharField(max_length=255, null=False, primary_key=True)
+    name = models.CharField(max_length=255, null=False)
+    table_size = models.IntegerField(default=0)
+    status = models.CharField(max_length=255, default='未运行')
 
 
+class multi_regression_parameter(models.Model):
+    resident_population = models.FloatField(null=False, default=None)
+    population_of_density = models.FloatField(null=False, default=None)
+    number_of_households = models.FloatField(null=False, default=None)
+    average_population_per_household = models.FloatField(null=False, default=None)
+    urban_residents_per_capita_disposable_income = models.FloatField(null=False, default=None)
+    consumer_expenditure = models.FloatField(null=False, default=None)
+    general_public_expenditure = models.FloatField(null=False, default=None)
+    investment_in_urban_infrastructure = models.FloatField(null=False, default=None)
+    urban_population_density = models.FloatField(null=False, default=None)
+    greening_coverage = models.FloatField(null=False, default=None)
+    gross_local_product = models.FloatField(null=False, default=None)
+    gross_domestic_product_per_capita = models.FloatField(null=False, default=None)
+    gross_domestic_product_of_the_first_industry = models.FloatField(null=False, default=None)
+    gross_value_of_secondary_industry = models.FloatField(null=False, default=None)
+    gross_value_of_the_tertiary_industry = models.FloatField(null=False, default=None)
+    investment_in_environmental_protection = models.FloatField(null=False, default=None)
+    number_of_college_students = models.FloatField(null=False, default=None)
+    level_of_education = models.FloatField(null=False, default=None)
+    municial_household_garbage = models.FloatField(null=False, default=None)
+    project_id = models.ForeignKey(to="multi_regression_project", on_delete=models.CASCADE)
 
 
-
-
-
-
-
-
+class multi_regression_result(models.Model):
+    project_id = models.ForeignKey(to="multi_regression_project", on_delete=models.CASCADE)
+    pred = models.FloatField(null=False)
+    real = models.FloatField(null=False)
+    time = models.DateTimeField(auto_now_add=True)
+    sort = models.IntegerField(default=1)

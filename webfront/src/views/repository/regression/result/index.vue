@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { lstmprojectid } from '@/api/model'
+import { regressionid } from '@/api/model'
 import result from './components/result.vue'
 export default {
   components: {
@@ -37,7 +37,7 @@ export default {
   methods:{
     init_projectId:function(){
       let that = this
-      lstmprojectid().then(res=>{
+      regressionid().then(res=>{
         let data = res.data
         for (let i=0; i<data.length; i++){
             that.id_list.push(data[i])

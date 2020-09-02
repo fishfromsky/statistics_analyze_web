@@ -82,9 +82,28 @@ urlpatterns = [
     url('getcrawlrecord', views.get_crawl_record, name='getcrawlrecord'),  # 获取使用爬虫历史记录
     url('deletecrawldata', views.delete_crawl_data, name='deletecrawldata'),  # 删除爬取的数据
     url('getcrawl_select', views.get_crawl_record_select, name='getcrawl_select'),  # 筛选历史爬虫数据
+
     url('getlstmproject', views.get_lstm_project, name='getlstmproject'),  # 获取lstm项目
     url('addlstmproject', views.add_lstm_project, name='addlstmproject'),  # 添加lstm项目
+    url('amendlstmproject', views.amend_lstm_project, name='amendlstmproject'),  # 修改lstm项目
+    url('lstm_project_id', views.lstm_project_id, name='lstm_project_id'),  # 获得全部LSTM项目编号
+    url('get_parameter_lstm', views.get_parameter_lstm),   # 获得指定项目的参数
+    url('input_parameter_lstm', views.input_lstm_parameter, name='input_lstm_parameter'),  # 批量导入lstm参数表
+    url('experiment_lstm_start', views.experiment_lstm_start, name='experiment_lstm'),  # 开始试验
+    url('experiment_lstm_finish', views.experiment_lstm_finish, name='experiment_lstm_finish'),  # 结束实验
+    url('save_lstm_result', views.save_lstm_result, name='save_lstm_result'),  # 保存lstm实验结果
+    url('get_lstm_result', views.get_lstm_result, name='get_lstm_resut'),  # 获取lstm实验结果
 
+    url('get_regression', views.get_regression_programe),  # 获取多元回归项目
+    url('add_regression', views.add_regression_programe),  # 添加多元回归项目
+    url('amend_regression', views.amend_regression_programe),  # 修改多元回归模型
+    url('add_parameter_regression', views.add_regression_parameter),  # 添加多元回归参数
+    url('get_id_regression', views.regression_idlist),  # 获得多元回归所有项目编号
+    url('get_parameter_regression', views.parameter_regression),  # 获得多元回归参数列表
+    url('save_regression_result', views.save_regression_result),  # 保存多元回归参数
+    url('start_regression_experiment', views.start_regression_experiment),  # 开始多元回归实验
+    url('finish_regression_experiment', views.finish_regression_experiment),  # 结束多元回归实验
+    url('get_result_regression', views.get_regression_result),  # 获取多元回归实验结果
 
     url('pmedianbs/list', pmedianbasicviews.pmedianbs_list_get, name='pmedianbs_list_get'),
     url('pmedianbs/download', pmedianbasicviews.pmedianbs_download_get, name='pmedianbs_create_get'),
