@@ -659,3 +659,71 @@ export function getregressionresult(data){
     params: data
   })
 }
+
+// 添加kmeans算法模型
+export function addkmeansproject(data){
+  return request({
+    url: '/add_kmeans_project',
+    method: 'post',
+    data
+  })
+}
+
+// 获得kmeans模型
+export function getkmeansrpoject(){
+  return request({
+    url: '/get_kmeans_project',
+    method: 'get'
+  })
+}
+
+// 修改kmeans模型
+export function amendkmeansproject(data){
+  return request({
+    url: '/amend_kmeans_project',
+    method: 'post',
+    data
+  })
+}
+
+// 开始kmeans试验
+export function startkmeans(data){
+  return request({
+    url: '/start_kmeans',
+    method: 'post',
+    data
+  })
+}
+
+// 获得kmeans实验结果
+export function getkmeansresult(data){
+  return request({
+    url: '/get_result_kmeans',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获得kmeans实验项目编号
+export function getidlistkmeans(){
+  return request({
+    url: '/get_id_kmeans',
+    method: 'get'
+  })
+}
+
+// 输入kmeans实验数据
+export function parameterkmeans(data){
+  return request({
+    url: '/input_parameter_kmeans',
+    method: 'post',
+    data
+  })
+}
+
+export function getparameterkmeans(){
+  return request({
+    url: '/get_parameter_kmeans',
+    method: 'get'
+  })
+}

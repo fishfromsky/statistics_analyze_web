@@ -1,7 +1,8 @@
 from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City,\
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
-    lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, multi_regression_result
+    lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
+    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -1665,7 +1666,7 @@ def input_lstm_parameter(request):
             if data[i].__contains__('year') and data[i].__contains__('population') and data[i].__contains__('population_density')  and data[i].__contains__('total_households') \
                     and data[i].__contains__('average_person_per_household') and data[i].__contains__('gdp') \
                     and data[i].__contains__('per_capita_gdp') and data[i].__contains__('residential_garbage'):
-                if lstm_parameter.objects.filter(year=data[i]['year']).count() != 0:
+                if lstm_parameter.objects.filter(year=data[i]['year'], project_id=lstm_project(project_id=id)).count() != 0:
                     response['code'] = 50000
                     response['message'] = '存在重复年份数据，请先删除该数据'
                 else:
@@ -1708,11 +1709,15 @@ def experiment_lstm_start(request):
     response = {'message': 'success', 'code': 20000}
     body = json.loads(request.body)
     id = body.get('project_id')
-    model = lstm_project.objects.get(project_id=id)
-    model.status = '正在运行'
-    model.save()
-    task = threading.Thread(target=lstm_thread, args=(id,))
-    task.start()
+    if lstm_parameter.objects.filter(project_id=lstm_project(project_id=id)).count() == 0:
+        response['code'] = 50000
+        response['message'] = '该项目缺少数据，无法实验'
+    else:
+        model = lstm_project.objects.get(project_id=id)
+        model.status = '正在运行'
+        model.save()
+        task = threading.Thread(target=lstm_thread, args=(id,))
+        task.start()
     return JsonResponse(response, safe=False)
 
 
@@ -1735,7 +1740,7 @@ def save_lstm_result(request):
     body = json.loads(request.body)
     id = body.get('project_id')
     data = body.get('data')
-    if lstm_result.objects.all().count() != 0:
+    if lstm_result.objects.filter(project_id=lstm_project(project_id=id)).count() != 0:
         last_sort = lstm_result.objects.filter(project_id=lstm_project(project_id=id)).order_by('-id')[:1]
         sort = last_sort.get().sort + 1
     else:
@@ -1881,7 +1886,7 @@ def save_regression_result(request):
     body = json.loads(request.body)
     id = body.get('project_id')
     data = body.get('data')
-    if multi_regression_result.objects.all().count() != 0:
+    if multi_regression_result.objects.filter(project_id=multi_regression_project(project_id=id)).count() != 0:
         last_sort = multi_regression_result.objects.filter(project_id=multi_regression_project(project_id=id)).order_by('-id')[:1]
         sort = last_sort.get().sort + 1
     else:
@@ -1906,11 +1911,15 @@ def start_regression_experiment(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
     id = body.get('project_id')
-    model = multi_regression_project.objects.get(project_id=id)
-    model.status = '正在运行'
-    model.save()
-    task = threading.Thread(target=thread_regression, args=(id,))
-    task.start()
+    if multi_regression_parameter.objects.filter(project_id=multi_regression_project(project_id=id)).count() == 0:
+        response['code'] = 50000
+        response['message'] = '该项目缺少数据，无法实验'
+    else:
+        model = multi_regression_project.objects.get(project_id=id)
+        model.status = '正在运行'
+        model.save()
+        task = threading.Thread(target=thread_regression, args=(id,))
+        task.start()
     return JsonResponse(response, safe=False)
 
 
@@ -1932,6 +1941,207 @@ def get_regression_result(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     id = request.GET.get('project_id')
     data = multi_regression_result.objects.filter(project_id=multi_regression_project(project_id=id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_kmeans_project(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    name = body.get('name')
+    if kmeans_project.objects.filter(project_id=project_id).count() != 0:
+        response['code'] = 50000
+        response['message'] = '已存在该编号的项目'
+    else:
+        model = kmeans_project.objects.create(project_id=project_id, name=name)
+        model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_kmeans_project(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = kmeans_project.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amend_kmeans_project(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    name = body.get('name')
+    model = kmeans_project.objects.get(project_id=project_id)
+    model.name = name
+    model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def save_result_kmeans(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if kmeans_result.objects.filter(project_id=kmeans_project(project_id=id)).count() != 0:
+        last_sort = kmeans_result.objects.filter(project_id=kmeans_project(project_id=id)).order_by(
+            '-id')[:1]
+        sort = last_sort.get().sort + 1
+    else:
+        sort = 1
+    for i in range(len(data)):
+        xaxis = data[i]['xaxis']
+        yaxis = data[i]['yaxis']
+        label = data[i]['label']
+        model = kmeans_result.objects.create(project_id=kmeans_project(project_id=id),
+                                             xaxis=xaxis, yaxis=yaxis, label=label, sort=sort)
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+def thread_kmeans(id):
+    os.system('python backend/KMeans/kmeans.py %s' % id)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def start_kmeans(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    if kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id)).count() == 0:
+        response['code'] = 50000
+        response['message'] = '该项目缺少数据无法实验，请先补充数据'
+    else:
+        model = kmeans_project.objects.get(project_id=id)
+        model.status = '正在运行'
+        model.save()
+        task = threading.Thread(target=thread_kmeans, args=(id,))
+        task.start()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def stop_kmeans(request):
+    response = {'message': 'success', 'code': 20000}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    model = kmeans_project.objects.get(project_id=id)
+    model.status = '未运行'
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_result_kmeans(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    id = request.GET.get('project_id')
+    data = kmeans_result.objects.filter(project_id=kmeans_project(project_id=id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_idlist_kmeans(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = kmeans_project.objects.values('project_id').all()
+    for item in data:
+        response['data'].append(item)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def input_parameter_kmeans(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id)).count() != 0:
+        response['code'] = 50000
+        response['message'] = '数据库中存在该项目参数，请先删除'
+    else:
+        for i in range(len(data)):
+            if data[i].__contains__('resident_population') and data[i].__contains__('population_of_density') and \
+                    data[i].__contains__('number_of_households') and data[i].__contains__(
+                'average_population_per_household') \
+                    and data[i].__contains__('urban_residents_per_capita_disposable_income') and data[i].__conains__(
+                'consumer_expenditure') \
+                    and data[i].__contains__('general_public_expenditure') and data[i].__contains__(
+                'investment_in_urban_infrastructure') \
+                    and data[i].__contains__('urban_population_density') and data[i].__contains__(
+                'greening_coverage') and \
+                    data[i].__contains__('gross_local_product') and data[i].__contains__(
+                'gross_domestic_product_per_capita') \
+                    and data[i].__contains__('gross_domestic_product_of_the_first_industry') and data[i].__contains__(
+                'gross_value_of_secondary_industry') \
+                    and data[i].__contains__('gross_value_of_the_tertiary_industry') and data[i].__contains__(
+                'investment_in_environmental_protection') \
+                    and data[i].__contains__('number_of_college_students') and data[i].__contains__(
+                'level_of_education') and \
+                    data[i].__contains__('municial_household_garbage'):
+                model = kmeans_parameter.objects.create(project_id=kmeans_project(project_id=id),
+                                                        resident_population=data[i]['resident_population'],
+                                                        population_of_density=data[i]['population_of_density'],
+                                                        number_of_households=data[i]['number_of_households'],
+                                                        average_population_per_household=data[i][
+                                                              'average_population_per_household'],
+                                                        urban_residents_per_capita_disposable_income=data[i][
+                                                              'urban_residents_per_capita_disposable_income'],
+                                                        consumer_expenditure=data[i]['consumer_expenditure'],
+                                                        general_public_expenditure=data[i][
+                                                              'general_public_expenditure'],
+                                                        investment_in_urban_infrastructure=data[i][
+                                                              'investment_in_urban_infrastructure'],
+                                                        urban_population_density=data[i][
+                                                              'urban_population_density'],
+                                                        greening_coverage=data[i]['greening_coverage'],
+                                                        gross_local_product=data[i]['gross_local_product'],
+                                                        gross_domestic_product_per_capita=data[i][
+                                                              'gross_domestic_product_per_capita'],
+                                                        gross_domestic_product_of_the_first_industry=data[i][
+                                                              'gross_domestic_product_of_the_first_industry'],
+                                                        gross_value_of_secondary_industry=data[i][
+                                                              'gross_value_of_secondary_industry'],
+                                                        gross_value_of_the_tertiary_industry=data[i][
+                                                              'gross_value_of_the_tertiary_industry'],
+                                                        investment_in_environmental_protection=data[i][
+                                                              'investment_in_environmental_protection'],
+                                                        number_of_college_students=data[i][
+                                                              'number_of_college_students'],
+                                                        level_of_education=data[i]['level_of_education'],
+                                                        municial_household_garbage=data[i][
+                                                              'municial_household_garbage'])
+                model.save()
+            else:
+                response['code'] = 50000
+                response['message'] = '表头与数据不一致或者缺少数据'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_parameter_kmeans(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = kmeans_parameter.objects.all()
     for item in data:
         response['data'].append(to_dict(item))
 

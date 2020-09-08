@@ -246,3 +246,42 @@ class multi_regression_result(models.Model):
     real = models.FloatField(null=False)
     time = models.DateTimeField(auto_now_add=True)
     sort = models.IntegerField(default=1)
+
+
+class kmeans_project(models.Model):
+    project_id = models.CharField(max_length=255, null=False, primary_key=True)
+    name = models.CharField(max_length=255, null=False)
+    add_time = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=255, default='未运行')
+
+
+class kmeans_result(models.Model):
+    project_id = models.ForeignKey(to="kmeans_project", on_delete=models.CASCADE)
+    xaxis = models.FloatField(null=False)
+    yaxis = models.FloatField(null=False)
+    label = models.IntegerField(null=False, default=0)
+    time = models.DateTimeField(auto_now_add=True)
+    sort = models.IntegerField(default=1)
+
+
+class kmeans_parameter(models.Model):
+    resident_population = models.FloatField(null=False, default=None)
+    population_of_density = models.FloatField(null=False, default=None)
+    number_of_households = models.FloatField(null=False, default=None)
+    average_population_per_household = models.FloatField(null=False, default=None)
+    urban_residents_per_capita_disposable_income = models.FloatField(null=False, default=None)
+    consumer_expenditure = models.FloatField(null=False, default=None)
+    general_public_expenditure = models.FloatField(null=False, default=None)
+    investment_in_urban_infrastructure = models.FloatField(null=False, default=None)
+    urban_population_density = models.FloatField(null=False, default=None)
+    greening_coverage = models.FloatField(null=False, default=None)
+    gross_local_product = models.FloatField(null=False, default=None)
+    gross_domestic_product_per_capita = models.FloatField(null=False, default=None)
+    gross_domestic_product_of_the_first_industry = models.FloatField(null=False, default=None)
+    gross_value_of_secondary_industry = models.FloatField(null=False, default=None)
+    gross_value_of_the_tertiary_industry = models.FloatField(null=False, default=None)
+    investment_in_environmental_protection = models.FloatField(null=False, default=None)
+    number_of_college_students = models.FloatField(null=False, default=None)
+    level_of_education = models.FloatField(null=False, default=None)
+    municial_household_garbage = models.FloatField(null=False, default=None)
+    project_id = models.ForeignKey(to="kmeans_project", on_delete=models.CASCADE)

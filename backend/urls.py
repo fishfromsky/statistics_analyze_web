@@ -105,6 +105,17 @@ urlpatterns = [
     url('finish_regression_experiment', views.finish_regression_experiment),  # 结束多元回归实验
     url('get_result_regression', views.get_regression_result),  # 获取多元回归实验结果
 
+    url('add_kmeans_project', views.add_kmeans_project),  # 添加kmeans项目
+    url('get_kmeans_project', views.get_kmeans_project),  # 获取kmeans项目
+    url('amend_kmeans_project', views.amend_kmeans_project),  # 修改kmeans项目
+    url('save_result_kmeans', views.save_result_kmeans),  # 保存kmeans运行结果
+    url('start_kmeans', views.start_kmeans),  # 开始kmeans试验
+    url('finish_kmeans', views.stop_kmeans),  # 结束kmeans算法
+    url('get_result_kmeans', views.get_result_kmeans),  # 获得kmeans实验结果
+    url('get_id_kmeans', views.get_idlist_kmeans),  # 获取kmeans所有项目编号
+    url('input_parameter_kmeans', views.input_parameter_kmeans),  # 输入kmeans实验数据
+    url('get_parameter_kmeans', views.get_parameter_kmeans),  # 获取kmeans实验参数
+
     url('pmedianbs/list', pmedianbasicviews.pmedianbs_list_get, name='pmedianbs_list_get'),
     url('pmedianbs/download', pmedianbasicviews.pmedianbs_download_get, name='pmedianbs_create_get'),
     url('pmedianbs/create', pmedianbasicviews.pmedianbs_create_post, name='pmedianbs_create_post'),

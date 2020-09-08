@@ -1,15 +1,20 @@
 <template>
     <div>
         <el-table v-loading="table_loading" :key="tablekey" :data="page_data" border fit highlight-current-row style="width: 100%; margin-top: 20px">
-            <el-table-column label="实际值" align="center">
+            <el-table-column label="xAxis" align="center">
                 <template slot-scope="{row}">
-                    <span>{{row.real}}</span>
+                    <span>{{row.xaxis}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="预测值" align="center">
+            <el-table-column label="yAxis" align="center">
                 <template slot-scope="{row}">
-                    <span>{{row.pred}}</span>
+                    <span>{{row.yaxis}}</span>
                 </template>
+            </el-table-column>
+            <el-table-column label="label" align="center">
+                <template slot-scope="{row}">
+                    <span>{{row.label}}</span>
+                </template>               
             </el-table-column>
             <el-table-column label="实验时间" align="center">
                 <template slot-scope="{row}">
@@ -24,7 +29,9 @@
             </el-table-column>
         </el-table>
         <el-dialog :visible.sync="chart_dialog">
-            <chartresult :chart-data="graph_data"></chartresult>
+            <div style="width: 100%; height: 60vh">
+                <chartresult :chart-data="graph_data" style="height: 60vh"></chartresult>
+            </div>
         </el-dialog>
         <el-pagination
             @size-change="handleSizeChange"
@@ -40,7 +47,7 @@
 </template>
 
 <script>
-import { getregressionresult } from '@/api/model'
+import { getkmeansresult } from '@/api/model'
 import chartresult from './components/resultchart'
 export default {
     components:{
@@ -63,13 +70,14 @@ export default {
             currentPage: 1,
             page_size: 10,
             project_id: '',
-            filename: 'regression_result',
+            filename: 'kmeans_result',
             autoWidth: true,
             bookType: 'xlsx',
             sort_list: [],
             graph_data:{
-                real: [],
-                pred: [],
+                xaxis: [],
+                yaxis: [],
+                label: []
             }
         }
     },
@@ -84,17 +92,19 @@ export default {
     },
     methods:{
         showChart:function(id){
-            this.graph_data.real = []
-            this.graph_data.pred = []
-            this.graph_data.year = []
+            this.graph_data.xaxis = []
+            this.graph_data.yaxis = []
+            this.graph_data.label = []
             this.chart_dialog = true
             let chart_data = this.tableData
             for (let i=0; i<chart_data.length; i++){
                 if (chart_data[i].sort === id){
-                    this.graph_data.real.push(chart_data[i].real)
-                    this.graph_data.pred.push(chart_data[i].pred)
+                    this.graph_data.xaxis.push(chart_data[i].xaxis)
+                    this.graph_data.yaxis.push(chart_data[i].yaxis)
+                    this.graph_data.label.push(chart_data[i].label)
                 }
             }
+            this.graph_data.labelnum = this.sort_list.length
         },
         timeStamptoTime:function(time){
             var date = new Date(time);
@@ -122,8 +132,7 @@ export default {
             let that = this
             let dict = {}
             dict['project_id'] = id
-            this.table_loading = true
-            getregressionresult(dict).then(res=>{
+            getkmeansresult(dict).then(res=>{
                 that.table_loading = false
                 that.tableData = res.data
                 for (let i=0; i<res.data.length; i++){
@@ -167,8 +176,8 @@ export default {
         },
         download:function(){
             import('@/vendor/Export2Excel').then(excel => {
-                const tHeader = ['Real', 'Prediction', 'DateTime', 'Sort']
-                const filterVal = ['real', 'pred', 'time', 'sort']
+                const tHeader = ['xAxis', 'yAxis', 'Label', 'DateTime', 'Sort']
+                const filterVal = ['xaxis', 'yaxis', 'label', 'time', 'sort']
                 const list = this.tableData
                 const data = this.formatJson(filterVal, list)
                 excel.export_json_to_excel({

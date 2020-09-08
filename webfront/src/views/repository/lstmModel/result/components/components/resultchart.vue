@@ -36,8 +36,11 @@
             }
         },
         watch: {
-            chartData: function(a, _) {
-                console.log(a)
+            chartData: {
+                deep: true,
+                handler(val) {
+                    this.setOptions(val)
+                }
             }
         },
         mounted() {
@@ -60,10 +63,7 @@
             setOptions(val){
                 this.chart.setOption({
                     title: {
-                        text: 'LSTM模型运行结果'
-                    },
-                    tooltip: {
-                        trigger: 'axis'
+                        text: '多元回归模型运行结果'
                     },
                     legend: {
                         data: ['实际值', '预测值']
@@ -79,11 +79,11 @@
                             saveAsImage: {}
                         }
                     },
-                    // xAxis: {
-                    //     type: 'category',
-                    //     boundaryGap: false,
-                    //     data: val.year
-                    // },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: val.year
+                    },
                     yAxis: {
                         type: 'value'
                     },
@@ -92,12 +92,28 @@
                             name: '实际值',
                             type: 'line',
                             stack: '实际值',
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    position: 'left',
+                                    color: 'red',
+                                    fontSize: 16
+                                }
+                            },
                             data: val.real
                         },
                         {
                             name: '预测值',
                             type: 'line',
                             stack: '预测值',
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    position: 'left',
+                                    color: 'blue',
+                                    fontSize: 16
+                                }
+                            },
                             data: val.pred
                         },
                     ]

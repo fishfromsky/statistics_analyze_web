@@ -429,6 +429,33 @@ export const constantRoutes = [
             meta: { title: '结果查询' }
           }
         ]
+      },
+      {
+        path: 'kmeans',
+        name: 'kmeans',
+        redirect: '/repository/kmeans',
+        meta: { title: 'KMEANS聚类' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'manage',
+            component: () => import('@/views/repository/kmeans/manage/index'),
+            meta: { title: '项目管理' }
+          },
+          {
+            path: 'data',
+            name: 'data',
+            component: () => import('@/views/repository/kmeans/data/index'),
+            meta: { title: '数据导入'}
+          },
+          {
+            path: 'result',
+            name: 'result',
+            component: () => import('@/views/repository/kmeans/result/index'),
+            meta: { title: '结果查询' }
+          }
+        ]
       }
     ]
   },
