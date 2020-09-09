@@ -12,6 +12,7 @@ from math import *
 import sys
 import requests
 import json
+from pandas.io.json import json_normalize
 
 
 np.set_printoptions(suppress=True)
@@ -19,6 +20,19 @@ mpl.rcParams['font.sans-serif'] = ['simHei']
 mpl.rcParams['axes.unicode_minus'] = False
 
 id = sys.argv[1]
+
+
+class MyEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        """
+        只要检查到了是bytes类型的数据就把它转为str类型
+        :param obj:
+        :return:
+        """
+        if isinstance(obj, bytes):
+            return str(obj, encoding='utf-8')
+        return json.JSONEncoder.default(self, obj)
 
 
 class NpEncoder(json.JSONEncoder):
@@ -75,9 +89,14 @@ def load_data_to_supervision():
 
 
 def get_data():
-    dataset = pd.read_csv(os.path.dirname(__file__)+'/dataset_new.csv')
-    year = dataset.values[:, 1]
-    dataset = dataset.drop(dataset.columns[[0, 1, 4, 7, 10]], axis=1)
+    params = {'project_id': id}
+
+    res = requests.get('http://127.0.0.1:8000/api/get_parameter_lstm', params=params)
+    json_data = json.loads(res.text).get('data')
+
+    df = json_normalize(json_data)
+    year = df.values[:, 2]
+    dataset = df.drop(df.columns[[0, 1, 2]], axis=1)
 
     return dataset, year
 
@@ -205,7 +224,13 @@ def predict_all():
     data = scaler.inverse_transform(data)
 
     preds = data[:, -1]
-    real = pd.read_csv(os.path.dirname(__file__)+'/dataset_new.csv').values[:, -1]
+    params = {'project_id': id}
+
+    res = requests.get('http://127.0.0.1:8000/api/get_parameter_lstm', params=params)
+    json_data = json.loads(res.text).get('data')
+
+    df = json_normalize(json_data)
+    real = df.values[:, -1]
 
     rmse = sqrt(mean_squared_error(preds, real))
     print('Test RMSE: %.3f' % rmse)

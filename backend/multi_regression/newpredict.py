@@ -13,6 +13,7 @@ import json
 import sys
 import os
 import requests
+from pandas import json_normalize
 
 
 np.set_printoptions(suppress=True)
@@ -35,9 +36,16 @@ class NpEncoder(json.JSONEncoder):
 
 
 def filescvmatrix():
-    dataset = pd.read_csv(os.path.dirname(__file__)+'/dataset_new1.csv')
-    dataset = dataset.drop(dataset.columns[[0, 4, 8, 9, 10, 12, 13, 16, 17]], axis=1)
+    params = {'project_id': id}
+
+    res = requests.get('http://127.0.0.1:8000/api/get_parameter_regression', params=params)
+    json_data = json.loads(res.text).get('data')
+
+    df = json_normalize(json_data)
+    df = df.drop(df.columns[[df.shape[1]-1]], axis=1)
+    dataset = df.drop(df.columns[[0, 4, 8, 9, 10, 12, 13, 16, 17]], axis=1)
     dataset = dataset.fillna(0.1)
+
     # 1上海2北京3深圳4广州5-重庆6天津7武汉8南京9杭州10成都11-佛山12青岛13苏州14东莞15西安16长沙17济南18宁波19常州20无锡
     # h = 1  # 第几个城市
     # dataset = dataset[20 * h - 20:20 * h]
@@ -119,8 +127,14 @@ def test(x_test,Y_test):
 
 def yuchuli(iterations):
     alphaslist = [0.0001,0.001,0.01,0.1, 1.0, 10.0,100,1000,10000]#alphas列表
-    dataset = pd.read_csv(os.path.dirname(__file__)+'/dataset_new1.csv')
-    dataset = dataset.drop(dataset.columns[[0, 4, 8, 9, 10, 12, 13, 16, 17]], axis=1)
+    params = {'project_id': id}
+
+    res = requests.get('http://127.0.0.1:8000/api/get_parameter_regression', params=params)
+    json_data = json.loads(res.text).get('data')
+
+    df = json_normalize(json_data)
+    df = df.drop(df.columns[[df.shape[1] - 1]], axis=1)
+    dataset = df.drop(df.columns[[0, 4, 8, 9, 10, 12, 13, 16, 17]], axis=1)
     # h = 13  # 第几个城市
     # dataset = dataset[20 * h - 20:20 * h]
     dataset = dataset.fillna(0.1)

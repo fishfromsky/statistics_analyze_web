@@ -9,6 +9,7 @@ import sys
 import os
 import json
 import requests
+from pandas import json_normalize
 
 np.set_printoptions(suppress=True)
 mpl.rcParams['font.sans-serif'] = ['simHei']
@@ -155,7 +156,11 @@ def clusterclubs(mycentroids, clustassing,numclust,datmat,labels):#bikmeans分�
 
 
 def guiyihua():#归一化
-    dataset = pd.read_csv(os.path.dirname(__file__)+'/dataset_new1.csv')
+    params = {'project_id': id}
+    res = requests.get('http://127.0.0.1:8000/api/get_parameter_kmeans', params=params)
+    json_data = json.loads(res.text).get('data')
+    df = json_normalize(json_data)
+    dataset = df.drop(df.columns[[df.shape[1]-1]], axis=1)
     dataset = dataset.drop(dataset.columns[[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]], axis=1)#0, 4, 8, 9, 10, 12, 13, 16, 17, -1#0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
     dataset = dataset.fillna(0.1)
     datasety = dataset
@@ -264,21 +269,21 @@ def testnum():
 # testnum()#聚类评价指数
 classnum = 4#聚类的组数
 
-flag = 1#聚类方式选择,注意：选择层次聚类的时候要改guiyihua（）函数里面列的选择，多维的效果图好看一点
+flag = 2#聚类方式选择,注意：选择层次聚类的时候要改guiyihua（）函数里面列的选择，多维的效果图好看一点
 #如果bikmeans聚类的话，两维聚类的效果图好看一点
 if flag==1:#层次聚类
     AgglomerativeClustering(classnum)
 elif flag==2:#bikmeans聚类
     mycentroids,clustassing,df,labels= diaoyong(classnum)
     clusterclubs(mycentroids, clustassing,classnum,df,labels)
-    #对scv文件添加分类列
-    classifylist = clustassing[:,0]
-    classifylist = np.matrix.tolist(classifylist.T)
-    excel = pd.read_csv(os.path.dirname(__file__)+'/dataset_new1.csv')
-    classifylist = np.array(classifylist[0], dtype = int)
-    excel.loc[:,('Unnamed: 0')] = classifylist
-    excel.rename(columns={'Unnamed: 0':'class'},inplace=True)
-    excel.to_csv(os.path.dirname(__file__)+"/kmeansclassify.csv")#最终聚类表示文件
+    # #对scv文件添加分类列
+    # classifylist = clustassing[:,0]
+    # classifylist = np.matrix.tolist(classifylist.T)
+    # excel = pd.read_csv(os.path.dirname(__file__)+'/dataset_new1.csv')
+    # classifylist = np.array(classifylist[0], dtype = int)
+    # excel.loc[:,('Unnamed: 0')] = classifylist
+    # excel.rename(columns={'Unnamed: 0':'class'},inplace=True)
+    # excel.to_csv(os.path.dirname(__file__)+"/kmeansclassify.csv")#最终聚类表示文件
 
 dict = {}
 dict['project_id'] = id

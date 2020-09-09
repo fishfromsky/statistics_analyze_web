@@ -82,10 +82,15 @@
                     xAxis: {
                         type: 'category',
                         boundaryGap: false,
-                        data: val.year
+                        data: val.year,
+                        name: '年份'
                     },
                     yAxis: {
-                        type: 'value'
+                        type: 'value',
+                        axisLabel: {
+                            formatter: '{value}'
+                        },
+                        name: '固废产量(10,000t)'
                     },
                     series: [
                         {
