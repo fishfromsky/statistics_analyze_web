@@ -1,0 +1,10 @@
+id,project_id,name,value,unit,note
+91,p001,min_selected_rrc_rate,0.8,-,已经选中的rrc至少达到的服务水平
+92,p001,factor_m_carbon,0.7,-,碳排放的规模递减因子
+93,p001,factor_m_cost,0.6,-,成本的规模递减因子
+94,p001,trans_cost,7.0,元/(km*吨),单位距离成本
+95,p001,scale_emission,3000000.0,kg/年,单位规模碳排放（集中处理情景）
+96,p001,scale_cost,50000000.0,元/年,单位规模成本（集中处理情景）
+97,p001,recyling_rate,0.8,-,可再生资源的回收率
+98,p001,recyclable_percent,0.4,-,可再生资源占比
+99,p001,MSW,9917.8,千吨,上海市2020年生活垃圾产生量

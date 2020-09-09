@@ -3,7 +3,7 @@
   <div class="app-container">
     <div class="filter-container">
 
-      <el-input v-model="listQuery.ts" placeholder="集散场" style="width: 100px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.rrc" placeholder="集散场" style="width: 100px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.project_id" placeholder="项目编号" clearable style="width: 100px" class="filter-item">
         <el-option v-for="item in project_idOptions" :key="item" :label="item" :value="item" />
       </el-select>
@@ -25,6 +25,10 @@
       </el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-delete-solid" @click="showHandleClear">
         清空
+      </el-button>
+       </el-button>
+         <el-button v-waves class="filter-item" type="primary" icon="el-icon-s-marketing" @click="">
+        数据可视化
       </el-button>
 
       <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisibleupload">
@@ -71,25 +75,24 @@
           <span>{{ row.project_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="集散场" width="500.0px" align="center">
+      <el-table-column label="集散场" width="400.0px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.rrc }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="中转站" width="400.0px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ts }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="中转站" width="500.0px" align="center">
+      <el-table-column label="p值" width="200.0px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.rrc }}</span>
+          <span>{{ row.p_value }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑
-          </el-button>
-          <el-button type="success" size="mini" @click="handleUpdate(row)">
-            查询
-          </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>

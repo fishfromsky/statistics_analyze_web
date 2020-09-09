@@ -459,7 +459,7 @@ export function amendpmedianproject(data) {
 // 集散厂优化
 export function getplotlocation(data) {
   return request({
-    url: '/getplotlocation',
+    url: '/startpmedianproject',
     method: 'post',
     data
   })

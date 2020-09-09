@@ -56,13 +56,8 @@ urlpatterns = [
     url('addsinglerowdata', views.addsinglerow_cityeconomy, name='addsinglerowdata'),  # 添加一条经济表数据
     url('getgarbagecity', views.getgarbagepropduction_city),
     url('addpmedianproject', views.add_p_median_project, name='addpmedianproject'),  # 添加p_median项目
-    url('addbasic', views.add_basic, name='addbasic'),  # 添加p_median项目basic表
-    url('addts', views.add_ts, name='addts'),  # 添加p_median项目ts表
-    url('addrrc', views.add_rrc, name='addrrc'),  # 添加p_median项目rrc表
-    url('addcostmatrix', views.add_cost_matrix, name='addcostmatrix'),  # 添加p_median项目cost_matrix表
     url('getpmedianproject', views.getpmedianproject, name='getpmedianproject'),  # 请求p_median项目
     url('amendpmedianproject', views.amendpmedianproject, name='amendpmedianproject'),  # 修改p_median项目
-    url('getplotlocation', views.getlocation, name='getlocation'),  # 集散厂位置优化
     url('getnationwaterpollution', views.get_water_pollution, name='getwaterpollution'),  # 爬取国内水体污染数据
     url('getnationpm', views.get_nation_pm, name='getnationpm'),  # 爬取国内空气污染数据
     url('getnationsolidpollution', views.get_nation_solid_pollution, name='getnationsolidpollution'),  # 爬取国内固废垃圾数据
@@ -82,6 +77,7 @@ urlpatterns = [
     url('getcrawlrecord', views.get_crawl_record, name='getcrawlrecord'),  # 获取使用爬虫历史记录
     url('deletecrawldata', views.delete_crawl_data, name='deletecrawldata'),  # 删除爬取的数据
     url('getcrawl_select', views.get_crawl_record_select, name='getcrawl_select'),  # 筛选历史爬虫数据
+    url('startpmedianproject', views.start_p_median_project, name='startpmedianproject'),  # 运行p_median项目
 
     url('getlstmproject', views.get_lstm_project, name='getlstmproject'),  # 获取lstm项目
     url('addlstmproject', views.add_lstm_project, name='addlstmproject'),  # 添加lstm项目
