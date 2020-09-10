@@ -86,7 +86,7 @@
           <span>{{ row.lng }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="维度" width="200.0px" align="center">
+      <el-table-column label="纬度" width="200.0px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.lat }}</span>
         </template>
@@ -128,7 +128,7 @@
         <el-form-item label="经度">
           <el-input v-model="temp.lng" type="number" placeholder="输入数字" />
         </el-form-item>
-        <el-form-item label="维度">
+        <el-form-item label="纬度">
           <el-input v-model="temp.lat" type="number" placeholder="输入数字" />
         </el-form-item>
         <el-form-item label="所属区">
@@ -368,7 +368,7 @@ export default {
         // response = response.json();
         this.list = response.data.items
         // console.log('data.................', data)
-        const tHeader = ['项目编号', '所属街镇', '产量权重因子', '经度', '维度', '所属区']
+        const tHeader = ['项目编号', '所属街镇', '产量权重因子', '经度', '纬度', '所属区']
         const filterVal = ['project_id', 'sub_names', 'weight_percentage', 'lng', 'lat', 'district']
         const data = this.formatJson(filterVal)
 

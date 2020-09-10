@@ -31,6 +31,11 @@
                    <span>{{row.cost_matrix_size}}</span>
                </template>
            </el-table-column>
+           <el-table-column label="项目状态" align="center" min-width="50">
+               <template slot-scope="{row}">
+                   <span>{{row.project_state}}</span>
+               </template>
+           </el-table-column>
            <el-table-column label="数据操作" align="center" min-width="100">
                <template slot-scope="scope">
                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
@@ -123,6 +128,7 @@ export default {
                     that.tableData = res.data
                     let size = that.page_size
                     let index = that.currentPage-1
+                    that.page_data = []
                     for (let i=index*size; i<(index+1)*size; i++){
                         if (i==res.data.length){
                             break
@@ -153,29 +159,32 @@ export default {
             this.amend_dialog = false
         },
         GetLocation(index){
-        if (this.page_data[index].basic_size === 0 || this.page_data[index].ts_size === 0 || this.page_data[index].rrc_size === 0 || this.page_data[index].cost_matrix_size === 0) {
+        if (this.page_data[index].basic_size === 0 || this.page_data[index].ts_size === 0 || this.page_data[index].rrc_size === 0 ) {
           this.$message.error('请先导入实验参数表')
         } else {
-            this.get_dialog = true
             this.get_form.project_id = this.page_data[index].project_id
-        }
-        },
-        GetLocationConfirm(){
             let that = this
-            this.get_dialog = false
-            this.LocationImage = true
-            this.image_loading = true
-            this.get_form.plot_num = this.form.plot_num
+            that.page_data[index].project_state = '正在运行'
             getplotlocation(this.get_form).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
                         message: 'success'
                     })
-                    that.page_data = []
-                    that.image_loading = false
-                    that.getData()
-                    that.url = res.image_url
+                }
+                that.getData()
+            })
+
+        }
+        },
+        GetLocationConfirm(){
+            let that = this
+            getplotlocation(this.get_form).then(res=>{
+                if (res.code === 20000){
+                    this.$message({
+                        type: 'success',
+                        message: 'success'
+                    })
                 }
             })
         },

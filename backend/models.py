@@ -145,6 +145,7 @@ class p_median_project(models.Model):
     basic_size = models.IntegerField()
     ts_size = models.IntegerField()
     rrc_size = models.IntegerField()
+    project_state = models.CharField(max_length=200, default='未运行')
     cost_matrix_size = models.IntegerField()
 
 

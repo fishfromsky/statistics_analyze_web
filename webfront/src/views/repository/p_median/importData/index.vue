@@ -1,0 +1,216 @@
+<template>
+  <div class="app-container">
+    <upload-excel-component v-if="!hasData" :on-success="handleSuccess" :before-upload="beforeUpload" />
+    <div v-else class="save-list">
+      <div class="data-list">
+        <div class="model-name">
+          <span class="name-span">数据类型</span>
+          <el-select v-model="kind" placeholder="请输入具体表项类型" class="rate">
+            <el-option v-for="item in kind_list" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </div>
+        <el-button type="primary" icon="el-icon-document-add" class="addmodel-btn" @click="AddModel">导入数据</el-button>
+      </div>
+    </div>
+    <el-table v-loading="table_loading" :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
+      <el-table-column v-for="item of tableHeader" :key="item" :prop="item" :label="item" />
+    </el-table>
+  </div>
+</template>
+
+<script>
+import UploadExcelComponent from './components/UploadFile'
+import { getName } from '@/utils/auth'
+import { addbasic, addts, addrrc, addcostmatrix } from '@/api/model'
+export default {
+  name: 'UploadExcel',
+  components: { UploadExcelComponent },
+  data() {
+    return {
+      tableData: [],
+      tableHeader: [],
+      hasData: false,
+      kind: '',
+      kind_list: [
+        {
+          value: '1',
+          label: 'basic'
+        },
+        {
+          value: '2',
+          label: 'ts'
+        },
+        {
+          value: '3',
+          label: 'rrc'
+        },
+        {
+          value: '4',
+          label: 'cost_matrix'
+        }
+      ],
+      star: null,
+      table_loading: false
+    }
+  },
+  methods: {
+    beforeUpload(file) {
+      const isLt1M = file.size / 1024 / 1024 < 1
+
+      if (isLt1M) {
+        return true
+      }
+      this.$message({
+        message: 'Please do not upload files larger than 1m in size.',
+        type: 'warning'
+      })
+      return false
+    },
+    handleSuccess({ results, header }) {
+      this.tableData = results
+      this.tableHeader = header
+      this.hasData = true
+      console.log(this.tableData)
+    },
+    AddModel: function() {
+      var that = this
+      if (that.kind === '') {
+        that.$message.error('数据表类型不能为空')
+      } else {
+        if (that.kind === '1') {
+          this.table_loading = true
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
+            table.push(this.tableData[i])
+          }
+          const data = {}
+          data['data'] = table
+          addbasic(data).then(res => {
+            that.table_loading = false
+            if (res.code === 20000) {
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(res => {
+            that.table_loading = false
+          })
+        } else if (that.kind === '2') {
+          this.table_loading = true
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
+            table.push(this.tableData[i])
+          }
+          const data = {}
+          data['data'] = table
+          addts(data).then(res => {
+            that.table_loading = false
+            if (res.code === 20000) {
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(res => {
+            that.table_loading = false
+          })
+        } else if (that.kind === '3') {
+          that.table_loading = true
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
+            table.push(this.tableData[i])
+          }
+          const data = {}
+          data['data'] = table
+          addrrc(data).then(res => {
+            that.table_loading = false
+            if (res.code === 20000) {
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(res => {
+            console.log(res)
+          })
+        } else if (that.kind === '4') {
+          that.table_loading = true
+          const table = []
+          for (let i = 0; i < this.tableData.length; i++) {
+            table.push(this.tableData[i])
+          }
+          const data = {}
+          data['data'] = table
+          addcostmatrix(data).then(res => {
+            that.table_loading = false
+            if (res.code === 20000) {
+              this.$message({
+                type: 'success',
+                message: '导入数据成功'
+              })
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(res => {
+            console.log(res)
+          })
+        }
+      }
+    }
+  }
+}
+</script>
+<style scoped>
+  .save-list{
+    width: 100%;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .data-list{
+    margin: 0 auto;
+    width: 100%;
+    height: 80px;
+    background: #fff;
+    box-shadow: 0 0 10px 5px rgba(153, 153, 153, 0.1);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .model-name{
+    width: 300px;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    float: left;
+    margin-left: 20px;
+  }
+  .name-span{
+    float: left;
+    margin-left: 20px;
+    color: #5a5e66;
+    font-size: 15px;
+  }
+  .name-input{
+    width: 200px;
+    float: left;
+    margin-left: 20px;
+  }
+  .rate{
+    margin-left: 20px;
+  }
+  .addmodel-btn{
+    float: left;
+    margin-left: 20px;
+  }
+</style>
