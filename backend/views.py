@@ -2,7 +2,7 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
-    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter
+    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -18,8 +18,6 @@ import datetime
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
 import threading
-
-
 
 
 def to_dict(self, fields=None, exclude=None):
@@ -1941,6 +1939,46 @@ def get_parameter_kmeans(request):
     data = kmeans_parameter.objects.all()
     for item in data:
         response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_algorithm_list(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = algorithm_project.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_algorithm_list(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    name = body.get('name')
+    describe = body.get('describe')
+    if algorithm_project.objects.filter(project_id=id).count() != 0:
+        response['code'] = 50000
+        response['message'] = '已存在该编号的项目'
+    else:
+        model = algorithm_project.objects.create(project_id=id, name=name, describe=describe)
+        model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def delete_algorithm_list(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    item = algorithm_project.objects.get(project_id=id)
+    item.delete()
 
     return JsonResponse(response, safe=False)
 

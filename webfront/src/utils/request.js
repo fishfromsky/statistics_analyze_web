@@ -62,6 +62,10 @@ service.interceptors.response.use(
         // location.reload()
       }
 
+      if (res.code === 50000){
+        return res
+      }
+
       if (res.code === 20002) {
         return res
       }

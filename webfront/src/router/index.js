@@ -460,6 +460,18 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/project',
+    component: Layout,
+    children: [
+      {
+        path: 'board',
+        ame: 'board',
+        component: () => import('@/views/project/board/index'),
+        meta: { title: '项目实验', icon: 'component' }
+      }
+    ]
+  },
+  {
     path: '/crawldata',
     component: Layout,
     children: [

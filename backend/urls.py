@@ -112,6 +112,10 @@ urlpatterns = [
     url('input_parameter_kmeans', views.input_parameter_kmeans),  # 输入kmeans实验数据
     url('get_parameter_kmeans', views.get_parameter_kmeans),  # 获取kmeans实验参数
 
+    url('get_algorithm_list', views.get_algorithm_list),  # 获取算法模型列表
+    url('add_algorithm_list', views.add_algorithm_list),  # 添加算法模型列表
+    url('delete_algorithm_list', views.delete_algorithm_list),  # 删除算法模型列表
+
     url('pmedianbs/list', pmedianbasicviews.pmedianbs_list_get, name='pmedianbs_list_get'),
     url('pmedianbs/download', pmedianbasicviews.pmedianbs_download_get, name='pmedianbs_create_get'),
     url('pmedianbs/create', pmedianbasicviews.pmedianbs_create_post, name='pmedianbs_create_post'),

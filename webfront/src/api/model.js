@@ -727,3 +727,29 @@ export function getparameterkmeans(){
     method: 'get'
   })
 }
+
+// 获取算法模型列表
+export function getalgorithmlist(){
+  return request({
+    url: '/get_algorithm_list',
+    method: 'get'
+  })
+}
+
+// 添加算法模型列表
+export function addalgorithmlist(data){
+  return request({
+    url: '/add_algorithm_list',
+    method: 'post',
+    data
+  })
+}
+
+// 删除算法模型列表
+export function deletealgorithmlist(data){
+  return request({
+    url: '/delete_algorithm_list',
+    method: 'post',
+    data
+  })
+}

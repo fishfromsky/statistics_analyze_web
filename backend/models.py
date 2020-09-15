@@ -286,3 +286,21 @@ class kmeans_parameter(models.Model):
     level_of_education = models.FloatField(null=False, default=None)
     municial_household_garbage = models.FloatField(null=False, default=None)
     project_id = models.ForeignKey(to="kmeans_project", on_delete=models.CASCADE)
+
+
+class algorithm_table(models.Model):
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
+    pic_url = models.CharField(max_length=255, default='')
+    description = models.CharField(max_length=255, default='')
+    project_id = models.ForeignKey(to="algorithm_project", on_delete=models.CASCADE, default=1)
+
+
+class algorithm_project(models.Model):
+    project_id = models.IntegerField(default=1, primary_key=True)
+    name = models.CharField(max_length=255, null=False)
+    time = models.IntegerField(default=0)
+    describe = models.CharField(max_length=255)
+    add_time = models.DateTimeField(auto_now_add=True)
+
+
