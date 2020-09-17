@@ -753,3 +753,29 @@ export function deletealgorithmlist(data){
     data
   })
 }
+
+// 添加关联分析模型
+export function addrelationproject(data){
+  return request({
+    url: '/add_relation_project',
+    method: 'post',
+    data
+  })
+}
+
+// 获得关联分析模型
+export function getrelationproject(){
+  return request({
+    url: '/get_relation_project',
+    method: 'get'
+  })
+}
+
+// 修改关联分析项目信息
+export function amendrelationproject(data){
+  return request({
+    url: '/amend_relation_project',
+    method: 'post',
+    data
+  })
+}

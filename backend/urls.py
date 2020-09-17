@@ -112,6 +112,10 @@ urlpatterns = [
     url('input_parameter_kmeans', views.input_parameter_kmeans),  # 输入kmeans实验数据
     url('get_parameter_kmeans', views.get_parameter_kmeans),  # 获取kmeans实验参数
 
+    url('add_relation_project', views.add_relation_project),  # 添加关联分析项目
+    url('get_relation_project', views.get_relation_project),  # 获得关联分析项目
+    url('amend_relation_project', views.amend_relation_project),  # 修改关联分析项目信息
+
     url('get_algorithm_list', views.get_algorithm_list),  # 获取算法模型列表
     url('add_algorithm_list', views.add_algorithm_list),  # 添加算法模型列表
     url('delete_algorithm_list', views.delete_algorithm_list),  # 删除算法模型列表

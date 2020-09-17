@@ -2,7 +2,8 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
-    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project
+    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
+    relation_result_hot_matrix
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -1941,6 +1942,71 @@ def get_parameter_kmeans(request):
         response['data'].append(to_dict(item))
 
     return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_relation_project(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    name = body.get('name')
+    if relation_project.objects.filter(project_id=project_id).count() != 0:
+        response['code'] = 50000
+        response['message'] = '已存在该编号的项目'
+    else:
+        model = relation_project.objects.create(project_id=project_id, name=name)
+        model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_relation_project(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = relation_project.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amend_relation_project(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    name = body.get('name')
+    model = relation_project.objects.get(project_id=project_id)
+    model.name = name
+    model.save()
+
+    return JsonResponse(response, safe=False)
+
+#
+# @csrf_exempt
+# @require_http_methods(['POST'])
+# def save_hot_matrix_result_relation(request):
+#     response = {'code': 20000, 'message': 'success'}
+#     body = json.loads(request.body)
+#     id = body.get('project_id')
+#     data = body.get('data')
+#     if relation_result_hot_matrix.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
+#         last_sort = relation_result_hot_matrix.objects.filter(project_id=(project_id=id)).order_by(
+#             '-id')[:1]
+#         sort = last_sort.get().sort + 1
+#     else:
+#         sort = 1
+#     for i in range(len(data)):
+#         xaxis = data[i]['xaxis']
+#         yaxis = data[i]['yaxis']
+#         label = data[i]['label']
+#         model = kmeans_result.objects.create(project_id=kmeans_project(project_id=id),
+#                                              xaxis=xaxis, yaxis=yaxis, label=label, sort=sort)
+#         model.save()
+#
+#     return JsonResponse(response, safe=False)
 
 
 @csrf_exempt
