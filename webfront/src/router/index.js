@@ -457,27 +457,27 @@ export const constantRoutes = [
           }
         ]
       },
-      {
-        path: 'relation',
-        name: 'relation',
-        redirect: '/repository/relation',
-        meta: { title: '关联分析' },
-        component: () => import('@/views/repository/index'),
-        children: [
-          {
-            path: 'manage',
-            name: 'manage',
-            component: () => import('@/views/repository/relation/manage/index'),
-            meta: { title: '项目管理' }
-          },
-          {
-            path: 'data',
-            name: 'data',
-            component: () => import('@/views/repository/relation/data/index'),
-            meta: { title: '数据导入' }
-          }
-        ]
-      }
+      // {
+      //   path: 'relation',
+      //   name: 'relation',
+      //   redirect: '/repository/relation',
+      //   meta: { title: '关联分析' },
+      //   component: () => import('@/views/repository/index'),
+      //   children: [
+      //     {
+      //       path: 'manage',
+      //       name: 'manage',
+      //       component: () => import('@/views/repository/relation/manage/index'),
+      //       meta: { title: '项目管理' }
+      //     },
+      //     {
+      //       path: 'data',
+      //       name: 'data',
+      //       component: () => import('@/views/repository/relation/data/index'),
+      //       meta: { title: '数据导入' }
+      //     }
+      //   ]
+      // }
     ]
   },
   {
