@@ -295,30 +295,6 @@ class relation_project(models.Model):
     status = models.CharField(max_length=255, default='未运行')
 
 
-class relation_result_hot_matrix(models.Model):
-    project_id = models.ForeignKey(to="relation_project", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, null=False)
-    year = models.CharField(max_length=255, null=False)
-    garbage_clean = models.FloatField(null=False)
-    population = models.FloatField(null=False)
-    ratio_city_rural = models.FloatField(null=False)
-    households = models.FloatField(null=False)
-    average_per_household = models.FloatField(null=False)
-    sex_ratio = models.FloatField(null=False)
-    age_contribution_0_14 = models.FloatField(null=False)
-    age_contribution_15_64 = models.FloatField(null=False)
-    age_contributio_65 = models.FloatField(null=False)
-    income_per_person = models.FloatField(null=False)
-    pay_consume = models.FloatField(null=False)
-    pay_public = models.FloatField(null=False)
-    gdp = models.FloatField(null=False)
-    first_industry_gdp = models.FloatField(null=False)
-    second_industry_gdp = models.FloatField(null=False)
-    third_industry_gdp = models.FloatField(null=False)
-    per_person_gdp = models.FloatField(null=False)
-    education = models.FloatField(null=False)
-
-
 class algorithm_table(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)

@@ -2,8 +2,7 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
-    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
-    relation_result_hot_matrix
+    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -1983,30 +1982,6 @@ def amend_relation_project(request):
     model.save()
 
     return JsonResponse(response, safe=False)
-
-#
-# @csrf_exempt
-# @require_http_methods(['POST'])
-# def save_hot_matrix_result_relation(request):
-#     response = {'code': 20000, 'message': 'success'}
-#     body = json.loads(request.body)
-#     id = body.get('project_id')
-#     data = body.get('data')
-#     if relation_result_hot_matrix.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
-#         last_sort = relation_result_hot_matrix.objects.filter(project_id=(project_id=id)).order_by(
-#             '-id')[:1]
-#         sort = last_sort.get().sort + 1
-#     else:
-#         sort = 1
-#     for i in range(len(data)):
-#         xaxis = data[i]['xaxis']
-#         yaxis = data[i]['yaxis']
-#         label = data[i]['label']
-#         model = kmeans_result.objects.create(project_id=kmeans_project(project_id=id),
-#                                              xaxis=xaxis, yaxis=yaxis, label=label, sort=sort)
-#         model.save()
-#
-#     return JsonResponse(response, safe=False)
 
 
 @csrf_exempt
