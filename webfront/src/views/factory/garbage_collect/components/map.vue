@@ -1,75 +1,109 @@
 <template>
-    <div>
-        <div ref="map" class="map-container"></div>
-        <div class="control-panel">
-            <div class="button-list">
-                <span>是否显示标签：</span>
-                <el-select v-model="district" placeholder="请选择">
-                    <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                    </el-option>
-                </el-select>
-            </div>
-        </div>
-    </div>
+  <div :class="className" :style="{ width: width, height: height }" />
 </template>
 
 <script>
+// import data from "./mapdata/location_data.json"
 import echarts from 'echarts'
-import 'echarts/extension/bmap/bmap'
+import shanghai from './mapdata/shanghai.json'
+require('echarts/theme/westeros') // echarts
+import resize from './mixins/resize'
 import { getcollectfactorybyarea } from '@/api/model'
+console.log(getcollectfactorybyarea())
+
 export default {
-    data(){
-        return {
-            chart: echarts.ECharts,
-            data: [],
-            geoCoordMap: {},
-            district: '',
-            options: [
-                {
-                    value: '1',
-                    label: '宝山区'
-                }, 
-            ],
-        }
+  name: 'GDP',
+  mixins: [resize],
+  props: {
+    className: {
+      type: String,
+      default: 'chart'
     },
-    methods: {
-        getData(){
-            var that = this
-        }
+    width: {
+      type: String,
+      default: '100%'
+    },
+    height: {
+      type: String,
+      default: '700px'
+    },
+    autoResize: {
+      type: Boolean,
+      default: true
+    },
+    chartData: {
+      type: Object,
+      required: true
     }
+  },
+  data() {
+    return {
+      chart: null
+    }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val)
+      }
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.initChart()
+    })
+  },
+  beforeDestroy() {
+    if (!this.chart) {
+      return
+    }
+    this.chart.dispose()
+    this.chart = null
+  },
+  methods: {
+    initChart() {
+      this.chart = echarts.init(this.$el)
+      this.setOptions(this.chartData)
+    },
+    setOptions(val) {
+      echarts.registerMap('shanghai', shanghai) // 绑定地图数据
+      this.chart.setOption({
+        title: {
+          text: '垃圾收集点'
+        },
+        tooltip: {
+          trigger: 'item',
+          triggerOn: 'mousemove|click',
+          axisPointer: {
+            type: 'line'
+          },
+          formatter: '{b}: {c}',
+          textStyle: {
+            fontSize: 14
+          },
+          backgroundColor: 'rgba(50,50,50,0.7)',
+          borderColor: '#333',
+          borderWidth: 0
+        },
+        series: [
+          {
+            symbolSize: 5,
+            data: val,
+            type: 'scatter',
+            coordinateSystem: 'geo'
+          }
+        ],
+        geo: {
+          map: 'shanghai',
+          roam: true,
+          label: {}
+        }
+      })
+    }
+  }
 }
 </script>
 
-<style lang="less" scoped>
-    .map-container{
-        position: relative;
-        z-index: 10;
-        width: 100%;
-        height: 95vh;
-    }
-    .control-panel{
-        width: 250px;
-        height: 60px;
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 100
-    }
-    .button-list{
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-    }
-    .button-list span{
-        font-size: 15px;
-        color: #fff;
-    }
+<style scoped>
 </style>
