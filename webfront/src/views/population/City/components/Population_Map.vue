@@ -77,7 +77,7 @@
                     },
                     visualMap: {
                         min: 800,
-                        max: 50000,
+                        max: 35000,
                         text: ['High', 'Low'],
                         realtime: false,
                         calculable: true,
@@ -87,12 +87,9 @@
                     },
                     series: [
                         {
-                            name: '香港18区人口密度',
+                            name: '上海各区人口密度',
                             type: 'map',
                             mapType: 'shanghai', // 自定义扩展图表类型
-                            label: {
-                                show: true
-                            },
                             data: data
                         }
                     ]

@@ -71,7 +71,7 @@
                     grid:{
                    
                     },
-                     tooltip: {
+                    tooltip: {
                         trigger: 'axis',
                         axisPointer: {
                             type: 'cross',
@@ -79,17 +79,6 @@
                                 color: '#999'
                             }
                         }
-                    },
-                    toolbox: {
-                        feature: {
-                            dataView: {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore: {show: true},
-                            saveAsImage: {show: true}
-                        }
-                    },
-                    legend: {
-                        data: ['人口数量']
                     },
                     xAxis: [
                         {
@@ -104,7 +93,6 @@
                         {
                             type: 'value',
                             name: '人口数量 / 10,000',
-                            interval: 10,
                             axisLabel: {
                                 formatter: '{value}'
                             }

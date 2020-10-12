@@ -98,7 +98,8 @@
                     ],
                     yAxis: [
                         {
-                            type: 'value'
+                            type: 'value',
+                            name: '人/平方千米'
                         }
                     ],
                     series: [

@@ -1,5 +1,5 @@
 module.exports = {
-  title: '上海市固废管理平台',
+  title: '上海市固废智慧管理与仿真决策平台',
 
   /**
    * @type {boolean} true | false

@@ -104,7 +104,6 @@
           getcitypopulationdata().then(res=>{
             if (res.code === 20000){
               let result = res.data
-              // print(result)
               for (let i=0; i<result.length; i++){
                 that.population_data.population.data.push(parseFloat(result[i]['population']))
                 that.population_data.population.year.push(result[i]['year'])

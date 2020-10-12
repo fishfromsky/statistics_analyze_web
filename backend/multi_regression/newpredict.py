@@ -95,7 +95,6 @@ def draw(ypredict,Y_test,gongshi):
     json_data = json.dumps(json_data, cls=NpEncoder)
     requests.post('http://127.0.0.1:8000/api/save_regression_result', data=json_data)
 
-
     # plt.figure()
     # plt.plot(range(len(Y_test)), Y_test, 'r*', label="test")
     # plt.plot(range(len(ypredict)), ypredict, 'b', label="predict")

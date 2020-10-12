@@ -21,15 +21,25 @@
                    <span>{{row.gdp_growth_rate}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="失业率" align="center">
+           <el-table-column label="第一产业生产总值" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.unemployment_rate}}</span>
+                   <span>{{row.gdp_first_industry}}</span>
+               </template>
+           </el-table-column>
+           <el-table-column label="第二产业生产总值" align="center">
+               <template slot-scope="{row}">
+                   <span>{{row.gdp_second_industry}}</span>
+               </template>
+           </el-table-column>
+           <el-table-column label="第三产业生产总值" align="center">
+               <template slot-scope="{row}">
+                   <span>{{row.gdp_third_industry}}</span>
                </template>
            </el-table-column>
            <el-table-column label="数据操作" align="center">
                <template slot-scope="scope">
                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
-                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)" style="margin-left: 30px">删除</el-button>
+                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)">删除</el-button>
                </template>
            </el-table-column>
        </el-table>
@@ -44,8 +54,14 @@
                <el-form-item label="GDP增长率">
                    <el-input v-model="form.gdp_growth_rate" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="失业率">
-                   <el-input v-model="form.unemployment_rate" auto-complete="off"></el-input>
+               <el-form-item label="第一产业生产总值">
+                   <el-input v-model="form.gdp_first_industry" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="第二产业生产总值">
+                   <el-input v-model="form.gdp_second_industry" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="第三产业生产总值">
+                   <el-input v-model="form.gdp_third_industry" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -61,21 +77,27 @@
             </div>
        </el-dialog>
         <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
-           <el-form :model="form">
+           <el-form :model="add_form">
            <el-form-item label="年份">
-                   <el-input v-model="form.year" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="GDP总量">
-                   <el-input v-model="form.gdp" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.gdp" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="人均生产总值">
-                   <el-input v-model="form.gdp_per_capita" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.gdp_per_capita" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="GDP增长率">
-                   <el-input v-model="form.gdp_growth_rate" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.gdp_growth_rate" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="失业率">
-                   <el-input v-model="form.unemployment_rate" auto-complete="off"></el-input>
+               <el-form-item label="第一产业生产总值">
+                   <el-input v-model="add_form.gdp_first_industry" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="第二产业生产总值">
+                   <el-input v-model="add_form.gdp_second_industry" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="第三产业生产总值">
+                   <el-input v-model="add_form.gdp_third_industry" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -113,6 +135,7 @@ export default {
             delete_dialog: false,
             add_dialog: false,
             form: {},
+            add_form: {},
             delete_form: {
                 id: ''
             }
@@ -178,7 +201,7 @@ export default {
         this.add_dialog = true
         },
         addDataConfirm(){
-            let data = this.form
+            let data = this.add_form
             let that = this
             addsinglerowdata(data).then(res=>{
                 if (res.code === 20000){

@@ -69,24 +69,24 @@
             </div>
        </el-dialog>
        <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
-           <el-form :model="form">
+           <el-form :model="add_form">
                <el-form-item label="年份">
-                   <el-input v-model="form.year" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="全市人口">
-                   <el-input v-model="form.population" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.population" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="人口密度">
-                   <el-input v-model="form.population_density" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.population_density" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="人口增长率">
-                   <el-input v-model="form.population_rate" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.population_rate" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="户数">
-                   <el-input v-model="form.households" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.households" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="每户平均人口">
-                   <el-input v-model="form.average_person_per_household" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.average_person_per_household" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -124,6 +124,7 @@ export default {
             delete_dialog: false,
             add_dialog: false,
             form: {},
+            add_form: {},
             delete_form: {
                 id: ''
             }
@@ -189,7 +190,7 @@ export default {
           this.add_dialog =true
         },
         addDataConfirm(){
-            let data = this.form
+            let data = this.add_form
             let that = this
             addsinglepopulation(data).then(res=>{
                 if (res.code === 20000){

@@ -80,17 +80,6 @@
                             }
                         }
                     },
-                    toolbox: {
-                        feature: {
-                            dataView: {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore: {show: true},
-                            saveAsImage: {show: true}
-                        }
-                    },
-                    legend: {
-                        data: ['人口数量']
-                    },
                     xAxis: [
                         {
                             type: 'category',
@@ -111,7 +100,7 @@
                     ],
                     series: [
                         {
-                            name: '人口数量',
+                            name: '人口自然增长率',
                             type: 'bar',
                             data: population_rate
                         },

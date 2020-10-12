@@ -444,6 +444,12 @@ export const constantRoutes = [
             meta: { title: '项目管理' }
           },
           {
+            path: 'introduction',
+            name: 'introduction',
+            component: () => import('@/views/repository/kmeans/introduction/index'),
+            meta: { title: '算法简介'}
+          },
+          {
             path: 'data',
             name: 'data',
             component: () => import('@/views/repository/kmeans/data/index'),
@@ -457,27 +463,47 @@ export const constantRoutes = [
           }
         ]
       },
-      // {
-      //   path: 'relation',
-      //   name: 'relation',
-      //   redirect: '/repository/relation',
-      //   meta: { title: '关联分析' },
-      //   component: () => import('@/views/repository/index'),
-      //   children: [
-      //     {
-      //       path: 'manage',
-      //       name: 'manage',
-      //       component: () => import('@/views/repository/relation/manage/index'),
-      //       meta: { title: '项目管理' }
-      //     },
-      //     {
-      //       path: 'data',
-      //       name: 'data',
-      //       component: () => import('@/views/repository/relation/data/index'),
-      //       meta: { title: '数据导入' }
-      //     }
-      //   ]
-      // }
+      {
+        path: 'relation',
+        name: 'relation',
+        redirect: '/repository/relation',
+        meta: { title: '关联分析' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'manage',
+            component: () => import('@/views/repository/relation/manage/index'),
+            meta: { title: '项目管理' }
+          },
+          {
+            path: 'data',
+            name: 'data',
+            component: () => import('@/views/repository/relation/data/index'),
+            meta: { title: '数据导入' }
+          },
+          {
+            path: 'result',
+            name: 'result',
+            component: () => import('@/views/repository/index'),
+            meta: { title: '结果查询' },
+            children: [
+              {
+                path: 'hotmatrix',
+                name: 'hotmatrix',
+                component: () => import('@/views/repository/relation/result/hotmatrix/index'),
+                meta: { title: '相关系数'}
+              },
+              {
+                path: 'rf',
+                name: 'rf',
+                component: () => import('@/views/repository/relation/result/RF/index'),
+                meta: { title: '随机森林' }
+              }
+            ]
+          }
+        ]
+      }
     ]
   },
   {

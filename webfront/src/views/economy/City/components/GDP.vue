@@ -81,24 +81,17 @@
                             }
                         }
                     },
-                    toolbox: {
-                        feature: {
-                            dataView: {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore: {show: true},
-                            saveAsImage: {show: true}
-                        }
-                    },
-                    legend: {
-                        data: ['GDP总量', 'GDP增长率']
-                    },
                     xAxis: [
                         {
                             type: 'category',
                             data: year,
                             axisPointer: {
                                 type: 'shadow'
-                            }
+                            },
+                            axisLabel : {   //坐标轴刻度标签的相关设置。
+                                interval:0,
+                                rotate:"45"
+                            },
                         }
                     ],
                     yAxis: [
@@ -125,12 +118,12 @@
                             type: 'bar',
                             data: total
                         },
-                        {
-                            name: 'GDP增长率',
-                            type: 'line',
-                            yAxisIndex: 1,
-                            data: rate
-                        }
+                        // {
+                        //     name: 'GDP增长率',
+                        //     type: 'line',
+                        //     yAxisIndex: 1,
+                        //     data: rate
+                        // }
                     ]
 
                 })

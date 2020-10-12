@@ -71,9 +71,6 @@
                     tooltip: {
                         trigger: 'axis'
                     },
-                    legend: {
-                        data: ['每户平均人口']
-                    },
                     grid: {
                         containLabel: true
                     },
@@ -88,7 +85,8 @@
                         data: year
                     },
                     yAxis: {
-                        type: 'value'
+                        type: 'value',
+                        anme: '人'
                     },
                     series: [
                         {

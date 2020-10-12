@@ -4,7 +4,7 @@
 
 <script>
     import echarts from 'echarts'
-    require('echarts/theme/roma') // echarts theme
+    require('echarts/theme/westeros') // echarts theme
     import resize from './mixins/resize'
     export default {
         name: "garbage",
@@ -58,7 +58,7 @@
         },
         methods: {
             initChart(){
-                this.chart = echarts.init(this.$el, 'roma');
+                this.chart = echarts.init(this.$el, 'westeros');
                 this.setOptions(this.chartData)
             },
             setOptions(val){
@@ -70,9 +70,6 @@
                     },
                     tooltip: {
                         trigger: 'axis'
-                    },
-                    legend: {
-                        data: ['垃圾产量']
                     },
                     grid: {
                         left: '3%',
