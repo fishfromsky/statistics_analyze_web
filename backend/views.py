@@ -1473,7 +1473,9 @@ def input_lstm_parameter(request):
         for i in range(len(data)):
             if data[i].__contains__('year') and data[i].__contains__('population') and data[i].__contains__('population_density')  and data[i].__contains__('total_households') \
                     and data[i].__contains__('average_person_per_household') and data[i].__contains__('gdp') \
-                    and data[i].__contains__('per_capita_gdp') and data[i].__contains__('residential_garbage'):
+                    and data[i].__contains__('per_capita_gdp') and data[i].__contains__('residential_garbage') and \
+                    data[i].__contains__('gdp_growth_rate') and data[i].__contains__('natural_growth_rate') \
+                    and data[i].__contains__('unemployment_rate'):
                 if lstm_parameter.objects.filter(year=data[i]['year'], project_id=lstm_project(project_id=id)).count() != 0:
                     response['code'] = 50000
                     response['message'] = '存在重复年份数据，请先删除该数据'
@@ -1485,7 +1487,10 @@ def input_lstm_parameter(request):
                                                               average_person_per_household=data[i][
                                                                   'average_person_per_household'], gdp=data[i]['gdp'],
                                                               per_capita_gdp=data[i]['per_capita_gdp'],
-                                                              residential_garbage=data[i]['residential_garbage'])
+                                                              residential_garbage=data[i]['residential_garbage'],
+                                                              gdp_growth_rate=data[i]['gdp_growth_rate'],
+                                                              natural_growth_rate=data[i]['natural_growth_rate'],
+                                                              unemployment_rate=data[i]['unemployment_rate'])
                     parameter.save()
             else:
                 response['code'] = 50000
@@ -1507,8 +1512,12 @@ def amend_lstm_project(request):
     return JsonResponse(response, safe=False)
 
 
-def lstm_thread(id):
-    os.system('python backend/LSTM/predict_garbage.py %s' % id)
+def lstm_thread(id, test_type, select_list):
+    ret = os.system('python backend/LSTM/predict_garbage.py %s %s %s' % (id, test_type, select_list))
+    if ret != 0:
+        model = lstm_project.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
 
 
 @csrf_exempt
@@ -1517,6 +1526,8 @@ def experiment_lstm_start(request):
     response = {'message': 'success', 'code': 20000}
     body = json.loads(request.body)
     id = body.get('project_id')
+    test_type = body.get('type')
+    select_list = body.get('select_list')
     if lstm_parameter.objects.filter(project_id=lstm_project(project_id=id)).count() == 0:
         response['code'] = 50000
         response['message'] = '该项目缺少数据，无法实验'
@@ -1524,7 +1535,7 @@ def experiment_lstm_start(request):
         model = lstm_project.objects.get(project_id=id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=lstm_thread, args=(id,))
+        task = threading.Thread(target=lstm_thread, args=(id, test_type, select_list))
         task.start()
     return JsonResponse(response, safe=False)
 

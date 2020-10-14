@@ -20,6 +20,8 @@ mpl.rcParams['font.sans-serif'] = ['simHei']
 mpl.rcParams['axes.unicode_minus'] = False
 
 id = sys.argv[1]
+test_type = sys.argv[2]
+select_list = sys.argv[3]
 
 
 class MyEncoder(json.JSONEncoder):
@@ -75,8 +77,8 @@ def series_to_supervision(data, n_in=1, n_out=1, dropnan=True):
     return agg
 
 
-def load_data_to_supervision():
-    data, year = get_data()
+def load_data_to_supervision(list):
+    data, year = get_data(list)
     values = data.values
     scaler = MinMaxScaler(feature_range=(0, 1))
     values = values.astype('float32')
@@ -88,7 +90,7 @@ def load_data_to_supervision():
     return reframed, scaler, scaled, year
 
 
-def get_data():
+def get_data(list):
     params = {'project_id': id}
 
     res = requests.get('http://127.0.0.1:8000/api/get_parameter_lstm', params=params)
@@ -97,6 +99,7 @@ def get_data():
     df = json_normalize(json_data)
     year = df.values[:, 2]
     dataset = df.drop(df.columns[[0, 1, 2]], axis=1)
+    dataset = dataset.drop(dataset.columns[list], axis=1)
 
     return dataset, year
 
@@ -135,12 +138,12 @@ def train_model(trainX, trainY, testX, testY):
 
     # save_process_result(history)
 
-    plt.figure()
-    plt.plot(history.history['loss'], label='train')
-    plt.plot(history.history['val_loss'], label='test')
-    plt.legend()
-    plt.savefig('loss')
-    plt.show()
+    # plt.figure()
+    # plt.plot(history.history['loss'], label='train')
+    # plt.plot(history.history['val_loss'], label='test')
+    # plt.legend()
+    # plt.savefig('loss')
+    # plt.show()
 
 
 # def save_process_result(history):
@@ -213,8 +216,8 @@ def Predict(days):
     # return result_count
 
 
-def predict_all():
-    reframed, scaler, data, year = load_data_to_supervision()
+def predict_all(list):
+    reframed, scaler, data, year = load_data_to_supervision(list)
     trainX, trainY, _, _ = train_data(reframed, 1)
     model = LSTMmodel(trainX)
     model.load_weights(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
@@ -260,8 +263,8 @@ def predict_all():
     # plt.show()
 
 
-def Train():
-    reframed, scaler, _, _ = load_data_to_supervision()
+def Train(list):
+    reframed, scaler, _, _ = load_data_to_supervision(list)
     split = int((3 / 4)*reframed.values.shape[0])
     trainX, trainY, testX, testY = train_data(reframed, split)
     train_model(trainX, trainY, testX, testY)
@@ -269,9 +272,17 @@ def Train():
 
 if __name__ == '__main__':
     # Predict(10)
-    # Train()
-    dict = {}
-    dict['project_id'] = id
-    data = json.dumps(dict)
-    predict_all()
-    requests.post('http://127.0.0.1:8000/api/experiment_lstm_finish', data=data)
+    column_list = select_list.split(',')
+    column_list = list(map(int, column_list))
+    if test_type == '1':
+        Train(column_list)
+        dict = {}
+        dict['project_id'] = id
+        data = json.dumps(dict)
+        requests.post('http://127.0.0.1:8000/api/experiment_lstm_finish', data=data)
+    if test_type == '0':
+        dict = {}
+        dict['project_id'] = id
+        data = json.dumps(dict)
+        predict_all(column_list)
+        requests.post('http://127.0.0.1:8000/api/experiment_lstm_finish', data=data)

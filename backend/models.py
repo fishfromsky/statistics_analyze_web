@@ -192,10 +192,13 @@ class lstm_parameter(models.Model):
     year = models.CharField(max_length=255, null=False)
     population = models.FloatField(max_length=255, null=False)
     population_density = models.FloatField(max_length=255, null=False)
+    natural_growth_rate = models.FloatField(max_length=255, null=False, default=0)
     total_households = models.FloatField(max_length=255, null=False)
     average_person_per_household = models.FloatField(max_length=255, null=False)
+    unemployment_rate = models.FloatField(max_length=255, null=False, default=0)
     gdp = models.FloatField(max_length=255, null=False)
     per_capita_gdp = models.FloatField(max_length=255, null=False)
+    gdp_growth_rate = models.FloatField(max_length=255, null=False, default=0)
     residential_garbage = models.FloatField(max_length=255, null=False, default=0.0)
 
 
