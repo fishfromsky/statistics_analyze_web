@@ -722,10 +722,14 @@ def AddCollectFactory(request):
 @require_http_methods(['GET'])
 def GetCollectFactoryByArea(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
-    district = request.GET.get('district')
-    factory_list = CollectFactoryList.objects.filter(district=district)
-    for list in factory_list:
-        response['data'].append(to_dict(list))
+    districts = eval(request.GET.get('district'))
+    print(type(districts))
+    print(districts)
+    for district in districts:
+        print(district)
+        factory_list = CollectFactoryList.objects.filter(district=district)
+        for list in factory_list:
+            response['data'].append(to_dict(list))
 
     return JsonResponse(response, safe=False)
 

@@ -8,8 +8,6 @@ import echarts from 'echarts'
 import shanghai from './mapdata/shanghai.json'
 require('echarts/theme/westeros') // echarts
 import resize from './mixins/resize'
-import { getcollectfactorybyarea } from '@/api/model'
-console.log(getcollectfactorybyarea())
 
 export default {
   name: 'GDP',

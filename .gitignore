@@ -2,3 +2,4 @@ node_modules/
 settings.py
 .idea/
 __pycache__/
+*.xls
