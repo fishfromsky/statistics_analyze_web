@@ -17,7 +17,6 @@
     <input v-model="districts" type="checkbox" value="青浦区">青浦区
     <input v-model="districts" type="checkbox" value="奉贤区">奉贤区
     <input v-model="districts" type="checkbox" value="崇明区">崇明区
-    <!-- <div>已选中：{{ districts }}</div> -->
     <el-row>
       <el-col :xs="24" :sm="24" :lg="24">
         <div class="chart-wrapper">
@@ -30,9 +29,8 @@
 </template>
 
 <script>
-import mymap from './components/test'
+import mymap from './components/map'
 import { getcollectfactorybyarea } from '@/api/model'
-console.log(getcollectfactorybyarea())
 
 export default {
   name: 'Index',
@@ -43,7 +41,12 @@ export default {
     return {
       districts: [],
       Data: []
-      // Data: Location // 将location传给Data
+    }
+  },
+
+  watch: {
+    districts(val) {
+      this.getdata(val)
     }
   },
 
@@ -70,18 +73,9 @@ export default {
       }
       )
     }
-  },
-
-  watch: {
-    districts(val) {
-      // console.log(val)
-      this.getdata(val)
-    }
-  },
-
-  mounted() {
   }
 }
+
 </script>
 <style scoped lang="scss">
 .dashboard {

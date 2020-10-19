@@ -3,24 +3,16 @@
 </template>
 
 <script>
-// import data from "./mapdata/location_data.json"
 import echarts from 'echarts'
-// import shanghai from './mapdata/shanghai.json'
 require('echarts/theme/westeros') // echarts
 import resize from './mixins/resize'
 import 'echarts/extension/bmap/bmap'
 
-import data from './tmp-trans (1).json'
+import data from './mapdata/heat_data.json'
 
-console.log(data)
-
-var COLORS = ['#070093', '#1c3fbf', '#1482e5', '#70b4eb', '#b4e0f3', '#ffffff']
-// var lngExtent = [30.6822888542, 31.8770482032]
-// var latExtent = [120.857103906, 122.240509468]
 var lngExtent = [30.6882888542, 31.8830482032]
 var latExtent = [120.863603906, 122.247009468]
 var cellCount = [134, 155]
-// var cellCount = [155, 134]
 var cellSizeCoord = [
   (lngExtent[1] - lngExtent[0]) / cellCount[0],
   (latExtent[1] - latExtent[0]) / cellCount[1]
@@ -91,13 +83,8 @@ export default {
     },
 
     renderItem(params, api) {
-      var context = params.context
       var lngIndex = api.value(0)
       var latIndex = api.value(1)
-      var coordLeftTop = [
-        +(latExtent[0] + lngIndex * cellSizeCoord[0]).toFixed(6),
-        +(lngExtent[0] + latIndex * cellSizeCoord[1]).toFixed(6)
-      ]
       var pointLeftTop = this.getCoord(params, api, lngIndex, latIndex)
       var pointRightBottom = this.getCoord(params, api, lngIndex + 1, latIndex + 1)
 
@@ -121,32 +108,15 @@ export default {
       this.setOptions(this.chartData)
     },
     setOptions(val) {
-      // echarts.registerMap('shanghai', shanghai) // 绑定地图数据
 
       this.chart.setOption({
         tooltip: {},
-        // visualMap: {
-        //   type: 'piecewise',
-        //   inverse: true,
-        //   min: 0,
-        //   max: 60000,
-        //   splitNumber: 10,
-        //   precision: 0,
-        //   top: 10,
-        //   left: 10,
-        //   borderColor: '#ccc',
-        //   borderWidth: 2,
-        //   backgroundColor: '#eee',
-        //   dimension: 2
-        // },
         visualMap: {
           type: 'continuous',
           min: 0,
           max: 60000,
           top: 10,
           left: 10,
-          // calculable: true,
-          // show: false,
           range: [1, 60000],
           inRange: {
             color: ['#AFEEEE', '#4169E1', '#8B0000'],
