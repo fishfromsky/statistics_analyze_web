@@ -10,17 +10,14 @@ require('echarts/theme/westeros') // echarts
 import resize from './mixins/resize'
 import 'echarts/extension/bmap/bmap'
 
-import data from './tmp-trans (1).json'
+import data from './tmp.json'
 
 console.log(data)
 
 var COLORS = ['#070093', '#1c3fbf', '#1482e5', '#70b4eb', '#b4e0f3', '#ffffff']
-// var lngExtent = [30.6822888542, 31.8770482032]
-// var latExtent = [120.857103906, 122.240509468]
-var lngExtent = [30.6882888542, 31.8830482032]
-var latExtent = [120.863603906, 122.247009468]
+var lngExtent = [39.5, 40.6]
+var latExtent = [115.9, 116.8]
 var cellCount = [134, 155]
-// var cellCount = [155, 134]
 var cellSizeCoord = [
   (lngExtent[1] - lngExtent[0]) / cellCount[0],
   (latExtent[1] - latExtent[0]) / cellCount[1]
@@ -175,8 +172,8 @@ export default {
           }
         ],
         bmap: {
-          center: [121.5, 31.1],
-          zoom: 10,
+          center: [116.46, 39.92],
+          zoom: 11.8,
           roam: true,
           mapStyle: {
             styleJson: [{
