@@ -17,7 +17,6 @@ var cellSizeCoord = [
   (lngExtent[1] - lngExtent[0]) / cellCount[0],
   (latExtent[1] - latExtent[0]) / cellCount[1]
 ]
-var gapSize = 0
 
 export default {
   name: 'GDP',
