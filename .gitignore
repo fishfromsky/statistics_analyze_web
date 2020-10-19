@@ -3,3 +3,4 @@ settings.py
 .idea/
 __pycache__/
 *.xls
+/webfront/debug.log
