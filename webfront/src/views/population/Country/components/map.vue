@@ -145,8 +145,8 @@ export default {
           }
         ],
         bmap: {
-          center: [116.46, 39.92],
-          zoom: 11.8,
+          center: [121.5, 31.1],
+          zoom: 10,
           roam: true,
           mapStyle: {
             styleJson: [{
