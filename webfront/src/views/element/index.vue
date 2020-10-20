@@ -135,7 +135,7 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     .titlebox{
         width: 35%;
         height: 35px;

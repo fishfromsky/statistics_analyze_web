@@ -33,7 +33,15 @@ export default {
            if (msg === '1'){
                this.select_id = '1'
                this.select_status = false
-           }
+            }
+            else if (msg === '2'){
+                this.select_id = '2'
+                this.select_status = false
+            }
+            else if (msg === '3'){
+                this.select_id = '3'
+                this.select_status = false
+            }
         }
     }
 }

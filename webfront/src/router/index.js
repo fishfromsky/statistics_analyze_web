@@ -297,7 +297,7 @@ export const constantRoutes = [
     path: '/repository',
     component: Layout,
     redirect: '/repository/p_median',
-    meta: { title: '算法仓库', icon: 'algo'},
+    meta: { title: '模型仓库', icon: 'algo'},
     children: [
       {
         path: 'p_median',
@@ -507,18 +507,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/project',
-    component: Layout,
-    children: [
-      {
-        path: 'board',
-        ame: 'board',
-        component: () => import('@/views/project/board/index'),
-        meta: { title: '项目实验', icon: 'component' }
-      }
-    ]
-  },
-  {
     path: '/crawldata',
     component: Layout,
     children: [
@@ -537,6 +525,41 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/project',
+    component: Layout,
+    redirect: '/project/board',
+    meta: { title: '算法实验', icon: 'component'},
+    children: [
+      {
+        path: 'board',
+        name: 'board',
+        component: () => import('@/views/project/board/index'),
+        meta: { 
+          title: '算法列表',
+          roles: ['超级管理员', '教师']
+        }
+      },
+      {
+        path: 'select',
+        name: 'select',
+        component: () => import('@/views/project/edit/index'),
+        meta: { 
+          title: '编辑算法',
+          roles: ['超级管理员', '教师']
+        }
+      },
+      {
+        path: 'add',
+        name: 'add',
+        component: () => import('@/views/project/add/index'),
+        meta: {
+          title: '管理模型',
+          roles: ['超级管理员']
+        }
+      }
+    ]
+  },
   {
     path: '/example',
     component: Layout,

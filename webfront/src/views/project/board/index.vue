@@ -2,11 +2,8 @@
   <div>
     <div class="dashboard-container">
         <el-row :gutter="20">
-            <el-col :xs="24" :sm="24" :lg="17">
+            <el-col :xs="24" :sm="24" :lg="24">
                 <leftboard></leftboard>
-            </el-col>
-            <el-col :xs="24" :sm="24" :lg="7">
-                <rightboard></rightboard>
             </el-col>
         </el-row>
     </div>
@@ -14,11 +11,9 @@
 </template>
 
 <script>
-import rightboard from './components/rightboard/index'
 import leftboard from './components/leftboard/index'
 export default {
     components:{
-        rightboard,
         leftboard
     },
     data(){
@@ -30,7 +25,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.dashboard {
+  .dashboard {
     &-container {
       margin: 30px;
     }

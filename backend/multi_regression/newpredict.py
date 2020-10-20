@@ -21,6 +21,10 @@ mpl.rcParams['font.sans-serif'] = ['simHei']
 mpl.rcParams['axes.unicode_minus'] = False
 
 id = sys.argv[1]
+index_list = sys.argv[2]
+
+column_list = index_list.split(',')
+column_list = list(map(int, column_list))
 
 
 class NpEncoder(json.JSONEncoder):
@@ -132,8 +136,8 @@ def yuchuli(iterations):
     json_data = json.loads(res.text).get('data')
 
     df = json_normalize(json_data)
-    df = df.drop(df.columns[[df.shape[1] - 1]], axis=1)
-    dataset = df.drop(df.columns[[0, 4, 8, 9, 10, 12, 13, 16, 17]], axis=1)
+    df = df.drop(df.columns[[0, df.shape[1] - 1]], axis=1)
+    dataset = df.drop(df.columns[column_list], axis=1)
     # h = 13  # 第几个城市
     # dataset = dataset[20 * h - 20:20 * h]
     dataset = dataset.fillna(0.1)

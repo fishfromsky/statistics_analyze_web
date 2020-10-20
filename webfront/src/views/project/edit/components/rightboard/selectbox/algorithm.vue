@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { filtermodels } from '@/api/model'
 export default {
     props:{
         parentmsg: {
@@ -27,24 +28,39 @@ export default {
     },
     data(){
         return{
-            algorithm_item: [
-                {
-                    name: 'LSTM模型',
-                    pic_url: require('@/views/image/lstm.jpg'),
-                    description: '长短期记忆（Long short-term memory, LSTM）是一种特殊的RNN，主要是为了解决长序列训练过程中的梯度消失和梯度爆炸问题。简单来说，就是相比普通的RNN，LSTM能够在更长的序列中有更好的表现',
-                    color: 'light-blue-btn'
-                },
-                {
-                    name: '多元回归模型',
-                    pic_url: require('@/views/image/regression.jpg'),
-                    description: '多元回归分析(Multiple Regression Analysis)是指在相关变量中将一个变量视为因变量，其他一个或多个变量视为自变量，建立多个变量之间线性或非线性数学模型数量关系式并利用样本数据进行分析的统计分析方法',
-                    color: 'tiffany-btn'
+            algorithm_item: []
+        }
+    },
+    methods:{
+        getData:function(){
+            let color = ['light-blue-btn', 'tiffany-btn', 'green-btn', 'yellow-btn', 'pink-btn']
+            let that = this
+            let data = {}
+            if (this.parentmsg === '1'){
+                data['type'] = '数据预测模型'
+            }
+            else if (this.parentmsg === '2'){
+                data['type'] = '数据聚类模型'
+            }
+            else if (this.parentmsg === '3'){
+                data['type'] = '关联分析模型'
+            }
+            filtermodels(data).then(res=>{
+                if (res.code === 20000){
+                    let results = res.data
+                    for (let i=0; i<results.length; i++){
+                        results[i].color = color[i%results.length]
+                        that.algorithm_item.push(results[i])
+                    }
                 }
-            ]
+            })
         }
     },
     watch:{
         
+    },
+    mounted(){
+        this.getData()
     }
 }
 </script>
@@ -62,6 +78,11 @@ export default {
         margin-top: 20px;
         border-radius: 5px;
         padding: 5px;
+        cursor: pointer;
+        transition: all ease 0.5s;
+    }
+    .card:hover{
+        transform: scale(1.1);
     }
     .card-img{
         width: 90%;

@@ -867,10 +867,54 @@ export function deleteelementgarbage(data){
   })
 }
 
-// 修改一条；阿基成分信息
+// 修改一条垃圾成分信息
 export function amendelementgarbage(data){
   return request({
     url: '/amend_element_garbage',
+    method: 'post',
+    data
+  })
+}
+
+// 获取算法ID列表
+export function algorithmlidlist(data){
+  return request({
+    url: '/get_idlist_algorithm',
+    method: 'post',
+    data
+  })
+}
+
+// 根据ID获取算法模型
+export function getbyidalgorithm(data){
+  return request({
+    url: '/getbyid_algorithm',
+    method: 'post',
+    data
+  })
+}
+
+// 获取所有模型列表
+export function getallmodels(){
+  return request({
+    url: '/getallmodels',
+    method: 'get'
+  })
+}
+
+// 保存模型
+export function savemodels(data){
+  return request({
+    url: '/savemodel',
+    method: 'post',
+    data
+  })
+}
+
+// 根据类型筛选模型
+export function filtermodels(data){
+  return request({
+    url: '/filtermodels',
     method: 'post',
     data
   })

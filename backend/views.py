@@ -3,8 +3,9 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
-    relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element
+    relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img
 
+from django.conf import settings
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
@@ -1720,8 +1721,12 @@ def save_regression_result(request):
     return JsonResponse(response, safe=False)
 
 
-def thread_regression(id):
-    os.system('python backend/multi_regression/newpredict.py %s' % id)
+def thread_regression(id, list):
+    ret = os.system('python backend/multi_regression/newpredict.py %s %s' % (id, list))
+    if ret != 0:
+        model = multi_regression_project.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
 
 
 @csrf_exempt
@@ -1730,6 +1735,7 @@ def start_regression_experiment(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
     id = body.get('project_id')
+    list = body.get('index_list')
     if multi_regression_parameter.objects.filter(project_id=multi_regression_project(project_id=id)).count() == 0:
         response['code'] = 50000
         response['message'] = '该项目缺少数据，无法实验'
@@ -1737,7 +1743,7 @@ def start_regression_experiment(request):
         model = multi_regression_project.objects.get(project_id=id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_regression, args=(id,))
+        task = threading.Thread(target=thread_regression, args=(id, list))
         task.start()
     return JsonResponse(response, safe=False)
 
@@ -1830,8 +1836,12 @@ def save_result_kmeans(request):
     return JsonResponse(response, safe=False)
 
 
-def thread_kmeans(id):
-    os.system('python backend/KMeans/kmeans.py %s' % id)
+def thread_kmeans(id, list):
+    ret = os.system('python backend/KMeans/kmeans.py %s %s' % (id, list))
+    if ret != 0:
+        model = kmeans_project.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
 
 
 @csrf_exempt
@@ -1840,6 +1850,7 @@ def start_kmeans(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
     id = body.get('project_id')
+    index_list = body.get('index_list')
     if kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id)).count() == 0:
         response['code'] = 50000
         response['message'] = '该项目缺少数据无法实验，请先补充数据'
@@ -1847,7 +1858,7 @@ def start_kmeans(request):
         model = kmeans_project.objects.get(project_id=id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_kmeans, args=(id,))
+        task = threading.Thread(target=thread_kmeans, args=(id, index_list))
         task.start()
     return JsonResponse(response, safe=False)
 
@@ -2037,6 +2048,32 @@ def add_algorithm_list(request):
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
+def get_algorithm_idlist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    body = json.loads(request.body)
+    username = body.get('username')
+    user_id = UserProfile.objects.get(username=username).id
+    data = algorithm_project.objects.filter(user=UserProfile(id=user_id)).values('project_id')
+    for item in data:
+        response['data'].append(item)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def getbyid_algorithm(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    model = algorithm_project.objects.get(project_id=id)
+    response['data'] = to_dict(model)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
 @require_http_methods(['GET'])
 def get_idlist_relation(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
@@ -2113,7 +2150,11 @@ def input_relation_parameter(request):
 
 
 def thread_relation(id, sort):
-    os.system('python backend/relationship/GBDT.py %s %s' % (id, sort))
+    ret = os.system('python backend/relationship/GBDT.py %s %s' % (id, sort))
+    if ret != 0:
+        model = relation_project.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
 
 
 @csrf_exempt
@@ -2364,6 +2405,54 @@ def amend_element_garbage(request):
     data.recycle = recycle
     data.fire = fire
     data.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getallmodels(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    models = model_table.objects.all()
+    for item in models:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def savemodels(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    name = body.get('name')
+    type = body.get('type')
+    pic_url = body.get('pic_url')
+    describe = body.get('describe')
+    model = model_table.objects.create(name=name, type=type, description=describe, pic_url=pic_url)
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def upload_img(request):
+    response = {'code': 20000, 'message': 'success'}
+    img = Img(img_url=request.FILES['file'])
+    img.save()
+    response['url'] = 'http://127.0.0.1:8000/media/'+str(img.img_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def filtermodels(request):
+    response = {'code':20000, 'message': 'success', 'data': []}
+    body = json.loads(request.body)
+    type = body.get('type')
+    models = model_table.objects.filter(type=type)
+    for item in models:
+        response['data'].append(to_dict(item))
+
     return JsonResponse(response, safe=False)
 
 

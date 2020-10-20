@@ -18,7 +18,7 @@
            </el-table-column>
             <el-table-column label="运行状态" align="center" min-width="50">
                <template slot-scope="scope">
-                   <el-tag effect="dark" :type="scope.row.status == '未运行' ? 'info':'success'">{{scope.row.status}}</el-tag>
+                   <el-tag :type="scope.row.status == '未运行' ? 'info':scope.row.status=='正在运行'?'success':'danger'">{{scope.row.status}}</el-tag>
                    <el-button size="mini" @click="Refresh" type="primary">刷新</el-button>
                </template>
            </el-table-column>

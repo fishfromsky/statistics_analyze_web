@@ -22,7 +22,7 @@ export default {
                 },
                 {
                     value: '2',
-                    label: '数据拟合模型',
+                    label: '数据聚类模型',
                     color: 'pan-btn green-btn'
                 },
                 {

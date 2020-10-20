@@ -1,38 +1,14 @@
 # -*- coding: utf-8 -*-
 from numpy import *
-import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import pylab as mpl
-import sys
-import os
-import json
-import requests
-from pandas import json_normalize
+from log import aaddtext,addpicture
 
 np.set_printoptions(suppress=True)
 mpl.rcParams['font.sans-serif'] = ['simHei']
 mpl.rcParams['axes.unicode_minus'] = False
-
-id = sys.argv[1]
-index_list = sys.argv[2]
-
-column_list = index_list.split(',')
-column_list = list(map(int, column_list))
-
-
-class NpEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
-        else:
-            return super(NpEncoder, self).default(obj)
-
 
 def loadDataSet(filename):#MLiA_SourceCode\machinelearninginaction\Ch10\testSet.txt
     dataMat = []
@@ -111,116 +87,87 @@ def bikmeans(dataset, k, distmeas=distEclud):
         clusterAssment[nonzero(clusterAssment[:, 0].A == bestCentToSplit)[0],:] = bestClustAss  # reassign new clusters, and SSE
     return mat(centList), clusterAssment
 
-def clusterclubs(mycentroids, clustassing,numclust,datmat,labels):#bikmeans分类画图
-    classlabel = []
-    x = []
-    y = []
+def clusterclubs(mycentroids, clustassing,numclust,datmat,labels,savep):#bikmeans分类画图
     fig = plt.figure()
     rect=[0.1,0.1,0.8,0.8]
     scattermarkers=['s','o','^','8','p','d','v','h','>','<']
     axprops = dict(xticks=[],yticks=[])
-    ax0=fig.add_axes(rect, label='ax0', **axprops)
-    imgp = plt.imread(os.path.dirname(__file__)+'/1.jpg')
-    ax0.imshow(imgp)
+    fig.add_axes(rect, label='ax0', **axprops)
     ax1=fig.add_axes(rect, label='ax1', frameon=False)
+    otherpoints = []
     for i in range(numclust):
         ptsincurrcluster = datmat[nonzero(clustassing[:,0].A==i)[0], :]
-        x.extend(np.array(ptsincurrcluster)[:, 0])
-        y.extend(np.array(ptsincurrcluster)[:, 1])
-        tmp = len(np.array(ptsincurrcluster[:, 0]))
-        for j in range(tmp):
-            classlabel.append(i)
         markerstyle = scattermarkers[i % len(scattermarkers)]
         ax1.scatter(ptsincurrcluster[:,0].flatten().A[0],ptsincurrcluster[:,1].flatten().A[0],marker=markerstyle, s=90)
+        otherpoints.append(ptsincurrcluster.getA())
     ax1.scatter(mycentroids[:,0].flatten().A[0],mycentroids[:,1].flatten().A[0],marker='+',s=300)
-
-    json_data = {}
-    json_data['project_id'] = id
-    result_list = []
-    for i in range(len(classlabel)):
-        dict_data = {}
-        dict_data['xaxis'] = x[i]
-        dict_data['yaxis'] = y[i]
-        dict_data['label'] = classlabel[i]
-        result_list.append(dict_data)
-    json_data['data'] = result_list
-    json_data = json.dumps(json_data, cls=NpEncoder)
-    requests.post('http://127.0.0.1:8000/api/save_result_kmeans', data=json_data)
-    # title = []
-    #
-    # for i in range(len(labels)):
-    #     ch = labels[i].replace('\n', '').replace('\r', '')
-    #     title.append(ch)
-    #     if i != len(labels) - 1:
-    #         title.append('--')
-    # title = "".join(title)
-    # plt.title('bik-means分类效果图\n\n'+title,fontsize=9)
-    # plt.savefig('bik-means分类效果图.png')
+    title = []
+    for i in range(len(labels)):
+        ch = labels[i].replace('\n', '').replace('\r', '')
+        title.append(ch)
+        if i != len(labels) - 1:
+            title.append('--')
+    title = "".join(title)
+    plt.title('bik-means分类效果图\n'+title,fontsize=12)
+    plt.savefig(savep+'bik-means分类效果图.png')
+    addpicture(savep+'bik-means分类效果图.png')
     # plt.show()
+    return otherpoints
 
 
-def guiyihua():#归一化
-    params = {'project_id': id}
-    res = requests.get('http://127.0.0.1:8000/api/get_parameter_kmeans', params=params)
-    json_data = json.loads(res.text).get('data')
-    df = json_normalize(json_data)
-    dataset = df.drop(df.columns[[0, df.shape[1]-1]], axis=1)
-    dataset = dataset.drop(dataset.columns[column_list], axis=1)#0, 4, 8, 9, 10, 12, 13, 16, 17, -1#0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
-    dataset = dataset.fillna(0.1)
+def guiyihua(path,clearlist):#归一化
+    dataset = pd.read_csv(path)
+    dataset = dataset.drop(dataset.columns[clearlist], axis=1)#0 #0,1,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
+    # print(dataset)
     datasety = dataset
-    #print(dataset)
     labels = dataset.columns
     dataset = dataset.values
     for i in range(dataset.shape[0]):
         for j in range(dataset.shape[1]):
-            if(isinstance(dataset[i][j], str)):
+            if (isinstance(dataset[i][j], str)):
                 if (dataset[i][j].isspace()):
                     dataset[i][j].strip()
-    k=[]
+    k = []
     for i in range(dataset.shape[1]):
-        p = normalization(dataset[:,i])
+        p = normalization(dataset[:, i])
 
-        if (i == 0): k = p
+        if (i == 0):
+            k = p
         else:
-            k=np.c_[k, p]
-    #print(k.shape)
-    #print(k)
-    #dataset.shape[1]
-    #min_max_scaler = preprocessing.MinMaxScaler()
-    #X_minMax = min_max_scaler.fit_transform(dataset)
-    df = pd.DataFrame(k, columns=labels)#dataset
-    # print(datasety)
-    datasety.to_csv(os.path.dirname(__file__)+"/kmeans.csv")
+            k = np.c_[k, p]
+    df = pd.DataFrame(k, columns=labels)
+
     return df,datasety,labels
 
 def normalization(data):
     _range = np.max(data) - np.min(data)
     return (data - np.min(data)) / _range
 
-def diaoyong(classnum):
-    df, datasety,labels = guiyihua()
+def diaoyong(classnum,path,clearlist):
+    df, datasety,labels = guiyihua(path,clearlist)
     df = mat(df.values)
     mycentroids, clustassing = bikmeans(df, classnum, distmeas=distEclud)
     return mycentroids,clustassing,df,labels
 
 #层次聚类
-def AgglomerativeClustering(classnum):
+def AgglomerativeClustering(path):
     import numpy
     import pandas
     from sklearn import datasets
     import scipy.cluster.hierarchy as hcluster
 
-    df, datasety, labels = guiyihua()
+    df, datasety, labels = guiyihua(path)
     #df2 = pd.DataFrame(df.values.T, index=df.columns, columns=df.index)
-    data = df.values.T
-    print(type(data))
+    corr_matrix = df.corr()
+    matrix = (1 - abs(mat(corr_matrix.values)))*10
+    # print(matrix)
     target = labels.values.T
     target = target.tolist()
-    print(type(target))
+    # print(target)
     # Compute and plot first dendrogram.
     linkage = hcluster.linkage(
-        data,
-        method='centroid'
+        matrix,
+        method='average'
     )
 
     hcluster.dendrogram(
@@ -228,68 +175,81 @@ def AgglomerativeClustering(classnum):
         orientation='right',
         labels=target,
         leaf_rotation=0,
-        leaf_font_size=8.
+        leaf_font_size=9.
     )
-    # plt.xticks(target)
     plt.title('层次聚类效果图')
     plt.savefig('层次聚类效果图.png')
     plt.show()
-    hcluster.dendrogram(
-        linkage,
-        truncate_mode='lastp',
-        p=12,
-        leaf_font_size=12.
-    )
 
-    p = hcluster.fcluster(
-        linkage,
-        3,
-        criterion='maxclust'
-    )
 
-    ct = pandas.DataFrame({
-        'p': p,
-        't': target
-    }).pivot_table(
-        index=['t'],
-        columns=['p'],
-        aggfunc=[numpy.size]
-    )
 
 
 #聚类评价指数
-def testnum():
+def testnum(path,clearlist):
     from sklearn import metrics
     from sklearn.cluster import KMeans
-    df, datasety = guiyihua()
+    df, datasety,x = guiyihua(path,clearlist)
     df = mat(df.values)
+    max = 0
+    index = -1
     for i in range(2, 10):
         kmeans = KMeans(n_clusters=i, random_state=123).fit(df)
         score = metrics.calinski_harabasz_score(df, kmeans.labels_)
-        print("聚类%d簇的calinski_harabaz分数为：%f" % (i, score))
+        if(score > max):
+            max = score
+            index = i
+        # print("聚类%d簇的calinski_harabaz分数为：%f" % (i, score))
+
+    return index
+
+if __name__ == '__main__':
+    path = r'documents/newdata（删除空行+非数值）.csv'  # 原始数据路径（当前目录名字）
+
+    if path == 'documents/newdata（删除空行+非数值）.csv':
+        pathx = r'documents/newdata（删除空行）.csv'
+    elif path == 'documents/newdata（拉格朗日插值法）.csv':
+        pathx = r'documents/ceshi.csv'
+    clearlist = [0,1,2,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19]#需要删除的数据列
+
+    savep = "images/"
+    classnum = testnum(path,clearlist)  # 聚类评价指数筛选最好的组数
+    # print("best num: %d" % classnum)
+    mycentroids, clustassing, df, labels = diaoyong(classnum, path,clearlist)
+    otherpoints = clusterclubs(mycentroids, clustassing, classnum, df, labels,savep)
+    centpoints = mycentroids
+
+    # print(df)
+    x = []
+    y = []
+    for zu in otherpoints:
+        x.extend(zu[:,0])
+        y.extend(zu[:,1])
+    # plt.scatter(x, y)
+    # plt.show()
+
+    # 对scv文件添加分类列(此时加入包含非数值信息)
+    excelx = pd.read_csv(pathx)
+    excelx = excelx.drop(excelx.columns[0], axis=1)
+    cols = excelx.columns
+    labelx = []
+    for col in cols:
+        if str(excelx[col].dtype) == 'object':  # 删除非数值的列
+            labelx.append(col)
+    df1 = excelx[labelx]
+
+    classifylist = clustassing[:, 0]
+    classifylist = np.matrix.tolist(classifylist.T)
+    excel = pd.read_csv(path)
+    excel = excel.drop(excel.columns[0], axis=1)
+    classifylist = np.array(classifylist[0], dtype=int)
+    excel.insert(0, 'class', classifylist)
+    excel.insert(1, 'x', x)
+    excel.insert(2, 'y', y)
+
+    excel = pd.concat([df1, excel], axis=1)
+
+    excel.to_csv("documents/kmeansclassify.csv", encoding='utf_8_sig')  # 最终聚类表示文件
 
 
 
-# testnum()#聚类评价指数
-classnum = 4#聚类的组数
 
-flag = 2#聚类方式选择,注意：选择层次聚类的时候要改guiyihua（）函数里面列的选择，多维的效果图好看一点
-#如果bikmeans聚类的话，两维聚类的效果图好看一点
-if flag==1:#层次聚类
-    AgglomerativeClustering(classnum)
-elif flag==2:#bikmeans聚类
-    mycentroids,clustassing,df,labels= diaoyong(classnum)
-    clusterclubs(mycentroids, clustassing,classnum,df,labels)
-    # #对scv文件添加分类列
-    # classifylist = clustassing[:,0]
-    # classifylist = np.matrix.tolist(classifylist.T)
-    # excel = pd.read_csv(os.path.dirname(__file__)+'/dataset_new1.csv')
-    # classifylist = np.array(classifylist[0], dtype = int)
-    # excel.loc[:,('Unnamed: 0')] = classifylist
-    # excel.rename(columns={'Unnamed: 0':'class'},inplace=True)
-    # excel.to_csv(os.path.dirname(__file__)+"/kmeansclassify.csv")#最终聚类表示文件
-
-dict = {}
-dict['project_id'] = id
-data = json.dumps(dict)
-requests.post('http://127.0.0.1:8000/api/finish_kmeans', data=data)

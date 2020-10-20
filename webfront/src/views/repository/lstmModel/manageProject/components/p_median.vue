@@ -127,28 +127,35 @@ export default {
         }
     },
     methods: {
-        Select_Index:function(arr, item){
-            for (let i=0; i<arr.length; i++){
-                if (arr[i] === item){
-                    return i;
+        Select_Index:function(arr_main, arr_child){
+            let index = []
+            let flag = true
+            for (let i=0; i<arr_main.length; i++){
+                flag = true
+                for (let j=0; j<arr_child.length; j++){
+                    if (arr_main[i]===arr_child[j]){
+                        flag=false
+                        break
+                    }
+                }
+                if (flag){
+                    index.push(i)
                 }
             }
-            return -1;
+            return index;
         },
         PredictExperiment:function(){
             if (this.predict_list === []){
                 this.$message.error('选择数据不能为空!')
             }
             else{
-                this.choose_data_dialog = false
+                this.choose_test_dialog = false
                 let val = this.selected_project
                 let that = this
                 let data = {}
                 let index_list = []
                 data['project_id'] = this.page_data[val].project_id
-                for (let i=0; i<this.predict_list.length; i++){
-                    index_list.push(this.Select_Index(this.choose_data, this.predict_list[i]))
-                }
+                index_list = this.Select_Index(this.choose_data, this.predict_list)
                 data['select_list'] = index_list.toString()
                 data['type'] = '0'
                 LstmProjectStart(data).then(res=>{
@@ -170,15 +177,13 @@ export default {
                 this.$message.error('选择数据不能为空!')
             }
             else{
-                this.choose_test_dialog = false
+                this.choose_data_dialog = false
                 let val = this.selected_project
                 let that = this
                 let data = {}
                 let index_list = []
                 data['project_id'] = this.page_data[val].project_id
-                for (let i=0; i<this.selected_list.length; i++){
-                    index_list.push(this.Select_Index(this.choose_data, this.selected_list[i]))
-                }
+                index_list = this.Select_Index(this.choose_data, this.selected_list)
                 data['select_list'] = index_list.toString()
                 data['type'] = '1'
                 LstmProjectStart(data).then(res=>{

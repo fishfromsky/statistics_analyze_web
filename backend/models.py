@@ -300,12 +300,11 @@ class relation_project(models.Model):
     status = models.CharField(max_length=255, default='未运行')
 
 
-class algorithm_table(models.Model):
+class model_table(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
     pic_url = models.CharField(max_length=255, default='')
     description = models.CharField(max_length=255, default='')
-    project_id = models.ForeignKey(to="algorithm_project", on_delete=models.CASCADE, default=1)
 
 
 class algorithm_project(models.Model):
@@ -314,6 +313,12 @@ class algorithm_project(models.Model):
     time = models.IntegerField(default=0)
     describe = models.CharField(max_length=255)
     add_time = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
+
+
+class selected_algorithm_table(models.Model):
+    model = models.ForeignKey(to="model_table", on_delete=models.CASCADE)
+    user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
 
 
 class relation_parameter(models.Model):
@@ -389,6 +394,10 @@ class garbage_element(models.Model):
     recycle = models.FloatField(null=False)
     fire = models.FloatField(null=False)
     city_id = models.ForeignKey(to="City", on_delete=models.CASCADE)
+
+
+class Img(models.Model):
+    img_url = models.ImageField("图片", upload_to="static/img")
 
 
 

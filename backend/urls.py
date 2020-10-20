@@ -134,6 +134,13 @@ urlpatterns = [
     url('get_algorithm_list', views.get_algorithm_list),  # 获取算法模型列表
     url('add_algorithm_list', views.add_algorithm_list),  # 添加算法模型列表
     url('delete_algorithm_list', views.delete_algorithm_list),  # 删除算法模型列表
+    url('get_idlist_algorithm', views.get_algorithm_idlist),  # 获取算法模型ID列表
+    url('getbyid_algorithm', views.getbyid_algorithm),   # 根据ID获取模型
+
+    url('getallmodels', views.getallmodels),  # 获取所有模型列表
+    url('upload_img', views.upload_img),  # 上传图片文件
+    url('savemodel', views.savemodels),  # 保存模型
+    url('filtermodels', views.filtermodels),  # 根据类型筛选模型
 
     url('pmedianbs/list', pmedianbasicviews.pmedianbs_list_get, name='pmedianbs_list_get'),
     url('pmedianbs/download', pmedianbasicviews.pmedianbs_download_get, name='pmedianbs_create_get'),
