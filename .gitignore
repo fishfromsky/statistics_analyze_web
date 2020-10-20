@@ -2,11 +2,7 @@ node_modules/
 settings.py
 .idea/
 __pycache__/
-<<<<<<< HEAD
-webfront/.env.development
-webfront/.env.production
-webfront/.env.staging
-=======
-*.xls
+.env.development
+.env.production
+.env.staging
 /webfront/debug.log
->>>>>>> 李治平
