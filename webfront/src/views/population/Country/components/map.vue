@@ -118,8 +118,8 @@ export default {
           left: 10,
           range: [1, 60000],
           inRange: {
-            color: ['#9FDEEF', '#EBD958', '#F1C40F', '#E74C3C', '#CB4335'],
-            colorAlpha: [0.7, 0.9]
+            color: ['#AFEEEE', '#4169E1', '#8B0000'],
+            colorAlpha: [0.6, 0.9]
           },
           outOfRange: {
             color: ['rgba(0,0,0,0)'],
