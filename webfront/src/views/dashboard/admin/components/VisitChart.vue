@@ -72,7 +72,8 @@ export default {
           axisLabel:{
             interval: 0,
             rotate: 60
-          }
+          }, 
+        splitArea : {show : false}
         },
         grid: {
           left: 10,
@@ -91,10 +92,16 @@ export default {
         yAxis: {
           axisTick: {
             show: false
-          }
+          },
+          splitLine: {show : false}
         },
         legend: {
-          data: ['访问人数', '实验人数']
+          data: ['访问人数', '实验人数'],
+          textStyle:{//图例文字的样式
+                        color:'#fff',
+                        fontSize:16
+                    }
+
         },
         series: [{
           name: '访问人数', itemStyle: {
@@ -130,7 +137,8 @@ export default {
           },
           data: actualData,
           animationDuration: 2800,
-          animationEasing: 'quadraticOut'
+          animationEasing: 'quadraticOut',
+         
         }]
       })
     }

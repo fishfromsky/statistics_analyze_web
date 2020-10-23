@@ -1,5 +1,9 @@
 <template>
+
   <div class="dashboard-container">
+        <div class="header">
+    <h1 class="header-title">固废智慧管理</h1>
+     </div>
     <panel-group/>
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :lg="12" style="margin-top: 50px;">
@@ -99,19 +103,71 @@
 </script>
 
 <style lang="scss" scoped>
+.header {position:relative;height:40px;box-sizing:border-box;}
+.header-title {
+    margin:0;
+    padding:0;
+    text-align:center;
+    font-size:20px;
+    font-weight:400;
+    color:	#00FFFF;
+}
   .dashboard {
     &-container {
-      margin: 30px;
+        
+        width: 100%;
+    min-height: calc(100vh - 50px);
+    background-color: #080f3e;
+    padding: 20px;
+
+    top:36px;
+    bottom:10px;
+    left:10px;
+    right:10px;
+    padding:10px 10px 0 10px;
+    min-height:500px;
+    background:url("./wrapper-bg.png") no-repeat;
+     background-color:#0b0f34;
+    background-size:100% 100%;
+    box-sizing:border-box;
+
     }
     &-text {
       font-size: 30px;
       line-height: 46px;
     }
   }
-  .chart-wrapper{
-    background: #fff;
+  .chart-wrapper{//子组件框
+    background: linear-gradient(#00faff, #00faff) left top,
+		linear-gradient(#00faff, #00faff) left top,
+		linear-gradient(#00faff, #00faff) right top,
+		linear-gradient(#00faff, #00faff) right top,
+		linear-gradient(#00faff, #00faff) left bottom,
+		linear-gradient(#00faff, #00faff) left bottom,
+		linear-gradient(#00faff, #00faff) right bottom,
+		linear-gradient(#00faff, #00faff) right bottom;
+       background-repeat: no-repeat;
+        background-size: 5px 20px, 20px 5px;
+        background-color: rgba(0,161,255,0.1);
     padding: 16px 16px 0;
     margin-bottom: 32px;
     box-shadow: 0 0 10px 5px rgba(153,153,153,0.1);
+   
+    border: 2px solid #00a1ff;
+    border-radius: 8px;
+
+    
   }
+  .wrapper {
+    position:absolute;
+    top:36px;
+    bottom:10px;
+    left:10px;
+    right:10px;
+    padding:10px 10px 0 10px;
+    min-height:500px;
+  
+    background-size:100% 100%;
+    box-sizing:border-box;
+}
 </style>

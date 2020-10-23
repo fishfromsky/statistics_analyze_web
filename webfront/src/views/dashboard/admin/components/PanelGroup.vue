@@ -79,13 +79,18 @@ export default {
     position: relative;
     overflow: hidden;
     color: #666;
-    background: #fff;
+   // background: #fff;
     box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
     border-color: rgba(0, 0, 0, .05);
 
     &:hover{
       .card-panel-icon-wrapper{
         color: #fff;
+      
+      }
+      .card-panel-num {
+        font-size: 20px;
+        color:#fff
       }
       .icon-people{
         background: #40c9c6;
@@ -98,6 +103,12 @@ export default {
       }
       .icon-count{
         background: #67C23A;
+      }
+      .card-panel-text{
+        line-height: 18px;
+        color: rgb(72, 202, 46);
+        font-size: 16px;
+        margin-bottom: 12px;
       }
     }
 
@@ -117,13 +128,35 @@ export default {
     }
 
     .card-panel-icon-wrapper {
-      float: left;
-      margin: 14px 0 0 14px;
-      padding: 16px;
-      transition: all 0.38s ease-out;
-      border-radius: 6px;
+    float: left;
+    margin: 14px 0 0 14px;
+    padding: 16px;
+    transition: all 0.38s ease-out;
+    width: 80px;
+    height:80px;
+    border: 1px solid #2b92d4;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation-timing-function: ease-in-out;
+    animation-name: breathe;
+    animation-duration: 1500ms;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    }
+@keyframes breathe {
+    0% {
+        opacity: .4;
+        box-shadow: 0 1px 2px rgba(0, 147, 223, 0.4), 0 1px 1px rgba(0, 147, 223, 0.1) inset;
     }
 
+    100% {
+        opacity: 1;
+        border: 1px solid rgba(59, 235, 235, 0.7);
+        box-shadow: 0 1px 15px #0093df, 0 1px 10px #0093df inset;
+    }
+}
     .card-panel-icon {
       float: left;
       font-size: 48px;
@@ -135,8 +168,9 @@ export default {
       margin-left: 0px;
 
       .card-panel-text {
+        cursor: pointer;
         line-height: 18px;
-        color: rgba(0, 0, 0, 0.45);
+        color: 	#1E90FF;
         font-size: 16px;
         margin-bottom: 12px;
       }

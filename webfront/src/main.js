@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import VueParticles from 'vue-particles'  //Particle background
+Vue.use(VueParticles) 
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
