@@ -134,6 +134,7 @@ def train_model(trainX, trainY, testX, testY):
 
     history = model.fit(trainX, trainY, validation_data=(testX, testY), epochs=500, batch_size=5, verbose=2)
 
+
     model.save(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
 
     # save_process_result(history)
@@ -250,17 +251,6 @@ def predict_all(list):
     json_data['data'] = result_list
     json_data = json.dumps(json_data, cls=NpEncoder)
     requests.post('http://127.0.0.1:8000/api/save_lstm_result', data=json_data)
-
-    # data.to_csv(os.path.dirname(__file__)+
-    #             '/result/LSTM_result'+datetime.datetime.now().strftime('_%Y_%m_%d_%H_%M_%S')+'.csv')
-
-    # plt.title('LSTM模型对城市生活垃圾产量预测')
-    # plt.plot(real, label='实际值')
-    # plt.plot(preds, label='预测值')
-    # plt.legend()
-    # plt.savefig(os.path.dirname(__file__)+
-    #             '/picture/LSTM_Predict'+datetime.datetime.now().strftime('_%Y_%m_%d_%H_%M_%S')+'.png')
-    # plt.show()
 
 
 def Train(list):

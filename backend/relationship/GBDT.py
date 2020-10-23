@@ -341,18 +341,12 @@ def p(dataset):
         x=matrix[:,i]
         y=matrix[:,-1]
         p.append((((x - x.mean()) / (x.std(ddof=0))) * ((y - y.mean()) / (y.std(ddof=0)))).mean())
-    aa = {'p(score)': p}
-    bb = pd.DataFrame(aa)
-    bb.to_csv('p系数检验.csv')
 
     return p
 
 
 if __name__ == '__main__':
 
-    # temppath = xlsx_to_csv_pd(path) #excel转csv
-    # # path = deal1_csv(temppath) #丢掉空值数据
-    # path = deal2_csv(temppath)#拉格朗日插值法进行插值
     dataset,datasety = guiyihua()#归一化
     if algorithm == '1':
         hot_matrix(dataset)#相关系数热力图

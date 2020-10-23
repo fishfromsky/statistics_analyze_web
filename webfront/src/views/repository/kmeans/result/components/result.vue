@@ -16,6 +16,11 @@
                     <span>{{row.label}}</span>
                 </template>               
             </el-table-column>
+            <el-table-column label="地区" align="center">
+                <template slot-scope="{row}">
+                    <span>{{row.district}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="实验时间" align="center">
                 <template slot-scope="{row}">
                     <i class="el-icon-time"></i>
@@ -77,7 +82,8 @@ export default {
             graph_data:{
                 xaxis: [],
                 yaxis: [],
-                label: []
+                label: [],
+                district: []
             }
         }
     },
@@ -95,6 +101,7 @@ export default {
             this.graph_data.xaxis = []
             this.graph_data.yaxis = []
             this.graph_data.label = []
+            this.graph_data.district = []
             this.chart_dialog = true
             let chart_data = this.tableData
             for (let i=0; i<chart_data.length; i++){
@@ -102,6 +109,7 @@ export default {
                     this.graph_data.xaxis.push(chart_data[i].xaxis)
                     this.graph_data.yaxis.push(chart_data[i].yaxis)
                     this.graph_data.label.push(chart_data[i].label)
+                    this.graph_data.district.push(chart_data[i].district)
                 }
             }
             this.graph_data.labelnum = this.sort_list.length

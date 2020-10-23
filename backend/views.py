@@ -1830,15 +1830,16 @@ def save_result_kmeans(request):
         xaxis = data[i]['xaxis']
         yaxis = data[i]['yaxis']
         label = data[i]['label']
+        district = data[i]['district']
         model = kmeans_result.objects.create(project_id=kmeans_project(project_id=id),
-                                             xaxis=xaxis, yaxis=yaxis, label=label, sort=sort)
+                                             xaxis=xaxis, district=district, yaxis=yaxis, label=label, sort=sort)
         model.save()
 
     return JsonResponse(response, safe=False)
 
 
 def thread_kmeans(id, list):
-    ret = os.system('python backend/KMeans/kmeans.py %s %s' % (id, list))
+    ret = os.system('python backend/KMeans/kmeans1.py %s %s' % (id, list))
     if ret != 0:
         model = kmeans_project.objects.get(project_id=id)
         model.status = '运行出错'
@@ -1910,56 +1911,21 @@ def input_parameter_kmeans(request):
         response['message'] = '数据库中存在该项目参数，请先删除'
     else:
         for i in range(len(data)):
-            if data[i].__contains__('resident_population') and data[i].__contains__('population_of_density') and \
-                    data[i].__contains__('number_of_households') and data[i].__contains__(
-                'average_population_per_household') \
-                    and data[i].__contains__('urban_residents_per_capita_disposable_income') and data[i].__conains__(
-                'consumer_expenditure') \
-                    and data[i].__contains__('general_public_expenditure') and data[i].__contains__(
-                'investment_in_urban_infrastructure') \
-                    and data[i].__contains__('urban_population_density') and data[i].__contains__(
-                'greening_coverage') and \
-                    data[i].__contains__('gross_local_product') and data[i].__contains__(
-                'gross_domestic_product_per_capita') \
-                    and data[i].__contains__('gross_domestic_product_of_the_first_industry') and data[i].__contains__(
-                'gross_value_of_secondary_industry') \
-                    and data[i].__contains__('gross_value_of_the_tertiary_industry') and data[i].__contains__(
-                'investment_in_environmental_protection') \
-                    and data[i].__contains__('number_of_college_students') and data[i].__contains__(
-                'level_of_education') and \
-                    data[i].__contains__('municial_household_garbage'):
-                model = kmeans_parameter.objects.create(project_id=kmeans_project(project_id=id),
-                                                        resident_population=data[i]['resident_population'],
-                                                        population_of_density=data[i]['population_of_density'],
-                                                        number_of_households=data[i]['number_of_households'],
-                                                        average_population_per_household=data[i][
-                                                              'average_population_per_household'],
-                                                        urban_residents_per_capita_disposable_income=data[i][
-                                                              'urban_residents_per_capita_disposable_income'],
-                                                        consumer_expenditure=data[i]['consumer_expenditure'],
-                                                        general_public_expenditure=data[i][
-                                                              'general_public_expenditure'],
-                                                        investment_in_urban_infrastructure=data[i][
-                                                              'investment_in_urban_infrastructure'],
-                                                        urban_population_density=data[i][
-                                                              'urban_population_density'],
-                                                        greening_coverage=data[i]['greening_coverage'],
-                                                        gross_local_product=data[i]['gross_local_product'],
-                                                        gross_domestic_product_per_capita=data[i][
-                                                              'gross_domestic_product_per_capita'],
-                                                        gross_domestic_product_of_the_first_industry=data[i][
-                                                              'gross_domestic_product_of_the_first_industry'],
-                                                        gross_value_of_secondary_industry=data[i][
-                                                              'gross_value_of_secondary_industry'],
-                                                        gross_value_of_the_tertiary_industry=data[i][
-                                                              'gross_value_of_the_tertiary_industry'],
-                                                        investment_in_environmental_protection=data[i][
-                                                              'investment_in_environmental_protection'],
-                                                        number_of_college_students=data[i][
-                                                              'number_of_college_students'],
-                                                        level_of_education=data[i]['level_of_education'],
-                                                        municial_household_garbage=data[i][
-                                                              'municial_household_garbage'])
+            if data[i].__contains__('district') and data[i].__contains__('en_name') and data[i].__contains__('range') \
+                and data[i].__contains__('year') and data[i].__contains__('msw') and data[i].__contains__('pop') and \
+                data[i].__contains__('pup') and data[i].__contains__('hou') and data[i].__contains__('aph') and data[i].__contains__('gen') \
+                and data[i].__contains__('age1') and data[i].__contains__('age2') and data[i].__contains__('age3') \
+                and data[i].__contains__('inc') and data[i].__contains__('exp') and data[i].__contains__('bud') and \
+                    data[i].__contains__('gdp') and data[i].__contains__('gdp1') and data[i].__contains__('gdp2') and \
+                    data[i].__contains__('gdp3') and data[i].__contains__('pgdp') and data[i].__contains__('edu'):
+                model = kmeans_parameter.objects.create(district=data[i]['district'], en_name=data[i]['en_name'],
+                                                        range=data[i]['range'], year=data[i]['year'], msw=data[i]['msw'],
+                                                        pop=data[i]['pop'], pup=data[i]['pup'], hou=data[i]['hou'],
+                                                        aph=data[i]['aph'], gen=data[i]['gen'], age1=data[i]['age1'],
+                                                        age2=data[i]['age2'], age3=data[i]['age3'], inc=data[i]['inc'],
+                                                        exp=data[i]['exp'], bud=data[i]['bud'], gdp=data[i]['gdp'],
+                                                        gdp1=data[i]['gdp1'], gdp2=data[i]['gdp2'], gdp3=data[i]['gdp3'],
+                                                        pgdp=data[i]['pgdp'], edu=data[i]['edu'], project_id=kmeans_project(project_id=id))
                 model.save()
             else:
                 response['code'] = 50000
@@ -1972,7 +1938,8 @@ def input_parameter_kmeans(request):
 @require_http_methods(['GET'])
 def get_parameter_kmeans(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
-    data = kmeans_parameter.objects.all()
+    id = request.GET.get('project_id')
+    data = kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id))
     for item in data:
         response['data'].append(to_dict(item))
 
