@@ -107,8 +107,7 @@ export default {
             image_loading: false,
             choose_dialog: false,
             chooseIndex: null,
-            choose_data: ['人口', '人口密度', '住户数', '平均每户人口', '人均可支配收入', '人均消费支出', '公共支出', '基础设施投资','城市人口密度','绿植覆盖率',
-            'GDP', '人均GDP', '第一产业', '第二产业','第三产业', '环保投资','大学生数','受教育程度', '垃圾产生量'],
+            choose_data: ['MSW','POP','PUP','HOU','APH','GEN','AGE1','AGE2','AGE3','INC','EXP','BUD','GDP','GDP1','GDP2','GDP3','pGDP','EDU'],
             choose_list: [],
         }
     },
