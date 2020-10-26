@@ -54,18 +54,18 @@
             </div>
        </el-dialog>
        <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
-           <el-form :model="form">
+           <el-form :model="add_form">
                <el-form-item label="年份">
-                   <el-input v-model="form.year" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="生活垃圾总量">
-                   <el-input v-model="form.total_garbage" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.total_garbage" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="生活垃圾清运量">
-                   <el-input v-model="form.collect_transport_garbage" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.collect_transport_garbage" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="生活垃圾处理量">
-                   <el-input v-model="form.volume_of_treated" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.volume_of_treated" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -103,6 +103,7 @@ export default {
             delete_dialog: false,
             add_dialog: false,
             form: {},
+            add_form: {},
             delete_form: {
                 id: ''
             }
@@ -168,7 +169,7 @@ export default {
           this.add_dialog =true
         },
         addDataConfirm(){
-            let data = this.form
+            let data = this.add_form
             let that = this
             addsinglegarbage(data).then(res=>{
                 if (res.code === 20000){

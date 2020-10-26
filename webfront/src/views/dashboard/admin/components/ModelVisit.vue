@@ -63,6 +63,7 @@ export default {
     },
     setOptions({ expectedData, actualData } = {}) {
       this.chart.setOption({
+        
         xAxis: {
           data:['2020-4-5', '2020-4-6', '2020-4-7', '2020-4-8', '2020-4-9', '2020-4-10', '2020-4-11'],
           boundaryGap: false,
@@ -94,7 +95,11 @@ export default {
           }
         },
         legend: {
-          data: ['模型使用次数', '模型使用个数']
+          data: ['模型使用次数', '模型使用个数'],
+             textStyle:{//图例文字的样式
+                        color:'#fff',
+                        fontSize:16
+                    }
         },
         series: [{
           name: '模型使用次数', itemStyle: {
@@ -124,7 +129,7 @@ export default {
                 width: 2
               },
               areaStyle: {
-                color: '#f3f8ff'
+                color: '	#AFEEEE'
               }
             }
           },

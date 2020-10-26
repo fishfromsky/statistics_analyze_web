@@ -69,24 +69,24 @@
             </div>
        </el-dialog>
        <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%" >
-           <el-form :model="form">
+           <el-form :model="add_form">
             <el-form-item label="年份">
-                   <el-input v-model="form.year" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="垃圾总处理能力">
-                   <el-input v-model="form.deal_num_total" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.deal_num_total" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="填埋场垃圾处理能力">
-                   <el-input v-model="form.landfill" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.landfill" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="焚烧厂垃圾处理能力">
-                   <el-input v-model="form.incineration" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.incineration" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="堆肥厂垃圾处理能录">
-                   <el-input v-model="form.compost" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.compost" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="其他垃圾处理能力">
-                   <el-input v-model="form.else_num" auto-complete="off"></el-input>
+                   <el-input v-model="add_form.else_num" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -124,6 +124,7 @@ export default {
             delete_dialog: false,
             add_dialog: false,
             form: {},
+            add_form: {},
             delete_form: {
                 id: ''
             }
@@ -189,7 +190,7 @@ export default {
         this.add_dialog = true
         },
         addDataConfirm(){
-            let data = this.form
+            let data = this.add_form
             let that = this
             addsinglecapacitygarbage(data).then(res=>{
                 if (res.code === 20000){

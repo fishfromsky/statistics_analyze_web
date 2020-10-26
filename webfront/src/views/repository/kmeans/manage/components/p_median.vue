@@ -18,7 +18,7 @@
            </el-table-column>
             <el-table-column label="运行状态" align="center" min-width="50">
                <template slot-scope="scope">
-                   <el-tag effect="dark" :type="scope.row.status == '未运行' ? 'info':'success'">{{scope.row.status}}</el-tag>
+                   <el-tag :type="scope.row.status == '未运行' ? 'info':scope.row.status=='正在运行'?'success':'danger'">{{scope.row.status}}</el-tag>
                    <el-button size="mini" @click="Refresh" type="primary">刷新</el-button>
                </template>
            </el-table-column>
@@ -52,6 +52,15 @@
            <div slot="footer">
                <el-button @click="add_dialog=false">取消</el-button>
                <el-button @click="addDataConfirm" type="primary">确定</el-button>
+           </div>
+       </el-dialog>
+       <el-dialog :visible.sync="choose_dialog" title="数据选择">
+           <el-checkbox-group v-model="choose_list">
+               <el-checkbox v-for="item in choose_data" :key="item" :label="item"></el-checkbox>
+           </el-checkbox-group>
+           <div slot="footer">
+               <el-button @click="choose_dialog=false">取消</el-button>
+               <el-button @click="ChooseConfirm" type="primary">确定</el-button>
            </div>
        </el-dialog>
        <el-pagination
@@ -95,7 +104,11 @@ export default {
                 plot_num: ''
             },
             url: '',
-            image_loading: false
+            image_loading: false,
+            choose_dialog: false,
+            chooseIndex: null,
+            choose_data: ['MSW','POP','PUP','HOU','APH','GEN','AGE1','AGE2','AGE3','INC','EXP','BUD','GDP','GDP1','GDP2','GDP3','pGDP','EDU'],
+            choose_list: [],
         }
     },
     methods: {
@@ -105,22 +118,53 @@ export default {
             this.tableData = []
             this.getData()
         },
-        Experiment:function(val){
-            let that = this
-            let data = {}
-            data['project_id'] = this.page_data[val].project_id
-            startkmeans(data).then(res=>{
-                if (res.code === 20000){
-                    that.$message({
-                        type: 'success',
-                        message: '运行成功'
-                    })
-                    that.table_loading = true
-                    that.page_data = []
-                    that.tableData = []
-                    that.getData()
+        Select_Index:function(arr_main, arr_child){
+            let index = []
+            let flag = true
+            for (let i=0; i<arr_main.length; i++){
+                flag = true
+                for (let j=0; j<arr_child.length; j++){
+                    if (arr_main[i]===arr_child[j]){
+                        flag=false
+                        break
+                    }
                 }
-            })
+                if (flag){
+                    index.push(i)
+                }
+            }
+            return index;
+        },
+        ChooseConfirm:function(){
+            if (this.choose_list.length != 2){
+                this.$message.error('只能选择两个维度')
+            }
+            else{
+                this.choose_dialog = false
+                let val = this.chooseIndex
+                let that = this
+                let data = {}
+                let index_list = []
+                data['project_id'] = this.page_data[val].project_id
+                index_list = this.Select_Index(this.choose_data, this.choose_list)
+                data['index_list'] = index_list.toString()
+                startkmeans(data).then(res=>{
+                    if (res.code === 20000){
+                        this.$message({
+                            type: 'success',
+                            message: '运行成功'
+                        })
+                        that.table_loading = true
+                        that.page_data = []
+                        that.tableData = []
+                        that.getData()
+                    }
+                })
+            }
+        },
+        Experiment:function(val){
+            this.chooseIndex = val
+            this.choose_dialog = true
         },
         timeStamptoTime:function(time){
             var date = new Date(time);

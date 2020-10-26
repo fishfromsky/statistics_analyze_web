@@ -74,18 +74,20 @@ class Economy_Info_City(models.Model):
     gdp = models.CharField(max_length=200, null=True)
     gdp_per_capita = models.CharField(max_length=200, null=True)
     gdp_growth_rate = models.FloatField(null=True)
-    unemployment_rate = models.FloatField(null=True)   # 失业率
+    gdp_first_industry = models.FloatField(null=True)
+    gdp_second_industry = models.FloatField(null=True)
+    gdp_third_industry = models.FloatField(null=True)
 
 
 # 全市人口信息表
 class Population_Info_City(models.Model):
     city = models.ForeignKey(to='City', on_delete=models.CASCADE)
     year = models.CharField(max_length=200)
-    population = models.CharField(max_length=200, null=True)
-    population_density = models.CharField(max_length=200, null=True)
+    population = models.FloatField(max_length=200, null=True, default=0)
+    population_density = models.FloatField(max_length=200, null=True, default=0)
     population_rate = models.FloatField(null=True)
-    households = models.CharField(max_length=200, null=True)   # 户数
-    average_person_per_household = models.CharField(max_length=200, null=True)  # 每户平均人口
+    households = models.FloatField(max_length=200, null=True, default=0)   # 户数
+    average_person_per_household = models.FloatField(max_length=200, null=True, default=0)  # 每户平均人口
 
 
 # 全市生活垃圾表
@@ -190,10 +192,13 @@ class lstm_parameter(models.Model):
     year = models.CharField(max_length=255, null=False)
     population = models.FloatField(max_length=255, null=False)
     population_density = models.FloatField(max_length=255, null=False)
+    natural_growth_rate = models.FloatField(max_length=255, null=False, default=0)
     total_households = models.FloatField(max_length=255, null=False)
     average_person_per_household = models.FloatField(max_length=255, null=False)
+    unemployment_rate = models.FloatField(max_length=255, null=False, default=0)
     gdp = models.FloatField(max_length=255, null=False)
     per_capita_gdp = models.FloatField(max_length=255, null=False)
+    gdp_growth_rate = models.FloatField(max_length=255, null=False, default=0)
     residential_garbage = models.FloatField(max_length=255, null=False, default=0.0)
 
 
@@ -261,30 +266,34 @@ class kmeans_result(models.Model):
     xaxis = models.FloatField(null=False)
     yaxis = models.FloatField(null=False)
     label = models.IntegerField(null=False, default=0)
+    district = models.CharField(max_length=255, default='')
     time = models.DateTimeField(auto_now_add=True)
     sort = models.IntegerField(default=1)
 
 
 class kmeans_parameter(models.Model):
-    resident_population = models.FloatField(null=False, default=None)
-    population_of_density = models.FloatField(null=False, default=None)
-    number_of_households = models.FloatField(null=False, default=None)
-    average_population_per_household = models.FloatField(null=False, default=None)
-    urban_residents_per_capita_disposable_income = models.FloatField(null=False, default=None)
-    consumer_expenditure = models.FloatField(null=False, default=None)
-    general_public_expenditure = models.FloatField(null=False, default=None)
-    investment_in_urban_infrastructure = models.FloatField(null=False, default=None)
-    urban_population_density = models.FloatField(null=False, default=None)
-    greening_coverage = models.FloatField(null=False, default=None)
-    gross_local_product = models.FloatField(null=False, default=None)
-    gross_domestic_product_per_capita = models.FloatField(null=False, default=None)
-    gross_domestic_product_of_the_first_industry = models.FloatField(null=False, default=None)
-    gross_value_of_secondary_industry = models.FloatField(null=False, default=None)
-    gross_value_of_the_tertiary_industry = models.FloatField(null=False, default=None)
-    investment_in_environmental_protection = models.FloatField(null=False, default=None)
-    number_of_college_students = models.FloatField(null=False, default=None)
-    level_of_education = models.FloatField(null=False, default=None)
-    municial_household_garbage = models.FloatField(null=False, default=None)
+    district = models.CharField(max_length=255, null=False)
+    en_name = models.CharField(max_length=255, null=False)
+    range = models.CharField(max_length=255, null=False)
+    year = models.CharField(max_length=255, null=False)
+    msw = models.FloatField()
+    pop = models.FloatField()
+    pup = models.FloatField()
+    hou = models.FloatField()
+    aph = models.FloatField()
+    gen = models.FloatField()
+    age1 = models.FloatField()
+    age2 = models.FloatField()
+    age3 = models.FloatField()
+    inc = models.FloatField()
+    exp = models.FloatField()
+    bud = models.FloatField()
+    gdp = models.FloatField()
+    gdp1 = models.FloatField()
+    gdp2 = models.FloatField()
+    gdp3 = models.FloatField()
+    pgdp = models.FloatField()
+    edu = models.FloatField()
     project_id = models.ForeignKey(to="kmeans_project", on_delete=models.CASCADE)
 
 
@@ -295,12 +304,11 @@ class relation_project(models.Model):
     status = models.CharField(max_length=255, default='未运行')
 
 
-class algorithm_table(models.Model):
+class model_table(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
     pic_url = models.CharField(max_length=255, default='')
     description = models.CharField(max_length=255, default='')
-    project_id = models.ForeignKey(to="algorithm_project", on_delete=models.CASCADE, default=1)
 
 
 class algorithm_project(models.Model):
@@ -309,5 +317,92 @@ class algorithm_project(models.Model):
     time = models.IntegerField(default=0)
     describe = models.CharField(max_length=255)
     add_time = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
+
+
+class selected_algorithm_table(models.Model):
+    model = models.ForeignKey(to="model_table", on_delete=models.CASCADE)
+    user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
+
+
+class relation_parameter(models.Model):
+    year = models.FloatField(max_length=255, null=False, default=0)
+    garbage_clear = models.FloatField(null=False)
+    population = models.FloatField(null=False)
+    ratio_city_rural = models.FloatField(null=False)
+    household = models.FloatField(null=False)
+    people_per_capita = models.FloatField(null=False)
+    ratio_sex = models.FloatField(null=False)
+    age_0_14 = models.FloatField(null=False)
+    age_15_64 = models.FloatField(null=False)
+    age_65 = models.FloatField(null=False)
+    disposable_income = models.FloatField(null=False)
+    consume_cost = models.FloatField(null=False)
+    public_cost = models.FloatField(null=False)
+    gdp = models.FloatField(null=False)
+    gdp_first_industry = models.FloatField(null=False)
+    gdp_second_industry = models.FloatField(null=False)
+    gdp_third_industry = models.FloatField(null=False)
+    gnp = models.FloatField(null=False)
+    education = models.FloatField(null=False)
+    project_id = models.ForeignKey(to="relation_project", on_delete=models.CASCADE)
+
+
+class relation_hot_matrix_result(models.Model):
+    project_id = models.ForeignKey(to="relation_project", on_delete=models.CASCADE)
+    label = models.CharField(max_length=255, null=False)
+    year = models.FloatField(max_length=255, default=0)
+    garbage_clear = models.FloatField()
+    population = models.FloatField()
+    ratio_city_rural = models.FloatField()
+    household = models.FloatField()
+    people_per_capita = models.FloatField()
+    ratio_sex = models.FloatField()
+    age_0_14 = models.FloatField()
+    age_15_64 = models.FloatField()
+    age_65 = models.FloatField()
+    disposable_income = models.FloatField()
+    consume_cost = models.FloatField()
+    public_cost = models.FloatField()
+    gdp = models.FloatField()
+    gdp_first_industry = models.FloatField()
+    gdp_second_industry = models.FloatField()
+    gdp_third_industry = models.FloatField()
+    gnp = models.FloatField()
+    education = models.FloatField()
+    sort = models.IntegerField(default=1)
+    time = models.DateTimeField(auto_now_add=True)
+
+
+class relation_RF_result(models.Model):
+    project_id = models.ForeignKey(to="relation_project", on_delete=models.CASCADE)
+    label = models.CharField(max_length=255, null=False)
+    value = models.FloatField(max_length=255, null=False)
+    time = models.DateTimeField(auto_now_add=True)
+    sort = models.IntegerField(default=1)
+
+
+class garbage_element(models.Model):
+    year = models.CharField(max_length=255)
+    cook = models.FloatField(null=False)
+    paper = models.FloatField(null=False)
+    plastic = models.FloatField(null=False)
+    clothe = models.FloatField(null=False)
+    wood = models.FloatField(null=False)
+    ash = models.FloatField(null=False)
+    china = models.FloatField(null=False)
+    glass = models.FloatField(null=False)
+    metal = models.FloatField(null=False)
+    other = models.FloatField(null=False)
+    mix = models.FloatField(null=False)
+    recycle = models.FloatField(null=False)
+    fire = models.FloatField(null=False)
+    city_id = models.ForeignKey(to="City", on_delete=models.CASCADE)
+
+
+class Img(models.Model):
+    img_url = models.ImageField("图片", upload_to="static/img")
+
+
 
 

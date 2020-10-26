@@ -27,7 +27,7 @@
 <script>
 import UploadExcelComponent from './components/UploadFile'
 import { getName } from '@/utils/auth'
-import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory, addcollectfactory } from '@/api/model'
+import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory, addcollectfactory, addelementgarbage } from '@/api/model'
 export default {
   name: 'UploadExcel',
   components: { UploadExcelComponent },
@@ -88,6 +88,10 @@ export default {
         {
           value: '9',
           label: '垃圾收集点信息'
+        },
+        {
+          value: '10',
+          label: '固废成分信息'
         }
       ],
       star: null,
@@ -162,14 +166,17 @@ export default {
         else if (that.area === '1' && that.kind === '6') {
           this.DataInput(addcitygarbagevolume)
         }
-        else if (that.area === '1' && that.kind === '7'){
+        else if (that.area === '1' && that.kind === '7') {
           this. DataInput(addfacorylist)
         }
-        else if (that.area === '1' && that.kind === '8'){
+        else if (that.area === '1' && that.kind === '8') {
           this.DataInput(addtransferfactory)
         }
-        else if (that.area === '1' && that.kind === '9'){
+        else if (that.area === '1' && that.kind === '9') {
           this.DataInput(addcollectfactory)
+        }
+        else if (that.area === '1' && that.kind === '10'){
+          this.DataInput(addelementgarbage)
         }
       }
     }

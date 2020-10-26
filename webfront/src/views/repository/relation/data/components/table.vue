@@ -6,104 +6,99 @@
             <span>{{row.project_id}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人口(10,000)" align="center">
+        <el-table-column label="年份" align="center">
           <template slot-scope="{row}">
-            <span>{{row.resident_population}}</span>
+            <span>{{row.year}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人口密度(p/sq km)" align="center">
+        <el-table-column label="垃圾清运量" align="center">
           <template slot-scope="{row}">
-            <span>{{row.population_of_density}}</span>
+            <span>{{row.garbage_clear}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="住户数(10,000)" align="center">
+        <el-table-column label="常住人口" align="center">
           <template slot-scope="{row}">
-            <span>{{row.number_of_households}}</span>
+            <span>{{row.population}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="平均每户人口(p)" align="center">
+        <el-table-column label="城镇人口比重" align="center">
           <template slot-scope="{row}">
-            <span>{{row.average_population_per_household}}</span>
+            <span>{{row.ratio_city_rural}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人均可支配收入(元)" align="center">
+        <el-table-column label="户数" align="center">
           <template slot-scope="{row}">
-            <span>{{row.urban_residents_per_capita_disposable_income}}</span>
+            <span>{{row.household}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人均消费支出(元)" align="center">
+        <el-table-column label="每户平均人口" align="center">
           <template slot-scope="{row}">
-            <span>{{row.consumer_expenditure}}</span>
+            <span>{{row.people_per_capita}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="公共支出(十亿)" align="center">
+        <el-table-column label="性别比例" align="center">
           <template slot-scope="{row}">
-            <span>{{row.general_public_expenditure}}</span>
+            <span>{{row.ratio_sex}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="基础设施投资(十亿)" align="center">
+        <el-table-column label="年龄构成(0-14)" align="center">
           <template slot-scope="{row}">
-            <span>{{row.investment_in_urban_infrastructure}}</span>
+            <span>{{row.age_0_14}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="城市人口密度(p/sq km)" align="center">
+        <el-table-column label="年龄构成(15-64)" align="center">
           <template slot-scope="{row}">
-            <span>{{row.urban_population_density}}</span>
+            <span>{{row.age_15_64}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="绿植覆盖率(%)" align="center">
+        <el-table-column label="年龄构成（65以上)" align="center">
           <template slot-scope="{row}">
-            <span>{{row.greening_coverage}}</span>
+            <span>{{row.age_65}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="本地生产总值(十亿)" align="center">
+        <el-table-column label="城市居民人均可支配收入" align="center">
           <template slot-scope="{row}">
-            <span>{{row.gross_local_product}}</span>
+            <span>{{row.disposable_income}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人均GDP(元)" align="center">
+        <el-table-column label="城市居民人均消费支出" align="center">
           <template slot-scope="{row}">
-            <span>{{row.gross_domestic_product_per_capita}}</span>
+            <span>{{row.consume_cost}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="第一产业产值(十亿)" align="center">
+        <el-table-column label="一般性公共财政支出" align="center">
           <template slot-scope="{row}">
-            <span>{{row.gross_domestic_product_of_the_first_industry}}</span>
+            <span>{{row.public_cost}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="第二产业产值(十亿)" align="center">
+        <el-table-column label="国内生产总值" align="center">
           <template slot-scope="{row}">
-            <span>{{row.gross_value_of_secondary_industry}}</span>
+            <span>{{row.gdp}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="第三产业产值(十亿)" align="center">
+        <el-table-column label="第一产业生产总值" align="center">
           <template slot-scope="{row}">
-            <span>{{row.investment_in_environmental_protection}}</span>
+            <span>{{row.gdp_first_industry}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="第三产业产值(十亿)" align="center">
+        <el-table-column label="第二产业生产总值" align="center">
           <template slot-scope="{row}">
-            <span>{{row.investment_in_environmental_protection}}</span>
+            <span>{{row.gdp_second_industry}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="环保投资(百万)" align="center">
+        <el-table-column label="第三产业生产总值" align="center">
           <template slot-scope="{row}">
-            <span>{{row.investment_in_environmental_protection}}</span>
+            <span>{{row.gdp_third_industry}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="大学生数(10,000)" align="center">
+        <el-table-column label="人均生产总值" align="center">
           <template slot-scope="{row}">
-            <span>{{row.number_of_college_students}}</span>
+            <span>{{row.gnp}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="员工受教育程度(%)" align="center">
+        <el-table-column label="就业人员受教育程度" align="center">
           <template slot-scope="{row}">
-            <span>{{row.level_of_education}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="垃圾产量(10,000吨)" align="center">
-          <template slot-scope="{row}">
-            <span>{{row.municial_household_garbage}}</span>
+            <span>{{row.education}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -121,7 +116,7 @@
 </template>
 
 <script>
-import { getparameterkmeans } from '@/api/model'
+import { getparameterrelation } from '@/api/model'
 export default {
   props: {
     parentmsg: {
@@ -156,7 +151,7 @@ export default {
       let data = {}
       let that = this
       data['project_id'] = this.project_id
-      getparameterkmeans(data).then(res => {
+      getparameterrelation(data).then(res => {
         if (res.code === 20000){
           that.table_loading = false
           that.tableData = res.data

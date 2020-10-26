@@ -81,11 +81,6 @@
             <span>{{row.investment_in_environmental_protection}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="第三产业产值(十亿)" align="center">
-          <template slot-scope="{row}">
-            <span>{{row.investment_in_environmental_protection}}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="环保投资(百万)" align="center">
           <template slot-scope="{row}">
             <span>{{row.investment_in_environmental_protection}}</span>

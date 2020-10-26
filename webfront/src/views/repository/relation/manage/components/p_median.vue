@@ -18,7 +18,7 @@
            </el-table-column>
             <el-table-column label="运行状态" align="center" min-width="50">
                <template slot-scope="scope">
-                   <el-tag effect="dark" :type="scope.row.status == '未运行' ? 'info':'success'">{{scope.row.status}}</el-tag>
+                   <el-tag :type="scope.row.status == '未运行' ? 'info':scope.row.status=='正在运行'?'success':'danger'">{{scope.row.status}}</el-tag>
                    <el-button size="mini" @click="Refresh" type="primary">刷新</el-button>
                </template>
            </el-table-column>
@@ -54,6 +54,15 @@
                <el-button @click="addDataConfirm" type="primary">确定</el-button>
            </div>
        </el-dialog>
+       <el-dialog :visible.sync="choose_dialog" title="选择关联分析算法" width="30%">
+           <el-select v-model="choose_value" placeholder="请选择想要进行的算法">
+               <el-option v-for="item in choose_item" :key="item.value" :label="item.label" :value="item.value"></el-option>
+           </el-select>
+           <div slot="footer">
+               <el-button @click="choose_dialog=false">取消</el-button>
+               <el-button @click="ExperimentConfirm" type="primary">确定</el-button>
+           </div>
+       </el-dialog>
        <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -69,7 +78,7 @@
 </template>
 
 <script>
-import { getrelationproject, addrelationproject, amendrelationproject, startkmeans } from '@/api/model'
+import { getrelationproject, addrelationproject, amendrelationproject, startrelation } from '@/api/model'
 export default {
     data(){
         return{
@@ -84,6 +93,13 @@ export default {
             amend_dialog: false,
             get_dialog: false,
             add_dialog: false,
+            choose_dialog: false,
+            choose_value: null,
+            choose_item: [
+                { value: '1', label: '相关矩阵'},
+                { value: '2', label: '随机森林'}
+            ],
+            choose_id: null,
             LocationImage: false,
             form: {},
             add_form: {
@@ -106,21 +122,32 @@ export default {
             this.getData()
         },
         Experiment:function(val){
+            this.choose_dialog = true
+            this.choose_id = this.page_data[val].project_id
+        },
+        ExperimentConfirm:function(){
             let that = this
-            let data = {}
-            data['project_id'] = this.page_data[val].project_id
-            startkmeans(data).then(res=>{
-                if (res.code === 20000){
-                    that.$message({
-                        type: 'success',
-                        message: '运行成功'
-                    })
-                    that.table_loading = true
-                    that.page_data = []
-                    that.tableData = []
-                    that.getData()
-                }
-            })
+            if (this.choose_value === null){
+                this.$message.error('请选择具体算法')
+            }
+            else{
+                let data = {}
+                data['project_id'] = this.choose_id
+                data['algorithm'] = this.choose_value
+                startrelation(data).then(res=>{
+                    that.choose_dialog = false
+                    if (res.code === 20000){
+                        that.$message({
+                            type: 'success',
+                            message: '运行成功'
+                        })
+                        that.table_loading = true
+                        that.page_data = []
+                        that.tableData = []
+                        that.getData()
+                    }
+                })
+            }
         },
         timeStamptoTime:function(time){
             var date = new Date(time);

@@ -88,7 +88,8 @@
                 axisLabel:{
                   interval: 0,
                   rotate: 60
-                }
+                },
+          
               }],
               yAxis: [{
                 type: 'value',

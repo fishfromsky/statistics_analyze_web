@@ -9,10 +9,43 @@ plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
 plt.rcParams['axes.unicode_minus']=False #用来正常显示负号
 import seaborn as sns
 from numpy import *
+import sys
+import json
+import requests
+import os
+from pandas import json_normalize
 from sklearn import preprocessing
 from scipy import stats
 
 np.set_printoptions(suppress=True)
+
+project_id = sys.argv[1]
+algorithm = sys.argv[2]
+
+
+class MyEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        """
+        只要检查到了是bytes类型的数据就把它转为str类型
+        :param obj:
+        :return:
+        """
+        if isinstance(obj, bytes):
+            return str(obj, encoding='utf-8')
+        return json.JSONEncoder.default(self, obj)
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(NpEncoder, self).default(obj)
 
 
 def ployinterp_column(s, n, k=2):
@@ -113,26 +146,68 @@ def showbar(labels, model, method):
     feature_importance_df.sort_values(by='importance', ascending=False, inplace=True)
     x_axis = list(feature_importance_df['name'])
     y_axis = list(feature_importance_df['importance'])
-    plt.subplots(figsize=(20, 10))
-    plt.title('importance factors of residential garbage')
-    plt.ylabel('importance')
-    plt.xlabel('factors')
-    plt.xticks(fontsize=9,rotation=30)
-    plt.bar(x_axis, y_axis)
-    if method == 'GBDT':
-        plt.savefig('GBDT_importance.png')
-    if method == 'RF':
-        plt.savefig('RF_importance.png')
-    plt.show()
+    json_data = {}
+    json_data['project_id'] = project_id
+    result_list = []
+    for i in range(len(x_axis)):
+        dict = {}
+        dict['label'] = x_axis[i]
+        dict['value'] = y_axis[i]
+        result_list.append(dict)
+    json_data['data'] = result_list
+    json_data = json.dumps(json_data, cls=NpEncoder)
+    requests.post('http://127.0.0.1:8000/api/save_relation_RF_result', data=json_data)
+    # plt.subplots(figsize=(20, 10))
+    # plt.title('importance factors of residential garbage')
+    # plt.ylabel('importance')
+    # plt.xlabel('factors')
+    # plt.xticks(fontsize=9, rotation=30)
+    # plt.bar(x_axis, y_axis)
+    # if method == 'GBDT':
+    #     plt.savefig('GBDT_importance.png')
+    # if method == 'RF':
+    #     plt.savefig('RF_importance.png')
+    # plt.show()
 
 
 def hot_matrix(dataset):
     corr_matrix = dataset.corr()
-    print(corr_matrix)
-    plt.subplots(figsize=(12, 12))
-    sns.heatmap(corr_matrix, annot=True, vmax=1, square=True, yticklabels=dataset.columns, xticklabels=dataset.columns, cmap="YlGnBu",annot_kws={'size':7})
-    plt.savefig('heatmap.png')
-    plt.show()
+    json_data = {}
+    json_data['project_id'] = project_id
+    result_list = []
+    labels = list(corr_matrix.columns)
+    dataframe = corr_matrix.values
+    for i in range(len(labels)):
+        dict = {}
+        dict['label'] = labels[i]
+        dict['year'] = dataframe[:, 0][i]
+        dict['garbage_clear'] = dataframe[:, 1][i]
+        dict['population'] = dataframe[:, 2][i]
+        dict['city_rural_ratio'] = dataframe[:, 3][i]
+        dict['household'] = dataframe[:, 4][i]
+        dict['people_per_capita'] = dataframe[:, 5][i]
+        dict['sex_ratio'] = dataframe[:, 6][i]
+        dict['age_0_14'] = dataframe[:, 7][i]
+        dict['age_15_64'] = dataframe[:, 8][i]
+        dict['age_65'] = dataframe[:, 9][i]
+        dict['disposable_income'] = dataframe[:, 10][i]
+        dict['consume_cost'] = dataframe[:, 11][i]
+        dict['public_cost'] = dataframe[:, 12][i]
+        dict['gdp'] = dataframe[:, 13][i]
+        dict['gdp_first_industry'] = dataframe[:, 14][i]
+        dict['gdp_second_industry'] = dataframe[:, 15][i]
+        dict['gdp_third_industry'] = dataframe[:, 16][i]
+        dict['gnp'] = dataframe[:, 17][i]
+        dict['education'] = dataframe[:, 18][i]
+        result_list.append(dict)
+    json_data['data'] = result_list
+    json_data = json.dumps(json_data, cls=NpEncoder)
+    requests.post('http://127.0.0.1:8000/api/save_relation_hot_matrix_result', data=json_data)
+
+    # plt.subplots(figsize=(12, 12))
+    # sns.heatmap(corr_matrix, annot=True, vmax=1, square=True, yticklabels=dataset.columns, xticklabels=dataset.columns, cmap="YlGnBu",annot_kws={'size':7})
+    # plt.savefig('heatmap.png')
+    # plt.show()
 
 
 def RF(dataset):
@@ -222,10 +297,19 @@ def gray_relate(dataset):
     data_gray = GRA(dataframe)
 
     ShowGRAHeatMap(data_gray, cols)
+
 #归一化
-def guiyihua(path):
-    dataset = pd.read_csv(path)
-    dataset = dataset.drop(dataset.columns[[0]], axis=1)
+def guiyihua():
+
+    params = {'project_id': project_id}
+    res = requests.get('http://127.0.0.1:8000/api/get_relation_parameter', params=params)
+    json_data = json.loads(res.text).get('data')
+
+    df = json_normalize(json_data)
+    df = df.drop(df.columns[[df.shape[1] - 1]], axis=1)
+
+    dataset = df.drop(df.columns[[0]], axis=1)
+
     datasety = dataset
     labels = dataset.columns
     dataset = dataset.values
@@ -242,7 +326,8 @@ def guiyihua(path):
         else:
             k=np.c_[k, p]
     df = pd.DataFrame(k, columns=labels)
-    return df,datasety
+    return df, datasety
+
 
 def normalization(data):
     _range = np.max(data) - np.min(data)
@@ -256,21 +341,22 @@ def p(dataset):
         x=matrix[:,i]
         y=matrix[:,-1]
         p.append((((x - x.mean()) / (x.std(ddof=0))) * ((y - y.mean()) / (y.std(ddof=0)))).mean())
-    aa = {'p(score)': p}
-    bb = pd.DataFrame(aa)
-    bb.to_csv('p系数检验.csv')
 
     return p
 
-if __name__ == '__main__':
-    path = r'C:\Users\LYM\Desktop\ding mentor mission\2020-9-9.xlsx'#初始文件路径
 
-    temppath = xlsx_to_csv_pd(path) #excel转csv
-    # path = deal1_csv(temppath) #丢掉空值数据
-    path = deal2_csv(temppath)#拉格朗日插值法进行插值
-    dataset,datasety = guiyihua(path)#归一化
-    hot_matrix(dataset)#相关系数热力图
+if __name__ == '__main__':
+
+    dataset,datasety = guiyihua()#归一化
+    if algorithm == '1':
+        hot_matrix(dataset)#相关系数热力图
+    if algorithm == '2':
     # deal_data(dataset)#gbdt
-    # RF(dataset)
+        RF(dataset)
     # gray_relate(dataset)#灰度关联
     # p(datasety)
+
+    dict = {}
+    dict['project_id'] = project_id
+    data = json.dumps(dict)
+    requests.post('http://127.0.0.1:8000/api/stop_relation', data=data)

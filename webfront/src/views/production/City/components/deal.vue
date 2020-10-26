@@ -71,9 +71,6 @@
                     tooltip: {
                         trigger: 'axis'
                     },
-                    legend: {
-                        data: ['垃圾清运量']
-                    },
                     grid: {
                         left: '3%',
                         right: '4%',

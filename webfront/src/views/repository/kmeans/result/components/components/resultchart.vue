@@ -6,24 +6,7 @@
     import echarts from 'echarts'
     require('echarts/theme/infographic') // echarts theme
     import resize from './mixins/resize'
-    let option = {
-        title: {
-            text: 'bi-kmeans聚类分析结果',
-            left: 'center'
-        },
-        xAxis: {
-            type: 'value'
-        },
-        yAxis: {
-            type: 'value'
-        },
-        tooltip: {
-            axisPointer: {
-                type: 'cross'
-            }
-        },
-        series: []
-    }
+    import { param } from '@/utils'
     export default {
         mixins:[resize],
         props:{
@@ -50,7 +33,41 @@
         },
         data(){
             return {
-                chart: null
+                chart: null,
+                districtlist: []
+            }
+        },
+        computed:{
+            option: function(){
+                let that = this
+                return {
+                    title: {
+                        text: 'bi-kmeans聚类分析结果',
+                        left: 'center'
+                    },
+                    xAxis: {
+                        type: 'value'
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    tooltip: {
+                        axisPointer: {
+                            type: 'cross'
+                        },
+                        formatter(params){
+                            let series_index = params.seriesIndex
+                            let data_index = params.dataIndex
+                            let district = that.districtlist[series_index][data_index]
+                            return `
+                                地区：${district}<br>
+                                横坐标: ${params.data[0]}<br>
+                                纵坐标: ${params.data[1]}
+                            `
+                        }
+                    },
+                    series: []
+                }
             }
         },
         watch: {
@@ -77,7 +94,7 @@
             getdataoption:function(result, k) {
                 var series = [];
                 for (let i = 0; i < k; i++) {
-                    option.series.push({
+                    this.option.series.push({
                         name: 'scatter' + i,
                         type: 'scatter',
                         animation: false,
@@ -99,17 +116,20 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
+                this.districtlist = []
                 let label_num = this.judgesortnum(val.label)
                 let dataset = []
                 for (let i=0; i<label_num; i++){
                     dataset.push([])
+                    this.districtlist.push([])
                 }
                 for (let i=0; i<val.label.length; i++){
                     let index = val.label[i]
                     dataset[index].push([val.xaxis[i], val.yaxis[i]])
+                    this.districtlist[index].push(val.district[i])
                 }
                 this.getdataoption(dataset, label_num)
-                this.chart.setOption(option)
+                this.chart.setOption(this.option)
             },
             judgesortnum:function(list){
                 let tmp_sort = []

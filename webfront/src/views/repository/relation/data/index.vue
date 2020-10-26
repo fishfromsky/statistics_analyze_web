@@ -22,7 +22,7 @@
 import column from './components/column.vue'
 import datatable from './components/table.vue'
 import uploadexcel from './components/UploadFile.vue'
-import { parameterkmeans, getidlistkmeans } from '@/api/model'
+import { inputrelationparameter, getidrelation } from '@/api/model'
 import da from 'element-ui/src/locale/lang/da'
 export default { 
   name: 'index',
@@ -46,7 +46,7 @@ export default {
   methods: {
     get_project_id:function(){
       var that = this
-      getidlistkmeans().then(res=>{
+      getidrelation().then(res=>{
         let data = res.data
         for (let i=0; i<data.length; i++){
             that.id_list.push(data[i])
@@ -122,7 +122,7 @@ export default {
       }
     },
     InputParameter:function(){
-      this.DataInput(parameterkmeans)
+      this.DataInput(inputrelationparameter)
     },
   },
   mounted(){

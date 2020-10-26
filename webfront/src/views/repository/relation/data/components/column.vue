@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { getidlistkmeans } from '@/api/model'
+import { getidrelation } from '@/api/model'
 import da from 'element-ui/src/locale/lang/da'
 export default {
     data(){
@@ -24,7 +24,7 @@ export default {
     methods: {
         get_project_id:function(){
             var that = this
-            getidlistkmeans().then(res=>{
+            getidrelation().then(res=>{
                 let data = res.data
                 for (let i=0; i<data.length; i++){
                     that.id_list.push(data[i])

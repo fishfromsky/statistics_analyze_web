@@ -2,8 +2,10 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
-    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project
+    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
+    relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img
 
+from django.conf import settings
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
@@ -345,7 +347,9 @@ def addEconomyCity(request):
     body = json.loads(request.body)
     data = body.get('data')
     for i in range(len(data)):
-        if data[i].__contains__('year') and data[i].__contains__('gdp') and data[i].__contains__('gdp_per_capita') and data[i].__contains__('gdp_growth_rate') and data[i].__contains__('unemployment_rate'):
+        if data[i].__contains__('year') and data[i].__contains__('gdp') and data[i].__contains__('gdp_per_capita') \
+                and data[i].__contains__('gdp_growth_rate') and data[i].__contains__('gdp_first_industry') and \
+                data[i].__contains__('gdp_second_industry') and data[i].__contains__('gdp_third_industry'):
             if Economy_Info_City.objects.filter(year=data[i]['year']).count() != 0:
                 response['code'] = 50000
                 response['message'] = '该年份数据已存在，请先删除'
@@ -354,10 +358,12 @@ def addEconomyCity(request):
                 gdp = data[i]['gdp']
                 gdp_per_capita = data[i]['gdp_per_capita']
                 gdp_growth_rate = data[i]['gdp_growth_rate']
-                unemployment_rate = data[i]['unemployment_rate']
+                gdp_first_industry = data[i]['gdp_first_industry']
+                gdp_second_industry = data[i]['gdp_second_industry']
+                gdp_third_industry = data[i]['gdp_third_industry']
                 list = Economy_Info_City.objects.create(
                     city=City(id=city_id), year=year, gdp=gdp, gdp_per_capita=gdp_per_capita, gdp_growth_rate=gdp_growth_rate,
-                    unemployment_rate=unemployment_rate)
+                    gdp_first_industry=gdp_first_industry, gdp_second_industry=gdp_second_industry, gdp_third_industry=gdp_third_industry)
                 list.save()
         else:
             response['code'] = 50000
@@ -723,10 +729,7 @@ def AddCollectFactory(request):
 def GetCollectFactoryByArea(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     districts = eval(request.GET.get('district'))
-    print(type(districts))
-    print(districts)
     for district in districts:
-        print(district)
         factory_list = CollectFactoryList.objects.filter(district=district)
         for list in factory_list:
             response['data'].append(to_dict(list))
@@ -842,13 +845,17 @@ def amendeconomydata_city(request):
     gdp = body.get('gdp')
     gdp_per_capita = body.get('gdp_per_capita')
     gdp_growth_rate = body.get('gdp_growth_rate')
-    unemployment_rate = body.get('unemployment_rate')
+    gdp_first_industry = body.get('gdp_first_industry')
+    gdp_second_industry = body.get('gdp_second_industry')
+    gdp_third_industry = body.get('gdp_third_industry')
     data = Economy_Info_City.objects.get(id=id)
     data.year = year
     data.gdp = gdp
     data.gdp_per_capita = gdp_per_capita
     data.gdp_growth_rate = gdp_growth_rate
-    data.unemployment_rate = unemployment_rate
+    data.gdp_first_industry = gdp_first_industry
+    data.gdp_second_industry = gdp_second_industry
+    data.gdp_third_industry = gdp_third_industry
     data.save()
     return JsonResponse(response, safe=False)
 
@@ -1014,12 +1021,16 @@ def addsinglerow_cityeconomy(request):
     gdp = body.get('gdp')
     gdp_per_capita = body.get('gdp_per_capita')
     gdp_growth_rate = body.get('gdp_growth_rate')
-    unemployment_rate = body.get('unemployment_rate')
+    gdp_first_industry = body.get('gdp_first_industry')
+    gdp_second_industry = body.get('gdp_second_industry')
+    gdp_third_industry = body.get('gdp_third_industry')
     if Economy_Info_City.objects.filter(year=year).count() != 0:
         response['code'] = 50000
         response['message'] = '该年份数据已存在，请先删除'
     else:
-        data = Economy_Info_City.objects.create(city=City(id=city_id),  year=year, gdp=gdp, gdp_per_capita=gdp_per_capita, gdp_growth_rate=gdp_growth_rate, unemployment_rate=unemployment_rate)
+        data = Economy_Info_City.objects.create(city=City(id=city_id),  year=year, gdp=gdp, gdp_per_capita=gdp_per_capita,
+                                                gdp_growth_rate=gdp_growth_rate, gdp_first_industry=gdp_first_industry,
+                                                gdp_second_industry=gdp_second_industry, gdp_third_industry=gdp_third_industry)
         data.save()
     return JsonResponse(response, safe=False)
 
@@ -1464,7 +1475,9 @@ def input_lstm_parameter(request):
         for i in range(len(data)):
             if data[i].__contains__('year') and data[i].__contains__('population') and data[i].__contains__('population_density')  and data[i].__contains__('total_households') \
                     and data[i].__contains__('average_person_per_household') and data[i].__contains__('gdp') \
-                    and data[i].__contains__('per_capita_gdp') and data[i].__contains__('residential_garbage'):
+                    and data[i].__contains__('per_capita_gdp') and data[i].__contains__('residential_garbage') and \
+                    data[i].__contains__('gdp_growth_rate') and data[i].__contains__('natural_growth_rate') \
+                    and data[i].__contains__('unemployment_rate'):
                 if lstm_parameter.objects.filter(year=data[i]['year'], project_id=lstm_project(project_id=id)).count() != 0:
                     response['code'] = 50000
                     response['message'] = '存在重复年份数据，请先删除该数据'
@@ -1476,7 +1489,10 @@ def input_lstm_parameter(request):
                                                               average_person_per_household=data[i][
                                                                   'average_person_per_household'], gdp=data[i]['gdp'],
                                                               per_capita_gdp=data[i]['per_capita_gdp'],
-                                                              residential_garbage=data[i]['residential_garbage'])
+                                                              residential_garbage=data[i]['residential_garbage'],
+                                                              gdp_growth_rate=data[i]['gdp_growth_rate'],
+                                                              natural_growth_rate=data[i]['natural_growth_rate'],
+                                                              unemployment_rate=data[i]['unemployment_rate'])
                     parameter.save()
             else:
                 response['code'] = 50000
@@ -1498,8 +1514,12 @@ def amend_lstm_project(request):
     return JsonResponse(response, safe=False)
 
 
-def lstm_thread(id):
-    os.system('python backend/LSTM/predict_garbage.py %s' % id)
+def lstm_thread(id, test_type, select_list):
+    ret = os.system('python backend/LSTM/predict_garbage.py %s %s %s' % (id, test_type, select_list))
+    if ret != 0:
+        model = lstm_project.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
 
 
 @csrf_exempt
@@ -1508,6 +1528,8 @@ def experiment_lstm_start(request):
     response = {'message': 'success', 'code': 20000}
     body = json.loads(request.body)
     id = body.get('project_id')
+    test_type = body.get('type')
+    select_list = body.get('select_list')
     if lstm_parameter.objects.filter(project_id=lstm_project(project_id=id)).count() == 0:
         response['code'] = 50000
         response['message'] = '该项目缺少数据，无法实验'
@@ -1515,7 +1537,7 @@ def experiment_lstm_start(request):
         model = lstm_project.objects.get(project_id=id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=lstm_thread, args=(id,))
+        task = threading.Thread(target=lstm_thread, args=(id, test_type, select_list))
         task.start()
     return JsonResponse(response, safe=False)
 
@@ -1700,8 +1722,12 @@ def save_regression_result(request):
     return JsonResponse(response, safe=False)
 
 
-def thread_regression(id):
-    os.system('python backend/multi_regression/newpredict.py %s' % id)
+def thread_regression(id, list):
+    ret = os.system('python backend/multi_regression/newpredict.py %s %s' % (id, list))
+    if ret != 0:
+        model = multi_regression_project.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
 
 
 @csrf_exempt
@@ -1710,6 +1736,7 @@ def start_regression_experiment(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
     id = body.get('project_id')
+    list = body.get('index_list')
     if multi_regression_parameter.objects.filter(project_id=multi_regression_project(project_id=id)).count() == 0:
         response['code'] = 50000
         response['message'] = '该项目缺少数据，无法实验'
@@ -1717,7 +1744,7 @@ def start_regression_experiment(request):
         model = multi_regression_project.objects.get(project_id=id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_regression, args=(id,))
+        task = threading.Thread(target=thread_regression, args=(id, list))
         task.start()
     return JsonResponse(response, safe=False)
 
@@ -1803,15 +1830,20 @@ def save_result_kmeans(request):
         xaxis = data[i]['xaxis']
         yaxis = data[i]['yaxis']
         label = data[i]['label']
+        district = data[i]['district']
         model = kmeans_result.objects.create(project_id=kmeans_project(project_id=id),
-                                             xaxis=xaxis, yaxis=yaxis, label=label, sort=sort)
+                                             xaxis=xaxis, district=district, yaxis=yaxis, label=label, sort=sort)
         model.save()
 
     return JsonResponse(response, safe=False)
 
 
-def thread_kmeans(id):
-    os.system('python backend/KMeans/kmeans.py %s' % id)
+def thread_kmeans(id, list):
+    ret = os.system('python backend/KMeans/kmeans1.py %s %s' % (id, list))
+    if ret != 0:
+        model = kmeans_project.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
 
 
 @csrf_exempt
@@ -1820,6 +1852,7 @@ def start_kmeans(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
     id = body.get('project_id')
+    index_list = body.get('index_list')
     if kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id)).count() == 0:
         response['code'] = 50000
         response['message'] = '该项目缺少数据无法实验，请先补充数据'
@@ -1827,7 +1860,7 @@ def start_kmeans(request):
         model = kmeans_project.objects.get(project_id=id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_kmeans, args=(id,))
+        task = threading.Thread(target=thread_kmeans, args=(id, index_list))
         task.start()
     return JsonResponse(response, safe=False)
 
@@ -1878,56 +1911,21 @@ def input_parameter_kmeans(request):
         response['message'] = '数据库中存在该项目参数，请先删除'
     else:
         for i in range(len(data)):
-            if data[i].__contains__('resident_population') and data[i].__contains__('population_of_density') and \
-                    data[i].__contains__('number_of_households') and data[i].__contains__(
-                'average_population_per_household') \
-                    and data[i].__contains__('urban_residents_per_capita_disposable_income') and data[i].__conains__(
-                'consumer_expenditure') \
-                    and data[i].__contains__('general_public_expenditure') and data[i].__contains__(
-                'investment_in_urban_infrastructure') \
-                    and data[i].__contains__('urban_population_density') and data[i].__contains__(
-                'greening_coverage') and \
-                    data[i].__contains__('gross_local_product') and data[i].__contains__(
-                'gross_domestic_product_per_capita') \
-                    and data[i].__contains__('gross_domestic_product_of_the_first_industry') and data[i].__contains__(
-                'gross_value_of_secondary_industry') \
-                    and data[i].__contains__('gross_value_of_the_tertiary_industry') and data[i].__contains__(
-                'investment_in_environmental_protection') \
-                    and data[i].__contains__('number_of_college_students') and data[i].__contains__(
-                'level_of_education') and \
-                    data[i].__contains__('municial_household_garbage'):
-                model = kmeans_parameter.objects.create(project_id=kmeans_project(project_id=id),
-                                                        resident_population=data[i]['resident_population'],
-                                                        population_of_density=data[i]['population_of_density'],
-                                                        number_of_households=data[i]['number_of_households'],
-                                                        average_population_per_household=data[i][
-                                                              'average_population_per_household'],
-                                                        urban_residents_per_capita_disposable_income=data[i][
-                                                              'urban_residents_per_capita_disposable_income'],
-                                                        consumer_expenditure=data[i]['consumer_expenditure'],
-                                                        general_public_expenditure=data[i][
-                                                              'general_public_expenditure'],
-                                                        investment_in_urban_infrastructure=data[i][
-                                                              'investment_in_urban_infrastructure'],
-                                                        urban_population_density=data[i][
-                                                              'urban_population_density'],
-                                                        greening_coverage=data[i]['greening_coverage'],
-                                                        gross_local_product=data[i]['gross_local_product'],
-                                                        gross_domestic_product_per_capita=data[i][
-                                                              'gross_domestic_product_per_capita'],
-                                                        gross_domestic_product_of_the_first_industry=data[i][
-                                                              'gross_domestic_product_of_the_first_industry'],
-                                                        gross_value_of_secondary_industry=data[i][
-                                                              'gross_value_of_secondary_industry'],
-                                                        gross_value_of_the_tertiary_industry=data[i][
-                                                              'gross_value_of_the_tertiary_industry'],
-                                                        investment_in_environmental_protection=data[i][
-                                                              'investment_in_environmental_protection'],
-                                                        number_of_college_students=data[i][
-                                                              'number_of_college_students'],
-                                                        level_of_education=data[i]['level_of_education'],
-                                                        municial_household_garbage=data[i][
-                                                              'municial_household_garbage'])
+            if data[i].__contains__('district') and data[i].__contains__('en_name') and data[i].__contains__('range') \
+                and data[i].__contains__('year') and data[i].__contains__('msw') and data[i].__contains__('pop') and \
+                data[i].__contains__('pup') and data[i].__contains__('hou') and data[i].__contains__('aph') and data[i].__contains__('gen') \
+                and data[i].__contains__('age1') and data[i].__contains__('age2') and data[i].__contains__('age3') \
+                and data[i].__contains__('inc') and data[i].__contains__('exp') and data[i].__contains__('bud') and \
+                    data[i].__contains__('gdp') and data[i].__contains__('gdp1') and data[i].__contains__('gdp2') and \
+                    data[i].__contains__('gdp3') and data[i].__contains__('pgdp') and data[i].__contains__('edu'):
+                model = kmeans_parameter.objects.create(district=data[i]['district'], en_name=data[i]['en_name'],
+                                                        range=data[i]['range'], year=data[i]['year'], msw=data[i]['msw'],
+                                                        pop=data[i]['pop'], pup=data[i]['pup'], hou=data[i]['hou'],
+                                                        aph=data[i]['aph'], gen=data[i]['gen'], age1=data[i]['age1'],
+                                                        age2=data[i]['age2'], age3=data[i]['age3'], inc=data[i]['inc'],
+                                                        exp=data[i]['exp'], bud=data[i]['bud'], gdp=data[i]['gdp'],
+                                                        gdp1=data[i]['gdp1'], gdp2=data[i]['gdp2'], gdp3=data[i]['gdp3'],
+                                                        pgdp=data[i]['pgdp'], edu=data[i]['edu'], project_id=kmeans_project(project_id=id))
                 model.save()
             else:
                 response['code'] = 50000
@@ -1940,7 +1938,8 @@ def input_parameter_kmeans(request):
 @require_http_methods(['GET'])
 def get_parameter_kmeans(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
-    data = kmeans_parameter.objects.all()
+    id = request.GET.get('project_id')
+    data = kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id))
     for item in data:
         response['data'].append(to_dict(item))
 
@@ -2018,12 +2017,409 @@ def add_algorithm_list(request):
 
 @csrf_exempt
 @require_http_methods(['POST'])
+def get_algorithm_idlist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    body = json.loads(request.body)
+    username = body.get('username')
+    user_id = UserProfile.objects.get(username=username).id
+    data = algorithm_project.objects.filter(user=UserProfile(id=user_id)).values('project_id')
+    for item in data:
+        response['data'].append(item)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def getbyid_algorithm(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    model = algorithm_project.objects.get(project_id=id)
+    response['data'] = to_dict(model)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_idlist_relation(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = relation_project.objects.values('project_id').all()
+    for item in data:
+        response['data'].append(item)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
 def delete_algorithm_list(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
     id = body.get('project_id')
     item = algorithm_project.objects.get(project_id=id)
     item.delete()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_relation_parameter(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = relation_parameter.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def input_relation_parameter(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if relation_project.objects.filter(project_id=id).count() == 0:
+        response['code'] = 50000
+        response['message'] = '不存在该编号的项目'
+    else:
+        if relation_parameter.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
+            response['code'] = 50000
+            response['message'] = '数据库中存在该项目参数，请先删除'
+        else:
+            for i in range(len(data)):
+                if data[i].__contains__('year') and data[i].__contains__('garbage_clear') and data[i].__contains__('population') \
+                    and data[i].__contains__('ratio_city_rural') and data[i].__contains__('household') and data[i].__contains__('people_per_capita') \
+                    and data[i].__contains__('ratio_sex') and data[i].__contains__('age_0_14') and data[i].__contains__('age_15_64') \
+                    and data[i].__contains__('age_65') and data[i].__contains__('disposable_income') and data[i].__contains__('consume_cost') \
+                    and data[i].__contains__('public_cost') and data[i].__contains__('gdp') and data[i].__contains__('gdp_first_industry') \
+                    and data[i].__contains__('gdp_second_industry') and data[i].__contains__('gdp_third_industry') and data[i].__contains__('gnp')\
+                    and data[i].__contains__('education'):
+                    model = relation_parameter.objects.create(project_id=relation_project(project_id=id), year=data[i]['year'],
+                                                              garbage_clear=data[i]['garbage_clear'], population=data[i]['population'],
+                                                              ratio_city_rural=data[i]['ratio_city_rural'],
+                                                              household=data[i]['household'], people_per_capita=data[i]['people_per_capita'],
+                                                              ratio_sex=data[i]['ratio_sex'], age_0_14=data[i]['age_0_14'],
+                                                              age_15_64=data[i]['age_15_64'], age_65=data[i]['age_65'],
+                                                              disposable_income=data[i]['disposable_income'], consume_cost=data[i]['consume_cost'],
+                                                              public_cost=data[i]['public_cost'], gdp=data[i]['gdp'],
+                                                              gdp_first_industry=data[i]['gdp_first_industry'],
+                                                              gdp_second_industry=data[i]['gdp_second_industry'],
+                                                              gdp_third_industry=data[i]['gdp_third_industry'], gnp=data[i]['gnp'],
+                                                              education=data[i]['education'])
+                    model.save()
+                else:
+                    response['code'] = 50000
+                    response['message'] = '表头与数据不一致或者缺少数据'
+
+    return JsonResponse(response, safe=False)
+
+
+def thread_relation(id, sort):
+    ret = os.system('python backend/relationship/GBDT.py %s %s' % (id, sort))
+    if ret != 0:
+        model = relation_project.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def start_relation(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    sort = body.get('algorithm')
+    if relation_parameter.objects.filter(project_id=relation_project(project_id=id)).count() == 0:
+        response['code'] = 50000
+        response['message'] = '该项目缺少数据无法实验，请先补充数据'
+    else:
+        model = relation_project.objects.get(project_id=id)
+        model.status = '正在运行'
+        model.save()
+        task = threading.Thread(target=thread_relation, args=(id, sort))
+        task.start()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def save_relation_hot_matrix_result(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if relation_hot_matrix_result.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
+        last_sort = relation_hot_matrix_result.objects.filter(project_id=relation_project(project_id=id)).order_by(
+            '-id')[:1]
+        sort = last_sort.get().sort + 1
+    else:
+        sort = 1
+    for i in range(len(data)):
+        label = data[i]['label']
+        year = data[i]['year']
+        garbage_clear = data[i]['garbage_clear']
+        population = data[i]['population']
+        city_rural_ratio = data[i]['city_rural_ratio']
+        household = data[i]['household']
+        people_per_capita = data[i]['people_per_capita']
+        sex_ratio = data[i]['sex_ratio']
+        age_0_14 = data[i]['age_0_14']
+        age_15_64 = data[i]['age_15_64']
+        age_65 = data[i]['age_65']
+        disposable_income = data[i]['disposable_income']
+        consume_cost = data[i]['consume_cost']
+        public_cost = data[i]['public_cost']
+        gdp = data[i]['gdp']
+        gdp_first_industry = data[i]['gdp_first_industry']
+        gdp_second_industry = data[i]['gdp_second_industry']
+        gdp_third_industry = data[i]['gdp_third_industry']
+        gnp = data[i]['gnp']
+        education = data[i]['education']
+        model = relation_hot_matrix_result.objects.create(project_id=relation_project(project_id=id),
+                                             label=label, year=year, garbage_clear=garbage_clear, population=population,
+                                                          ratio_city_rural=city_rural_ratio, household=household,
+                                                          people_per_capita=people_per_capita, ratio_sex=sex_ratio,
+                                                          age_0_14=age_0_14, age_15_64=age_15_64, age_65=age_65,
+                                                          disposable_income=disposable_income, consume_cost=consume_cost,
+                                                          public_cost=public_cost, gdp=gdp, gdp_first_industry=gdp_first_industry, gdp_second_industry=gdp_second_industry,
+                                                          gdp_third_industry=gdp_third_industry, gnp=gnp,
+                                                          education=education, sort=sort)
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def stop_relation(request):
+    response = {'message': 'success', 'code': 20000}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    model = relation_project.objects.get(project_id=id)
+    model.status = '未运行'
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_relation_hot_matrix_result(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    id = request.GET.get('project_id')
+    data = relation_hot_matrix_result.objects.filter(project_id=relation_project(project_id=id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def save_relation_RF_result(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if relation_RF_result.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
+        last_sort = relation_RF_result.objects.filter(project_id=relation_project(project_id=id)).order_by(
+            '-id')[:1]
+        sort = last_sort.get().sort + 1
+    else:
+        sort = 1
+    for i in range(len(data)):
+        label = data[i]['label']
+        value = data[i]['value']
+        model = relation_RF_result.objects.create(project_id=relation_project(project_id=id), label=label, value=value,
+                                                  sort=sort)
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_relation_RF_result(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    id = request.GET.get('project_id')
+    data = relation_RF_result.objects.filter(project_id=relation_project(project_id=id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def input_garbage_element(request):
+    response = {'code': 20000, 'message': 'success'}
+    city_id = 1
+    body = json.loads(request.body)
+    data = body.get('data')
+    for i in range(len(data)):
+        if data[i].__contains__('year') and data[i].__contains__('cook') and data[i].__contains__('paper') and \
+            data[i].__contains__('plastic') and data[i].__contains__('clothe') and data[i].__contains__('wood') and \
+            data[i].__contains__('ash') and data[i].__contains__('china') and data[i].__contains__('glass') \
+                and data[i].__contains__('metal') and data[i].__contains__('other') and data[i].__contains__('mix') \
+                and data[i].__contains__('recycle') and data[i].__contains__('fire'):
+            if garbage_element.objects.filter(year=data[i]['year']).count() != 0:
+                response['code'] = 50000
+                response['message'] = '该年份数据已经存在'
+            else:
+                model = garbage_element.objects.create(city_id=City(id=city_id), year=data[i]['year'], cook=data[i]['cook'],
+                                                   paper=data[i]['paper'], plastic=data[i]['plastic'], clothe=data[i]['clothe'],
+                                                   wood=data[i]['wood'], ash=data[i]['ash'], china=data[i]['china'],
+                                                   glass=data[i]['glass'], metal=data[i]['metal'], other=data[i]['other'],
+                                                   mix=data[i]['mix'], recycle=data[i]['recycle'], fire=data[i]['fire'])
+                model.save()
+
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与不一致或缺少数据'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_garbage_element(request):
+    response={'code': 20000, 'message': 'success', 'data': []}
+    data = garbage_element.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_garbage_element(request):
+    response={'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    city_id = 1
+    year = body.get('year')
+    cook = body.get('cook')
+    paper = body.get('paper')
+    plastic = body.get('plastic')
+    clothe = body.get('clothe')
+    wood = body.get('wood')
+    ash = body.get('ash')
+    china = body.get('china')
+    glass = body.get('glass')
+    metal = body.get('metal')
+    elsees = body.get('else')
+    mix = body.get('mix')
+    recycle = body.get('recycle')
+    fire = body.get('fire')
+    if garbage_element.objects.filter(year=year).count() != 0:
+        response['message'] = '该年份数据已经存在，请先删除'
+        response['code'] = 50000
+    else:
+        model = garbage_element.objects.create(year=year, cook=cook, paper=paper, plastic=plastic, clothe=clothe,
+                                               wood=wood, ash=ash, china=china, glass=glass, metal=metal, other=elsees,
+                                               mix=mix, recycle=recycle, fire=fire, city_id=City(id=city_id))
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def delete_garbage_element(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    data = garbage_element.objects.get(id=id)
+    data.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amend_element_garbage(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    year = body.get('year')
+    cook = body.get('cook')
+    paper = body.get('paper')
+    plastic = body.get('plastic')
+    clothe = body.get('clothe')
+    wood = body.get('wood')
+    ash = body.get('ash')
+    china = body.get('china')
+    glass = body.get('glass')
+    metal = body.get('metal')
+    other = body.get('other')
+    mix = body.get('mix')
+    recycle = body.get('recycle')
+    fire = body.get('fire')
+    data = garbage_element.objects.get(id=id)
+    data.year = year
+    data.year = year
+    data.cook = cook
+    data.paper = paper
+    data.plastic = plastic
+    data.clothe = clothe
+    data.wood = wood
+    data.ash = ash
+    data.china = china
+    data.glass = glass
+    data.metal = metal
+    data.other = other
+    data.mix = mix
+    data.recycle = recycle
+    data.fire = fire
+    data.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getallmodels(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    models = model_table.objects.all()
+    for item in models:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def savemodels(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    name = body.get('name')
+    type = body.get('type')
+    pic_url = body.get('pic_url')
+    describe = body.get('describe')
+    model = model_table.objects.create(name=name, type=type, description=describe, pic_url=pic_url)
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def upload_img(request):
+    response = {'code': 20000, 'message': 'success'}
+    img = Img(img_url=request.FILES['file'])
+    img.save()
+    response['url'] = 'http://127.0.0.1:8000/media/'+str(img.img_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def filtermodels(request):
+    response = {'code':20000, 'message': 'success', 'data': []}
+    body = json.loads(request.body)
+    type = body.get('type')
+    models = model_table.objects.filter(type=type)
+    for item in models:
+        response['data'].append(to_dict(item))
 
     return JsonResponse(response, safe=False)
 

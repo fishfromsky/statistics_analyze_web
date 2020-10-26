@@ -67,7 +67,7 @@
                 let economy_rate = val.economy_rate
                 this.chart.setOption({
                     title: {
-                        text: 'GDP增长率和失业率对比图'
+                        text: 'GDP增长率'
                     },
                     xAxis: {
                     data: year,
@@ -99,9 +99,6 @@
                         show: false
                     }
                     },
-                    legend: {
-                        data: ['失业率', 'GDP增长率']
-                    },
                     series: [{
                         name: 'GDP增长率',
                          itemStyle: {
@@ -116,26 +113,6 @@
                         smooth: true,
                         type: 'line',
                         data: economy_rate,
-                        animationDuration: 2800,
-                        animationEasing: 'quadraticOut'
-                    },
-                    {
-                        name: '失业率',
-                        smooth: true,
-                        type: 'line',
-                        itemStyle: {
-                            normal: {
-                            color: '#3888fa',
-                            lineStyle: {
-                                color: '#3888fa',
-                                width: 2
-                            },
-                            areaStyle: {
-                                color: '#f3f8ff'
-                            }
-                            }
-                        },
-                        data: unemployment_rate,
                         animationDuration: 2800,
                         animationEasing: 'quadraticOut'
                     }]

@@ -13,9 +13,14 @@
       </el-col>
     </el-row>
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="24" :lg="24">
+      <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
           <local_-gdp :chart-data="BasicInfo.Rate"></local_-gdp>
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="12">
+        <div class="chart-wrapper">
+          <industry :chart-data="BasicInfo.Industry"></industry>
         </div>
       </el-col>
     </el-row>
@@ -28,16 +33,18 @@
     import GdpChart from './components/GDP'
     import capita_Gdp from './components/capita_GDP'
     import local_Gdp from './components/local_GDP'
+    import Industry from './components/Industry'
     export default {
         name: "index",
         components:{
             GdpChart,
             capita_Gdp,
-            local_Gdp
+            local_Gdp,
+            Industry
         },
         data(){
             return {
-                BasicInfo: {
+              BasicInfo: {
                 GDPData: {
                     total: [],
                     rate: [],
@@ -48,9 +55,14 @@
                   year: []
                 },
                 Rate: {
-                  unemployment_rate: [],
                   economy_rate: [],
                   year: []
+                },
+                Industry: {
+                  year: [],
+                  first: [],
+                  second: [],
+                  third: []
                 }
               }
             }
@@ -71,9 +83,12 @@
                 that.BasicInfo.GDPData.year.push(result[i]['year'])
                 that.BasicInfo.CapitaGDP.capita_gdp.push(parseFloat(result[i]['gdp_per_capita']))
                 that.BasicInfo.CapitaGDP.year.push(result[i]['year'])
-                that.BasicInfo.Rate.unemployment_rate.push(parseFloat(result[i]['unemployment_rate']))
                 that.BasicInfo.Rate.economy_rate.push(parseFloat(result[i]['gdp_growth_rate']))
                 that.BasicInfo.Rate.year.push(result[i]['year'])
+                that.BasicInfo.Industry.year.push(result[i]['year'])
+                that.BasicInfo.Industry.first.push(result[i]['gdp_first_industry'])
+                that.BasicInfo.Industry.second.push(result[i]['gdp_second_industry'])
+                that.BasicInfo.Industry.third.push(result[i]['gdp_third_industry'])
               }
             }
           })

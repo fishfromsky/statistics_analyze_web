@@ -297,7 +297,7 @@ export const constantRoutes = [
     path: '/repository',
     component: Layout,
     redirect: '/repository/p_median',
-    meta: { title: '算法仓库', icon: 'algo'},
+    meta: { title: '模型仓库', icon: 'algo'},
     children: [
       {
         path: 'p_median',
@@ -444,6 +444,12 @@ export const constantRoutes = [
             meta: { title: '项目管理' }
           },
           {
+            path: 'introduction',
+            name: 'introduction',
+            component: () => import('@/views/repository/kmeans/introduction/index'),
+            meta: { title: '算法简介'}
+          },
+          {
             path: 'data',
             name: 'data',
             component: () => import('@/views/repository/kmeans/data/index'),
@@ -457,38 +463,46 @@ export const constantRoutes = [
           }
         ]
       },
-      // {
-      //   path: 'relation',
-      //   name: 'relation',
-      //   redirect: '/repository/relation',
-      //   meta: { title: '关联分析' },
-      //   component: () => import('@/views/repository/index'),
-      //   children: [
-      //     {
-      //       path: 'manage',
-      //       name: 'manage',
-      //       component: () => import('@/views/repository/relation/manage/index'),
-      //       meta: { title: '项目管理' }
-      //     },
-      //     {
-      //       path: 'data',
-      //       name: 'data',
-      //       component: () => import('@/views/repository/relation/data/index'),
-      //       meta: { title: '数据导入' }
-      //     }
-      //   ]
-      // }
-    ]
-  },
-  {
-    path: '/project',
-    component: Layout,
-    children: [
       {
-        path: 'board',
-        ame: 'board',
-        component: () => import('@/views/project/board/index'),
-        meta: { title: '项目实验', icon: 'component' }
+        path: 'relation',
+        name: 'relation',
+        redirect: '/repository/relation',
+        meta: { title: '关联分析' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'manage',
+            component: () => import('@/views/repository/relation/manage/index'),
+            meta: { title: '项目管理' }
+          },
+          {
+            path: 'data',
+            name: 'data',
+            component: () => import('@/views/repository/relation/data/index'),
+            meta: { title: '数据导入' }
+          },
+          {
+            path: 'result',
+            name: 'result',
+            component: () => import('@/views/repository/index'),
+            meta: { title: '结果查询' },
+            children: [
+              {
+                path: 'hotmatrix',
+                name: 'hotmatrix',
+                component: () => import('@/views/repository/relation/result/hotmatrix/index'),
+                meta: { title: '相关系数'}
+              },
+              {
+                path: 'rf',
+                name: 'rf',
+                component: () => import('@/views/repository/relation/result/RF/index'),
+                meta: { title: '随机森林' }
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -511,6 +525,41 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/project',
+    component: Layout,
+    redirect: '/project/board',
+    meta: { title: '算法实验', icon: 'component'},
+    children: [
+      {
+        path: 'board',
+        name: 'board',
+        component: () => import('@/views/project/board/index'),
+        meta: { 
+          title: '算法列表',
+          roles: ['超级管理员', '教师']
+        }
+      },
+      {
+        path: 'select',
+        name: 'select',
+        component: () => import('@/views/project/edit/index'),
+        meta: { 
+          title: '编辑算法',
+          roles: ['超级管理员', '教师']
+        }
+      },
+      {
+        path: 'add',
+        name: 'add',
+        component: () => import('@/views/project/add/index'),
+        meta: {
+          title: '管理模型',
+          roles: ['超级管理员']
+        }
+      }
+    ]
+  },
   {
     path: '/example',
     component: Layout,

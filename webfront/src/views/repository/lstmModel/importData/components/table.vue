@@ -21,6 +21,11 @@
             <span>{{row.population_density}}</span>
           </template>
         </el-table-column>
+        <el-table-column label="自然增长率" align="center">
+          <template slot-scope="{row}">
+            <span>{{row.natural_growth_rate}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="总户数" align="center">
           <template slot-scope="{row}">
             <span>{{row.total_households}}</span>
@@ -31,6 +36,11 @@
             <span>{{row.average_person_per_household}}</span>
           </template>
         </el-table-column>
+        <el-table-column label="失业率" align="center">
+          <template slot-scope="{row}">
+            <span>{{row.unemployment_rate}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="GDP总量" align="center">
           <template slot-scope="{row}">
             <span>{{row.gdp}}</span>
@@ -39,6 +49,11 @@
         <el-table-column label="人均GDP" align="center">
           <template slot-scope="{row}">
             <span>{{row.per_capita_gdp}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="GDP增长率" align="center">
+          <template slot-scope="{row}">
+            <span>{{row.gdp_growth_rate}}</span>
           </template>
         </el-table-column>
         <el-table-column label="固废产量" align="center">

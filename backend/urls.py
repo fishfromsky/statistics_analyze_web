@@ -79,6 +79,12 @@ urlpatterns = [
     url('getcrawl_select', views.get_crawl_record_select, name='getcrawl_select'),  # 筛选历史爬虫数据
     url('startpmedianproject', views.start_p_median_project, name='startpmedianproject'),  # 运行p_median项目
 
+    url('add_element_garbage', views.input_garbage_element),  # 批量导入垃圾成分数据
+    url('get_element_garbage', views.get_garbage_element),    # 获取垃圾成分表数据
+    url('insert_element_garbage', views.add_garbage_element),  # 新增一条垃圾成分数据
+    url('delete_element_garbage', views.delete_garbage_element),  # 删除一条垃圾成分数据
+    url('amend_element_garbage', views.amend_element_garbage),  # 修改一条垃圾成分数据
+
     url('getlstmproject', views.get_lstm_project, name='getlstmproject'),  # 获取lstm项目
     url('addlstmproject', views.add_lstm_project, name='addlstmproject'),  # 添加lstm项目
     url('amendlstmproject', views.amend_lstm_project, name='amendlstmproject'),  # 修改lstm项目
@@ -115,10 +121,26 @@ urlpatterns = [
     url('add_relation_project', views.add_relation_project),  # 添加关联分析项目
     url('get_relation_project', views.get_relation_project),  # 获得关联分析项目
     url('amend_relation_project', views.amend_relation_project),  # 修改关联分析项目信息
+    url('get_id_relation', views.get_idlist_relation),  # 获得关联分析项目编号
+    url('get_relation_parameter', views.get_relation_parameter),  # 获得关联分析参数
+    url('input_relation_parameter', views.input_relation_parameter),  # 导入关联分析参数
+    url('save_relation_hot_matrix_result', views.save_relation_hot_matrix_result),  # 保存关联分析混淆矩阵结果
+    url('start_relation', views.start_relation),  # 开始运行关联分析
+    url('stop_relation', views.stop_relation),  # 结束运行关联分析模型
+    url('get_relation_hot_matrix_result', views.get_relation_hot_matrix_result),  # 获取关联分析混淆矩阵结果
+    url('save_relation_RF_result', views.save_relation_RF_result),  # 保存关联分析随机森林结果
+    url('get_relation_rf_result', views.get_relation_RF_result),  # 获得关联分析随机分析结果
 
     url('get_algorithm_list', views.get_algorithm_list),  # 获取算法模型列表
     url('add_algorithm_list', views.add_algorithm_list),  # 添加算法模型列表
     url('delete_algorithm_list', views.delete_algorithm_list),  # 删除算法模型列表
+    url('get_idlist_algorithm', views.get_algorithm_idlist),  # 获取算法模型ID列表
+    url('getbyid_algorithm', views.getbyid_algorithm),   # 根据ID获取模型
+
+    url('getallmodels', views.getallmodels),  # 获取所有模型列表
+    url('upload_img', views.upload_img),  # 上传图片文件
+    url('savemodel', views.savemodels),  # 保存模型
+    url('filtermodels', views.filtermodels),  # 根据类型筛选模型
 
     url('pmedianbs/list', pmedianbasicviews.pmedianbs_list_get, name='pmedianbs_list_get'),
     url('pmedianbs/download', pmedianbasicviews.pmedianbs_download_get, name='pmedianbs_create_get'),

@@ -66,7 +66,7 @@
                 let year = val.year
                 this.chart.setOption({
                     title: {
-                        text: '上海住房数据'
+                        text: '上海住户数据'
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -76,9 +76,6 @@
                                 backgroundColor: '#6a7985'
                             }
                         }
-                    },
-                    legend: {
-                        data: ['户数']
                     },
                     toolbox: {
                         feature: {
@@ -98,7 +95,8 @@
                     ],
                     yAxis: [
                         {
-                            type: 'value'
+                            type: 'value',
+                            name: '万户'
                         }
                     ],
                     series: [
