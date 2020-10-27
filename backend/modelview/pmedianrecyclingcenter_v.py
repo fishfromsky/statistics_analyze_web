@@ -175,7 +175,7 @@ def pmedianreccen_upload_post(request):
                                                                      has_selected=has_selected
                                                               )
                         list.save()
-                        project.ts_size = len(data)
+                        project.rrc_size = len(data)
                         project.save()
                     else:
                         response['code'] = 50000
