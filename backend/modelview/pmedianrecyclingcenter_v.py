@@ -1,6 +1,7 @@
 import urllib.parse as parse
 from backend.modelview import PmedianRecyclingCenter
 from django.http import JsonResponse
+from backend.models import p_median_project
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
 import json
@@ -98,6 +99,10 @@ def pmedianreccen_create_post(request):
 def pmedianreccen_delete_post(request):
     response = {'code': 20000, 'message': 'success'}
     post_id = json.loads(request.body)
+    project_id = PmedianRecyclingCenter.objects.get(id=post_id).project_id
+    project = p_median_project.objects.get(project_id=project_id)
+    project.rrc_size = project.rrc_size - 1
+    project.save()
     PmedianRecyclingCenter.objects.filter(id=post_id).delete()
     return JsonResponse(response, safe=False)
 
@@ -135,27 +140,52 @@ def pmedianreccen_download_get(request):
 @require_http_methods(['POST'])
 def pmedianreccen_upload_post(request):
     response = {'code': 20000, 'message': 'success'}
-    post_info = json.loads(request.body)
-    # print(post_info)
-    print(type(post_info))
-    createsetlist = []
-    for i in post_info:
-        obj_i = PmedianRecyclingCenter(
-            # id = i.get('id'),
-            project_id=i.get('项目编号'),
-            district=i.get('区'),
-            sub_district=i.get('街镇'),
-            location=i.get('位置'),
-            lng=i.get('经度'),
-            lat=i.get('纬度'),
-            max_load=i.get('处理量'),
-            max_load_unit=i.get('单位'),
-            has_selected=i.get('已选择'),
-
-        )
-        createsetlist.append(obj_i)
-    PmedianRecyclingCenter.objects.bulk_create(createsetlist)
+    data = json.loads(request.body)
+    if data[0].__contains__('项目编号'):
+        if p_median_project.objects.filter(project_id=data[0]['项目编号']).count() == 0:
+            response['code'] = 50000
+            response['message'] = '请先创建项目！'
+        else:
+            project = p_median_project.objects.get(project_id=data[0]['项目编号'])
+            if project.ts_size != 0:
+                response['code'] = 50000
+                response['message'] = '该项目此表数据已存在！'
+            else:
+                for i in range(len(data)):
+                    if data[i].__contains__('项目编号') and data[i].__contains__('区') and data[
+                        i].__contains__('街镇') and data[i].__contains__('位置') and data[i].__contains__(
+                        '经度') and data[i].__contains__('纬度') and data[i].__contains__('处理量') and data[i].__contains__('单位') and data[i].__contains__('已选择'):
+                        project_id = data[i]['项目编号']
+                        district = data[i]['区']
+                        sub_district = data[i]['街镇']
+                        location = data[i]['位置']
+                        lng = data[i]['经度']
+                        lat = data[i]['纬度']
+                        max_load = data['处理量']
+                        max_load_unit = data['单位']
+                        has_selected = data[i]['已选择']
+                        list = PmedianRecyclingCenter.objects.create(project_id=project_id,
+                                                                     district=district,
+                                                                     sub_district=sub_district,
+                                                                     location=location,
+                                                                     lng=lng,
+                                                                     lat=lat,
+                                                                     max_load=max_load,
+                                                                     max_load_unit=max_load_unit,
+                                                                     has_selected=has_selected
+                                                              )
+                        list.save()
+                        project.ts_size = len(data)
+                        project.save()
+                    else:
+                        response['code'] = 50000
+                        response['message'] = '表头与数据不一致或者缺少数据！'
+    else:
+        response['code'] = 50000
+        response['message'] = '表头与数据不一致或者缺少数据！'
     return JsonResponse(response, safe=False)
+
+
 
 
 @csrf_exempt
@@ -192,7 +222,10 @@ def pmedianreccen_clear_post(request):
     if location != None and location != '':
         print(location, 'clear_post..................location')
         pmedianreccen_obj = pmedianreccen_obj.filter(location=location)
-
+    projects = p_median_project.objects.all()
+    for i in projects:
+        i.rrc_size = 0
+        i.save()
     pmedianreccen_obj.delete()
 
     return JsonResponse(response, safe=False)
