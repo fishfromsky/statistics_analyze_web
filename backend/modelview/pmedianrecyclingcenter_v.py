@@ -147,7 +147,7 @@ def pmedianreccen_upload_post(request):
             response['message'] = '请先创建项目！'
         else:
             project = p_median_project.objects.get(project_id=data[0]['项目编号'])
-            if project.ts_size != 0:
+            if project.rrc_size != 0:
                 response['code'] = 50000
                 response['message'] = '该项目此表数据已存在！'
             else:
