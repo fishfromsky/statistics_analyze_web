@@ -161,8 +161,8 @@ def pmedianreccen_upload_post(request):
                         location = data[i]['位置']
                         lng = data[i]['经度']
                         lat = data[i]['纬度']
-                        max_load = data['处理量']
-                        max_load_unit = data['单位']
+                        max_load = data[i]['处理量']
+                        max_load_unit = data[i]['单位']
                         has_selected = data[i]['已选择']
                         list = PmedianRecyclingCenter.objects.create(project_id=project_id,
                                                                      district=district,
