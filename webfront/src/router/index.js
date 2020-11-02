@@ -373,6 +373,12 @@ export const constantRoutes = [
             }
 
             ]
+          },
+          {
+            path: 'test',
+            name: 'echartstest',
+            component: () => import('@/views/repository/p_median/test/test.vue'),
+            meta: { title: '飞线展示' }
           }
         ]
       },
@@ -546,6 +552,15 @@ export const asyncRoutes = [
         component: () => import('@/views/project/edit/index'),
         meta: { 
           title: '编辑算法',
+          roles: ['超级管理员', '教师']
+        }
+      },
+      {
+        path: 'test',
+        name: 'test',
+        component: () => import('@/views/project/test/index'),
+        meta: {
+          title: '算法实验',
           roles: ['超级管理员', '教师']
         }
       },

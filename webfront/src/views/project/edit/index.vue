@@ -3,10 +3,10 @@
         <div class="dashboard-container">
             <el-row :gutter="20">
                 <el-col :xs="24" :sm="24" :lg="16">
-                    <mainbody></mainbody>
+                    <mainbody :parentmsg="modelId"></mainbody>
                 </el-col>
                 <el-col :xs="24" :sm="24" :lg="8">
-                    <rightboard></rightboard>
+                    <rightboard @child-event="handleChild"></rightboard>
                 </el-col>
             </el-row>
         </div>
@@ -16,6 +16,8 @@
 <script>
 import rightboard from './components/rightboard/index'
 import mainbody from './components/mainbody/index'
+import { getparameterkmeans } from '@/api/model'
+import { param } from 'jquery'
 export default {
     components:{
         rightboard,
@@ -23,8 +25,16 @@ export default {
     },
     data(){
         return{
-
+            modelId: null,
+            selectId: null
         }
+    },
+    methods:{
+        handleChild:function(data){
+            this.modelId = data
+        }
+    },
+    created(){
     }
 }
 </script>

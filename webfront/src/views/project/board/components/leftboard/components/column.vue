@@ -32,11 +32,23 @@ export default {
             form: {
                 project_id: null,
                 name: '',
-                describe: ''
+                describe: '',
+                user: ''
             }
         }
     },
     methods:{
+        getCookie:function(name){
+            var strcookie = document.cookie;
+            var arrcookie = strcookie.split("; ");
+            for ( var i = 0; i < arrcookie.length; i++) {
+                var arr = arrcookie[i].split("=");
+                if (arr[0] == name){
+                    return arr[1];
+                }
+            }
+            return "";
+        },
         addData:function(){
             this.add_dialog = true
         },
@@ -52,6 +64,7 @@ export default {
                 this.$message.error('项目描述不能为空')
             }
             else{
+                this.form.user = this.getCookie('environment_name')
                 addalgorithmlist(this.form).then(res=>{
                     if (res.code === 20000){
                         this.$message({

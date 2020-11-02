@@ -1,5 +1,5 @@
 import urllib.parse as parse
-from backend.modelview import PmedianOutputAllocationMatrix
+from backend.modelview import PmedianOutputAllocationMatrix, PmedianTransferStation, PmedianRecyclingCenter
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
@@ -29,6 +29,28 @@ def to_dict(self, fields=None, exclude=None):
 
 
 ########################################################################## PmedianOutputAllocationMatrix 开始##################################
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getalllist_utputallocation(request):
+	response = {'code': 20000, 'message': 'success', 'data': []}
+	project_id = request.GET.get('project_id')
+	data = PmedianOutputAllocationMatrix.objects.filter(project_id=project_id)
+
+	for item in data:
+		# ts_info = PmedianTransferStation.objects.get(sub_names=item.ts)
+		# item.ts_lng = ts_info.lng
+		# item.ts_lat = ts_info.lat
+		# item.ts_district = ts_info.district
+		# rrc_info = PmedianRecyclingCenter.objects.get(sub_district=item.rrc)
+		# item.rrc_lng = rrc_info.lng
+		# item.rrc_lat = rrc_info.lat
+		# item.rrc_district = rrc_info.district
+		response['data'].append(to_dict(item))
+
+	return JsonResponse(response, safe=False)
+
+
 @csrf_exempt
 @require_http_methods(['GET'])
 def utputallocation_list_get(request):

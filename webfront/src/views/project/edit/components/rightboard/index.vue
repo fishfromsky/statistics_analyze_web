@@ -6,7 +6,7 @@
             </div>
             <transition name="fade" mode="out-in">
                 <selectbox v-if="select_status" @child-event="handleChild"></selectbox>
-                <algorithm v-else :parentmsg="select_id"></algorithm>
+                <algorithm v-else  @child-event="handleChildEvent" :parentmsg="select_id"></algorithm>
             </transition>
         </div>
     </div>
@@ -29,6 +29,9 @@ export default {
         }
     },
     methods:{
+        handleChildEvent:function(data){
+            this.$emit('child-event', data)
+        },
         handleChild:function(msg){
            if (msg === '1'){
                this.select_id = '1'

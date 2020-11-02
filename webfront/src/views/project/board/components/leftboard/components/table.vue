@@ -28,7 +28,7 @@
             </el-table-column>
             <el-table-column>
                 <template slot-scope="scope">
-                    <el-button size="mini" type="primary">编辑</el-button>
+                    <el-button size="mini" type="primary" @click="editAlgorithm(scope.$index)">编辑</el-button>
                     <el-button size="mini" type="danger" @click="deleteProject(scope.$index)">删除</el-button>
                 </template>
             </el-table-column>
@@ -83,10 +83,32 @@ export default {
         }
     },
     methods: {
+        editAlgorithm:function(index){
+            let algorithm_id = this.page_data[parseInt(index)].project_id
+            this.$router.push({
+                path: '/project/select',
+                query: {
+                    id: algorithm_id
+                }
+            })
+        },
+        getCookie:function(name){
+            var strcookie = document.cookie;
+            var arrcookie = strcookie.split("; ");
+            for ( var i = 0; i < arrcookie.length; i++) {
+                var arr = arrcookie[i].split("=");
+                if (arr[0] == name){
+                    return arr[1];
+                }
+            }
+            return "";
+        },
         getData:function(){
             let that = this
             this.table_loading = true
-            getalgorithmlist().then(res=>{
+            let data = {}
+            data['name'] = this.getCookie('environment_name')
+            getalgorithmlist(data).then(res=>{
                 if (res.code === 20000){
                     that.table_loading = false
                     that.tableData = res.data

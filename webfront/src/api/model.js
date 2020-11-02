@@ -729,10 +729,11 @@ export function getparameterkmeans(){
 }
 
 // 获取算法模型列表
-export function getalgorithmlist(){
+export function getalgorithmlist(data){
   return request({
     url: '/get_algorithm_list',
-    method: 'get'
+    method: 'get',
+    params: data
   })
 }
 
@@ -915,6 +916,77 @@ export function savemodels(data){
 export function filtermodels(data){
   return request({
     url: '/filtermodels',
+    method: 'post',
+    data
+  })
+}
+
+// 获取特定用户和算法下的模型列表
+export function getmodelconstruction(data){
+  return request({
+    url: '/get_model_construction',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取指定模型信息
+export function getinfomodel(data){
+  return request({
+    url: '/model_message',
+    method: 'get',
+    params: data
+  })
+}
+
+// 增加特定算法中的模型
+export function addselectmodel(data){
+  return request({
+    url: '/select_model_add',
+    method: 'post',
+    data
+  })
+}
+
+// 删除特定算法中的模型
+export function deleteselectmodel(data){
+  return request({
+    url: '/select_model_delete',
+    method: 'post',
+    data
+  })
+}
+
+// 获取算法实验数据
+export function algorithmtestinfo(data){
+  return request({
+    url: '/algorithmtest',
+    method: 'post',
+    data
+  })
+}
+
+// 获取算法文件列表
+export function getfilelist(data){
+  return request({
+    url: '/getdatafilelist',
+    method: 'get'
+  })
+}
+
+// 获取excel表信息
+export function getexcelinfo(data){
+  return request({
+    url: '/getexceldetail',
+    method: 'get',
+    params: data
+  })
+}
+
+// 组合模型关联分析处理
+export function grouptestrelation(data){
+  return request({
+    url: '/grouptest_relation',
     method: 'post',
     data
   })

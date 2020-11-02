@@ -8,6 +8,14 @@ export function fetchList(query) {
   })
 }
 
+export function fetchall_list(query){
+  return request({
+    url: '/utputallocation/allist',
+    method: 'get',
+    params: query
+  })
+}
+
 export function fetchutputallocation(id) {
   return request({
     url: '/api/utputallocation/detail',

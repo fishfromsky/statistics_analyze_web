@@ -307,6 +307,7 @@ class relation_project(models.Model):
 class model_table(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
+    sort_Id = models.IntegerField(default=0)
     pic_url = models.CharField(max_length=255, default='')
     description = models.CharField(max_length=255, default='')
 
@@ -323,6 +324,8 @@ class algorithm_project(models.Model):
 class selected_algorithm_table(models.Model):
     model = models.ForeignKey(to="model_table", on_delete=models.CASCADE)
     user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
+    algorithm = models.ForeignKey(to="algorithm_project", on_delete=models.CASCADE)
+    status = models.CharField(max_length=100, default='未运行')
 
 
 class relation_parameter(models.Model):
@@ -404,5 +407,5 @@ class Img(models.Model):
     img_url = models.ImageField("图片", upload_to="static/img")
 
 
-
-
+class File(models.Model):
+    file_url = models.FileField("文件", upload_to="static/file/%Y/%m/%d")

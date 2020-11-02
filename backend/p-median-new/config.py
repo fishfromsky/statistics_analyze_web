@@ -2,7 +2,7 @@
 # 数据库配置
 host = "localhost"
 user = "root"
-password = "root"
+password = "godj123!@#"
 database = "environment"
 
 # app名称

@@ -3,7 +3,8 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
-    relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img
+    relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
+    selected_algorithm_table, File
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -214,6 +215,33 @@ def filtersuperuser(request):
 
 
 @csrf_exempt
+@require_http_methods(['GET'])
+def deleteteacher(request):
+    response = {'code': 20000, 'message': 'success'}
+    id = request.GET.get('id')
+    teacher = UserProfile.objects.get(id=id)
+    teacher.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def filterteacher(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    name = request.GET.get('name')
+    if name is None:
+        teachers = UserProfile.objects.filter(role='教师')
+        for user in teachers:
+            response['data'].append(to_dict(user))
+    else:
+        teachers = UserProfile.objects.filter(username__contains=name)
+        for user in teachers:
+            response['data'].append(to_dict(user))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
 @require_http_methods(['POST'])
 def addsuperuser(request):
     response = {'code': 20000, 'message': 'success'}
@@ -222,7 +250,40 @@ def addsuperuser(request):
     password = body.get('password')
     email = body.get('email')
     phone = body.get('phone')
-    UserProfile.objects.create(username=name, password=password, phone_number=phone, email=email, role='超级管理员')
+    if UserProfile.objects.filter(username=name).count() != 0:
+        response['code'] = 50000
+        response['message'] = '用户名已经存在'
+    else:
+        UserProfile.objects.create(username=name, password=password, phone_number=phone, email=email, role='超级管理员')
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addteacher(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    name = body.get('name')
+    password = body.get('password')
+    email = body.get('email')
+    phone = body.get('phone')
+    if UserProfile.objects.filter(username=name).count() != 0:
+        response['code'] = 50000
+        response['message'] = '用户名已经存在'
+    else:
+        UserProfile.objects.create(username=name, password=password, phone_number=phone, email=email, role='教师')
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods('GET')
+def getteacher(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    teachers = UserProfile.objects.filter(role='教师')
+    for user in teachers:
+        response['data'].append(to_dict(user))
+
     return JsonResponse(response, safe=False)
 
 
@@ -1991,7 +2052,9 @@ def amend_relation_project(request):
 @require_http_methods(['GET'])
 def get_algorithm_list(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
-    data = algorithm_project.objects.all()
+    name = request.GET.get('name')
+    user_id = UserProfile.objects.get(username=name).id
+    data = algorithm_project.objects.filter(user=UserProfile(id=user_id))
     for item in data:
         response['data'].append(to_dict(item))
 
@@ -2006,11 +2069,14 @@ def add_algorithm_list(request):
     id = body.get('project_id')
     name = body.get('name')
     describe = body.get('describe')
+    username = body.get('user')
+    user_id = UserProfile.objects.get(username=username).id
     if algorithm_project.objects.filter(project_id=id).count() != 0:
         response['code'] = 50000
         response['message'] = '已存在该编号的项目'
     else:
-        model = algorithm_project.objects.create(project_id=id, name=name, describe=describe)
+        model = algorithm_project.objects.create(project_id=id, name=name, describe=describe,
+                                                 user=UserProfile(id=user_id))
         model.save()
     return JsonResponse(response, safe=False)
 
@@ -2413,14 +2479,171 @@ def upload_img(request):
 
 @csrf_exempt
 @require_http_methods(['POST'])
+def upload_file(request):
+    response = {'code': 20000, 'message': 'success'}
+    file = File(file_url=request.FILES['file'])
+    file.save()
+    response['url'] = 'http://127.0.0.1:8000/media/'+str(file.file_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getdatafilelist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    filelist = []
+    for root, dirs, files in os.walk('media\\static\\file'):
+        if len(files) != 0:
+            for file in files:
+                file_dict = {}
+                file_dict['name'] = file
+                file_dict['url'] = os.path.join(root, file)
+                filelist.append(file_dict)
+
+    response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
 def filtermodels(request):
-    response = {'code':20000, 'message': 'success', 'data': []}
+    response = {'code': 20000, 'message': 'success', 'data': []}
     body = json.loads(request.body)
     type = body.get('type')
     models = model_table.objects.filter(type=type)
     for item in models:
         response['data'].append(to_dict(item))
 
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getmodelconstruction(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    name = request.GET.get('name')
+    algorithm_id = request.GET.get('algorithm_id')
+    user_id = UserProfile.objects.get(username=name).id
+    modellist = selected_algorithm_table.objects.filter(user=UserProfile(id=user_id),
+                                                        algorithm=algorithm_project(project_id=algorithm_id)).values('model')
+    for item in modellist:
+        model_id = item['model']
+        model = model_table.objects.get(id=model_id)
+        response['data'].append(to_dict(model))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def modelmessage(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    model_id = request.GET.get('id')
+    model = model_table.objects.get(id=model_id)
+    response['data'].append(to_dict(model))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def select_model_add(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    username = body.get('name')
+    user_id = UserProfile.objects.get(username=username).id
+    algorithm_id = body.get('algorithm_id')
+    model_id = body.get('model_id')
+    if selected_algorithm_table.objects.filter(model=model_table(id=model_id), user=UserProfile(id=user_id),
+                                  algorithm=algorithm_project(project_id=algorithm_id)).count() != 0:
+        response['code'] = 50000
+        response['message'] = '该算法中已经存在该模型'
+    else:
+        model = selected_algorithm_table.objects.create(model=model_table(id=model_id), user=UserProfile(id=user_id),
+                                                        algorithm=algorithm_project(project_id=algorithm_id))
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def select_model_delete(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    username = body.get('name')
+    user_id = UserProfile.objects.get(username=username).id
+    algorithm_id = body.get('algorithm_id')
+    model_id = body.get('model_id')
+    model = selected_algorithm_table.objects.get(user=UserProfile(id=user_id),
+                                                 algorithm=algorithm_project(project_id=algorithm_id), model=model_table(id=model_id))
+    model.delete()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def algorithmtest(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    body = json.loads(request.body)
+    test_dict = {}
+    name = body.get('name')
+    algorithm_id = body.get('algorithm_id')
+    algorithm = algorithm_project.objects.get(project_id=algorithm_id)
+    test_dict['algorithm'] = to_dict(algorithm)
+    user_id = UserProfile.objects.get(username=name).id
+    modellist = selected_algorithm_table.objects.filter(user=UserProfile(id=user_id),
+                                                        algorithm=algorithm_project(project_id=algorithm_id))\
+        .values('model', 'status')
+
+    test_dict['model'] = []
+
+    for item in modellist:
+        model_id = item['model']
+        model = model_table.objects.get(id=model_id)
+        model = to_dict(model)
+        model['status'] = item['status']
+        test_dict['model'].append(model)
+    response['data'].append(test_dict)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getexceldetail(request):
+    response = {'code': 20000, 'message': 'success'}
+    url = request.GET.get('url')
+    df = pd.read_excel(url)
+    cols = df.columns.values
+    col_num = df.shape[1]
+    response['cols'] = cols.tolist()
+    response['col_num'] = col_num
+    return JsonResponse(response, safe=False)
+
+
+def groupthread_relation():
+    pass
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def grouptest_relation(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    file_path = body.get('path')
+    relative_max = body.get('relative_max')
+    select_list = body.get('select_list')
+    choose_col = body.get('choose_col')
+    user = body.get('name')
+    algorithm_id = body.get('algorithm_id')
+    model_id = body.get('model_id')
+    user_id = UserProfile.objects.get(username=user).id
+    model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
+                                                 algorithm=algorithm_project(project_id=algorithm_id))
+    model.status = '正在运行'
+    model.save()
     return JsonResponse(response, safe=False)
 
 

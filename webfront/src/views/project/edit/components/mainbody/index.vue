@@ -4,6 +4,8 @@
             <el-select v-model="selectId" placeholder="请选择算法ID" style="margin-left: 10px">
                 <el-option v-for="item in selectlist" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
+            <el-cascader v-model="rule" :options="rule_option" @change="ruleselect" placeholder="选择组合方式"
+            :props="{ expandTrigger: 'hover' }" style="margin-left: 20px"></el-cascader>
         </div>
         <el-row :gutter="20">
             <el-col :xs="24" :sm="24" :lg="12">
@@ -40,7 +42,26 @@
             </el-col>
             <el-col :xs="24" :sm="24" :lg="12">
                 <transition name="el-zoom-in-top">
-                    <el-card v-show="modelshow" style="margin-top: 20px"></el-card>
+                    <el-card v-show="modelshow" style="margin-top: 20px">
+                        <div class="button-list">
+                            <el-button type="primary" @click="startExperiment">开始实验</el-button>
+                        </div>
+                        <div v-for="item in modellist" :key="item.id">
+                            <div class="model-container">
+                                <div class="img-box">
+                                    <img :src="item.pic_url">
+                                </div>
+                                <div class="title-box">
+                                    <span>{{item.name}}</span>
+                                </div>
+                                <div class="delete-box" @click="DeleteModel(item.id)">
+                                    <div class="delete-img">
+                                        <img src="@/views/image/delete.png">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </el-card>
                 </transition>
             </el-col>
         </el-row>
@@ -48,11 +69,19 @@
 </template>
 
 <script>
-import { algorithmlidlist, getbyidalgorithm } from '@/api/model'
+import { algorithmlidlist, getbyidalgorithm, getinfomodel, addselectmodel, getmodelconstruction, deleteselectmodel } from '@/api/model'
 import Mallki from '@/components/TextHoverEffect/Mallki'
+import da from 'element-ui/src/locale/lang/da'
+import { param } from 'jquery'
 export default {
     components:{
         Mallki
+    },
+    props:{
+        parentmsg: {
+            type: Number,
+            default: true
+        }
     },
     data(){
         return{
@@ -61,7 +90,29 @@ export default {
             modeltext: '',
             modeldescribe: '',
             modelshow: false,
-            username: ''
+            username: '',
+            modellist: [],
+            rule: [],
+            rule_option:[
+                {
+                    value: '1',
+                    label: '组合模板1',
+                    children: [
+                        {
+                            value: '1',
+                            label: '关联分析+多元回归'
+                        },
+                        {
+                            value: '2',
+                            label: '关联分析+LSTM'
+                        },
+                        {
+                            value: '3',
+                            label: '关联分析+聚类'
+                        }
+                    ]
+                }
+            ]
         }
     },
     watch:{
@@ -77,9 +128,91 @@ export default {
                     that.modelshow = true
                 }
             })
+            this.getmodelconstruction()
+        },
+        parentmsg(val){
+            let that = this
+            let data = {}
+            data['model_id'] = val
+            data['name'] = this.getCookie('environment_name')
+            data['algorithm_id'] = this.selectId
+            if (this.selectId === null){
+                this.$message.error('请选择编辑算法的ID')
+            }
+            else{
+                if (this.rule.length === 0){
+                    this.$message.error('请选择组合方式')
+                }
+                else{
+                    addselectmodel(data).then(res=>{
+                        if (res.code === 20000){
+                            this.$message({
+                                type: 'success',
+                                message: '添加成功'
+                            })
+                            that.getmodelconstruction()
+                        }
+                    })
+                }
+            }
         }
     },
     methods:{
+        ruleselect:function(value){
+            this.value = value
+        },
+        startExperiment:function(){
+            let template_list = []
+            for (let i=0; i<this.modellist.length; i++){
+                template_list.push(this.modellist[i].sort_Id)
+            }
+            if (this.rule[0]==="1" && this.rule[1]==="1"){
+                if (template_list[0]===3 && template_list[1]===1){
+                    this.$router.push({
+                        path: '/project/test',
+                        query: {
+                            username: this.getCookie('environment_name'),
+                            algorithm_Id: this.selectId,
+                            rule: this.rule
+                        }
+                    })
+                }
+                else{
+                    this.$message.error('不符合模板规则')
+                }
+            }
+            else if (this.rule[0]==="1" && this.rule[1]==="2"){
+                if (template_list[0]===3 && template_list[1]===0){
+                    this.$router.push({
+                        path: '/project/test',
+                        query: {
+                            username: this.getCookie('environment_name'),
+                            algorithm_Id: this.selectId,
+                            rule: this.rule
+                        }
+                    })
+                }
+                else{
+                    this.$message.error('不符合模板规则')
+                }
+            }
+        },
+        DeleteModel:function(id){
+            let that = this
+            let data = {}
+            data['model_id'] = id
+            data['algorithm_id'] = this.selectId
+            data['name'] = this.getCookie('environment_name')
+            deleteselectmodel(data).then(res=>{
+                if (res.code === 20000){
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功'
+                    })
+                    that.getmodelconstruction()
+                }
+            })
+        },
         getCookie:function(name){
             var strcookie = document.cookie;
             var arrcookie = strcookie.split("; ");
@@ -106,10 +239,27 @@ export default {
                     that.selectlist = list
                 }
             })
+        },
+        getmodelconstruction:function(){
+            let that = this
+            let data = {}
+            data['name'] = this.getCookie('environment_name')
+            data['algorithm_id'] = this.selectId
+            getmodelconstruction(data).then(res=>{
+                if (res.code === 20000){
+                    that.modellist = res.data
+                }
+            })
         }
     },
     mounted(){
         this.getID()
+    },
+    created(){
+        let params = this.$route.query.id
+        if (params != undefined){
+            this.selectId = params
+        }
     }
 
 }
@@ -225,5 +375,67 @@ export default {
         font-weight: 500;
         font-size: 15px;
         color: #409eff;
+    }
+    .model-container{
+        width: 100%;
+        height: 80px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 20px;
+    }
+    .img-box{
+        width: 30%;
+        height: 100%;
+    }
+    .img-box img{
+        width: 100%;
+        height: 100%;
+    }
+    .title-box{
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .title-box span{
+        font-size: 20px;
+        color: #555;
+        margin-left: 20px;
+        font-weight: bold;
+    }
+    .delete-box{
+        width: 20%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .delete-img{
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        transition: all ease 0.2s;
+    }
+    .delete-img:hover{
+        transform: scale(1.1);
+    }
+    .delete-img img{
+        width: 100%;
+        height: 100%;
+    }
+    .button-list{
+        position: relative;
+        width: 100%;
+        min-height: 50px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 10px;
     }
 </style>

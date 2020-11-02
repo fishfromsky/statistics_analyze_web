@@ -54,3 +54,35 @@ export function deletesuperuser(data) {
     params: data
   })
 }
+
+export function addteacher(data){
+  return request({
+    url: '/addteacher',
+    method: 'post',
+    data
+  })
+}
+
+export function getteacher(data){
+  return request({
+    url: '/getteacher',
+    method:'get',
+    data
+  })
+}
+
+export function filterteacher(data){
+  return request({
+    url: '/filterteacher',
+    method: 'get',
+    params: data
+  })
+}
+
+export function deleteteacher(data){
+  return request({
+    url: '/deleteteacher',
+    method: 'get',
+    params: data
+  })
+}

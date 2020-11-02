@@ -14,12 +14,16 @@ urlpatterns = [
     url('logout', views.logout, name='logout'),
     url('addmodel', views.addModel, name='addModel'),
     url('getmodel', views.getModel, name='getModel'),
+    url('getteacher', views.getteacher),
     url('fetchmodel', views.fetchModel, name='fetchModel'),
     url('getsuperuser', views.fetchsuperuser, name='fetchSuperuser'),
     url('fetchsuperuser', views.filtersuperuser, name='filtersuperuser'),
     url('amendmodel', views.amendmodel, name='amendmodel'),
     url('deletemodel', views.deletemodel, name='deletemodel'),
     url('addsuperuser', views.addsuperuser, name='addsuperuser'),
+    url('addteacher', views.addteacher),
+    url('filterteacher', views.filterteacher),
+    url('deleteteacher', views.deleteteacher),
     url('deletesuperuser', views.deletesuperuser, name='deleteSuperuser'),
     url('add_city', views.addCity, name='addCity'),  # 批量导入城市
     url('adddistrict', views.addDistrict, name='addDistrict'),  # 批量导入区
@@ -141,6 +145,16 @@ urlpatterns = [
     url('upload_img', views.upload_img),  # 上传图片文件
     url('savemodel', views.savemodels),  # 保存模型
     url('filtermodels', views.filtermodels),  # 根据类型筛选模型
+    url('get_model_construction', views.getmodelconstruction),  # 获取对应用户对应算法下的模型列表
+    url('model_message', views.modelmessage),  # 获取指定模型信息
+    url('select_model_add', views.select_model_add),  # 增加特定算法中的模型
+    url('select_model_delete', views.select_model_delete),  # 删除特定算法中的模型
+
+    url('algorithmtest', views.algorithmtest),  # 获取算法实验数据
+    url('uploadfile', views.upload_file),  # 上传算法数据文件
+    url('getdatafilelist', views.getdatafilelist),  # 获取算法列表
+    url('getexceldetail', views.getexceldetail),  # 获取excel表信息
+    url('grouptest_relation', views.grouptest_relation),  # 组合模型关联分析处理
 
     url('pmedianbs/list', pmedianbasicviews.pmedianbs_list_get, name='pmedianbs_list_get'),
     url('pmedianbs/download', pmedianbasicviews.pmedianbs_download_get, name='pmedianbs_create_get'),
@@ -157,6 +171,8 @@ urlpatterns = [
     url('pmediancstmtr/delete', pmediancostmatrixviews.pmediancstmtr_delete_post, name='pmediancstmtr_delete_post'),
     url('pmediancstmtr/upload', pmediancostmatrixviews.pmediancstmtr_upload_post, name='pmediancstmtr_upload_post'),
     url('pmediancstmtr/clear', pmediancostmatrixviews.pmediancstmtr_clear_post, name='pmediancstmtr_clear_post'),
+
+    url('utputallocation/allist', pmedianoutputallocationmatrixviews.getalllist_utputallocation),  # 根据项目名称获取所有数据
 
     url('utputallocation/list', pmedianoutputallocationmatrixviews.utputallocation_list_get,
         name='utputallocation_list_get'),
