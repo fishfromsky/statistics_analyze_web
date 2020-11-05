@@ -26,8 +26,7 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-delete-solid" @click="showHandleClear">
         清空
       </el-button>
-       </el-button>
-         <el-button v-waves class="filter-item" type="primary" icon="el-icon-s-marketing" @click="">
+         <el-button v-waves class="filter-item" type="primary" icon="el-icon-s-marketing">
         数据可视化
       </el-button>
 

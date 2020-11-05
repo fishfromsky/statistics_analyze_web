@@ -470,24 +470,32 @@ def addbatchgarbagedata_city(request):
     body = json.loads(request.body)
     city_id = 1
     data = body.get('data')
+    column_list = ['year', 'collect_transport_garbage', 'volume_of_treated', 'rate_of_treated']
     for i in range(len(data)):
-        if data[i].__contains__('year') and data[i].__contains__('total_garbage') and data[i].__contains__('collect_transport_garbage') and data[i].__contains__('volume_of_treated'):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+        if flag:
             year = data[i]['year']
-            total_garbage = data[i]['total_garbage']
-            collect_transport_garbage = data[i]['collect_transport_garbage']
-            volume_of_treated = data[i]['volume_of_treated']
+            rate_of_treated = data[i]['rate_of_treated'] if 'rate_of_treated' in data[i].keys() else ''
+            collect_transport_garbage = data[i]['collect_transport_garbage'] if 'collect_transport_garbage' in \
+                                                                                data[i].keys() else ''
+            volume_of_treated = data[i]['volume_of_treated'] if 'volume_of_treated' in data[i].keys() else ''
             if Garbage_Info_City.objects.filter(year=year).count() != 0:
                 response['code'] = 50000
                 response['message'] = '该年份数据已存在，请先删除'
                 break
             else:
-                list = Garbage_Info_City.objects.create(city=City(id=city_id), year=year, total_garbage=total_garbage,
+                list = Garbage_Info_City.objects.create(city=City(id=city_id), year=year, rate_of_treated=rate_of_treated,
                                                         collect_transport_garbage=collect_transport_garbage, volume_of_treated=volume_of_treated)
                 list.save()
+                pass
         else:
             response['code'] = 50000
-            response['message'] = '表头和数据表不一致或者缺少数据!'
+            response['message'] = '表头和数据表不一致'
     return JsonResponse(response, safe=False)
+
 
 # 批量导入全市无害化处理厂表
 @csrf_exempt
@@ -497,26 +505,33 @@ def addGarbageDealCity(request):
     city_id = 1
     body = json.loads(request.body)
     data = body.get('data')
+    column_list = ['year', 'factory_num_total', 'collect_factory_num', 'landfill', 'incineration', 'compost', 'else_num']
     for i in range(len(data)):
-        if data[i].__contains__('year') and data[i].__contains__('factory_num_total') and data[i].__contains__('landFill') and data[i].__contains__('incineration') and data[i].__contains__('compost') and data[i].__contains__('else_num'):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+        if flag:
             if Gargabe_Deal_City.objects.filter(year=data[i]['year']).count() != 0:
                 response['code'] = 50000
                 response['message'] = '该年份数据已存在，请先删除'
             else:
                 year = data[i]['year']
-                factory_num_total = data[i]['factory_num_total']
-                landFill = data[i]['landFill']
-                incineration = data[i]['incineration']
-                compost = data[i]['compost']
-                else_num = data[i]['else_num']
-                list = Gargabe_Deal_City.objects.create(city=City(id=city_id), year=year, factory_num_total=factory_num_total, landFill=landFill,
+                collect_factory_num = data[i]['collect_factory_num'] if 'collect_factory_num' in data[i].keys() else ''
+                factory_num_total = data[i]['factory_num_total'] if 'factory_num_total' in data[i].keys() else ''
+                landFill = data[i]['landfill'] if 'landfill' in data[i].keys() else ''
+                incineration = data[i]['incineration'] if 'incineration' in data[i].keys() else ''
+                compost = data[i]['compost'] if 'compost' in data[i].keys() else ''
+                else_num = data[i]['else_num'] if 'else_num' in data[i].keys() else ''
+                list = Gargabe_Deal_City.objects.create(city=City(id=city_id), year=year, collect_factory_num=collect_factory_num,
+                                                        factory_num_total=factory_num_total, landFill=landFill,
                                                     incineration=incineration, compost=compost, else_num=else_num)
                 list.save()
         else:
             response['code'] = 50000
             response['message'] = '表头和数据表不一致或者缺少数据!'
             break
-    return JsonResponse(response, safe = False)
+    return JsonResponse(response, safe=False)
 
 # 批量导入全市无害化处能力表
 @csrf_exempt
@@ -969,7 +984,7 @@ def amendgarbagedata_city(request):
     id = body.get('id')
     data = Garbage_Info_City.objects.get(id=id)
     data.year = body.get('year')
-    data.total_garbage = body.get('total_garbage')
+    data.rate_of_treated = body.get('rate_of_treated')
     data.collect_transport_garbage = body.get('collect_transport_garbage')
     data.volume_of_treated = body.get('volume_of_treated')
     data.save()
@@ -995,6 +1010,7 @@ def amendgarbagedealdata_city(request):
     id = body.get('id')
     data = Gargabe_Deal_City.objects.get(id=id)
     data.year = body.get('year')
+    data.collect_factory_num = body.get('collect_factory_num')
     data.factory_num_total = body.get('factory_num_total')
     data.landFill = body.get('landFill')
     data.incineration = body.get('incineration')
@@ -1030,6 +1046,7 @@ def amendgarbagecapacitydata_city(request):
     data.else_num = body.get('else_num')
     data.save()
     return JsonResponse(response, safe=False)
+
 
 # 删除无害化处理能力表数据
 @csrf_exempt
@@ -1125,14 +1142,16 @@ def addsinglegarbageinfocity(request):
     body = json.loads(request.body)
     city_id = 1
     year = body.get('year')
-    total_garbage = body.get('total_garbage')
-    collect_transport_garbage = body.get('collect_transport_garbage')
-    volume_of_treated = body.get('volume_of_treated')
+    rate_of_treated = body.get('rate_of_treated') if body.get('rate_of_treated') is not None else ''
+    collect_transport_garbage = body.get('collect_transport_garbage') if body.get('collect_transport_garbage') is not None else ''
+    volume_of_treated = body.get('volume_of_treated') if body.get('volume_of_treated') is not None else ''
     if Garbage_Info_City.objects.filter(year=year).count() != 0:
         response['code'] = 50000
         response['message'] = '该年份数据已存在，请先删除！'
     else:
-        data = Garbage_Info_City.objects.create(city=City(id=city_id), year=year, total_garbage=total_garbage, collect_transport_garbage=collect_transport_garbage, volume_of_treated=volume_of_treated)
+        data = Garbage_Info_City.objects.create(city=City(id=city_id), year=year, rate_of_treated=rate_of_treated,
+                                                collect_transport_garbage=collect_transport_garbage,
+                                                volume_of_treated=volume_of_treated)
         data.save()
     return JsonResponse(response, safe=False)
 
@@ -1145,6 +1164,7 @@ def addsinglegarbagedealcity(request):
     body = json.loads(request.body)
     city_id = 1
     year = body.get('year')
+    collect_factory_num = body.get('collect_factory_num')
     factory_num_total = body.get('factory_num_total')
     landFill = body.get('landFill')
     incineration = body.get('incineration')
@@ -1154,7 +1174,8 @@ def addsinglegarbagedealcity(request):
         response['code'] = 50000
         response['message'] = '该年份数据已存在，请先删除'
     else:
-        data = Gargabe_Deal_City.objects.create(city=City(id=city_id), year=year, factory_num_total=factory_num_total, landFill=landFill, incineration=incineration, compost=compost, else_num=else_num)
+        data = Gargabe_Deal_City.objects.create(city=City(id=city_id), year=year, collect_factory_num=collect_factory_num,
+                                                factory_num_total=factory_num_total, landFill=landFill, incineration=incineration, compost=compost, else_num=else_num)
         data.save()
     return JsonResponse(response, safe=False)
 

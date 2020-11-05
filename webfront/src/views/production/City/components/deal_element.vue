@@ -7,7 +7,7 @@
     require('echarts/theme/westeros') // echarts theme
     import resize from './mixins/resize'
     export default {
-        name: "GDP",
+        name: "compare",
         mixins:[resize],
         props:{
             className: {
@@ -20,7 +20,7 @@
             },
             height: {
                 type: String,
-                default: '300px'
+                default: '250px'
             },
             autoResize: {
                 type: Boolean,
@@ -62,62 +62,85 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
-                let total = val.total
-                let rate = val.rate
                 let year = val.year
+                let total = val.total
+                let landfill = val.landfill
+                let incineration = val.incineration
+                let compost = val.compost
+                let else_num = val.else_num
                 this.chart.setOption({
-                    title:{
-                        text: '上海市地区生产总值(GDP)'
-                    },
-                    grid:{
-                   
+                    title: {
+                        text: '上海市生活垃圾清运量与处理量'
                     },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {
                             type: 'cross',
-                            crossStyle: {
-                                color: '#999'
+                            label: {
+                                backgroundColor: '#6a7985'
                             }
                         }
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
                     },
                     xAxis: [
                         {
                             type: 'category',
-                            data: year,
-                            axisPointer: {
-                                type: 'shadow'
-                            },
-                            axisLabel : {   //坐标轴刻度标签的相关设置。
-                                interval:0,
-                                rotate:"45"
-                            },
+                            boundaryGap: false,
+                            data: year
                         }
                     ],
                     yAxis: [
                         {
-                            type: 'value',
-                            name: '亿元',
-                            interval: 5000,
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
+                            type: 'value'
                         }
                     ],
                     series: [
                         {
-                            name: 'GDP总量',
-                            type: 'bar',
+                            name: '处理厂总量',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
                             data: total
                         },
-                        // {
-                        //     name: 'GDP增长率',
-                        //     type: 'line',
-                        //     yAxisIndex: 1,
-                        //     data: rate
-                        // }
+                        {
+                            name: '垃圾填埋',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: landfill
+                        },
+                        {
+                            name: '焚烧',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: incineration
+                        },
+                        {
+                            name: '堆肥',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: compost
+                        },
+                        {
+                            name: '其他',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: else_num
+                        }
                     ]
-
                 })
             }
         }

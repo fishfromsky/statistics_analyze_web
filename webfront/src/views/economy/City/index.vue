@@ -34,6 +34,7 @@
     import capita_Gdp from './components/capita_GDP'
     import local_Gdp from './components/local_GDP'
     import Industry from './components/Industry'
+import { parse } from 'path-to-regexp'
     export default {
         name: "index",
         components:{
@@ -77,6 +78,9 @@
           getcityeconomydata().then(res=>{
             if (res.code === 20000){
               let result = res.data
+              result.sort(function(a, b){
+                return parseInt(a.year) > parseInt(b.year) ? 1:-1
+              })
               for (let i=0; i<result.length; i++){
                 that.BasicInfo.GDPData.total.push(parseFloat(result[i]['gdp']))
                 that.BasicInfo.GDPData.rate.push(result[i]['gdp_growth_rate'])
@@ -86,9 +90,10 @@
                 that.BasicInfo.Rate.economy_rate.push(parseFloat(result[i]['gdp_growth_rate']))
                 that.BasicInfo.Rate.year.push(result[i]['year'])
                 that.BasicInfo.Industry.year.push(result[i]['year'])
-                that.BasicInfo.Industry.first.push(result[i]['gdp_first_industry'])
-                that.BasicInfo.Industry.second.push(result[i]['gdp_second_industry'])
-                that.BasicInfo.Industry.third.push(result[i]['gdp_third_industry'])
+                let sum = result[i]['gdp_first_industry']+result[i]['gdp_second_industry']+result[i]['gdp_third_industry']
+                that.BasicInfo.Industry.first.push((result[i]['gdp_first_industry']/sum).toFixed(2))
+                that.BasicInfo.Industry.second.push((result[i]['gdp_second_industry']/sum).toFixed(2))
+                that.BasicInfo.Industry.third.push((result[i]['gdp_third_industry']/sum).toFixed(2))
               }
             }
           })

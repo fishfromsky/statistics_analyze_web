@@ -155,7 +155,7 @@ for p in range(min_p, rrc_numbers+1):
 
         # allocation matrix
         tb_name = app_name + '_pmedianoutputallocationmatrix'
-        sql = "insert into {0}(project_id, p_value, rrc, ts)values(%s,%s,%s,%s)".format(tb_name)
+        sql = "insert into {0}(project_id, p_value, ts, rrc)values(%s,%s,%s,%s)".format(tb_name)
         cur.executemany(sql,insert_rows)
         db.commit()
 

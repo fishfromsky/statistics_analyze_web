@@ -7,7 +7,7 @@
     require('echarts/theme/westeros') // echarts theme
     import resize from './mixins/resize'
     export default {
-        name: "deal",
+        name: "compare",
         mixins:[resize],
         props:{
             className: {
@@ -62,14 +62,25 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
-                let data = val.data
+                let collect_num = val.collect_num
                 let year = val.year
                 this.chart.setOption({
                     title: {
-                        text: '上海市生活垃圾清运量'
+                        text: '上海市生活垃圾收集点'
                     },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            label: {
+                                backgroundColor: '#6a7985'
+                            }
+                        }
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
                     },
                     grid: {
                         left: '3%',
@@ -77,27 +88,25 @@
                         bottom: '3%',
                         containLabel: true
                     },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
+                    xAxis: [
+                        {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: year
                         }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: year
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
                     series: [
                         {
-                            name: '垃圾清运量',
+                            name: '收集点数量',
                             type: 'line',
                             stack: '总量',
-                            data: data
+                            data: collect_num
                         },
-                      
                     ]
                 })
             }

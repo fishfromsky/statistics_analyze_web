@@ -66,7 +66,7 @@
                 let year = val.year
                 this.chart.setOption({
                     title: {
-                        text: '上海人口密度'
+                        text: '上海市人口密度'
                     },
                     tooltip: {
                         trigger: 'axis',

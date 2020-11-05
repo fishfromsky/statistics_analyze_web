@@ -104,6 +104,9 @@
           getcitypopulationdata().then(res=>{
             if (res.code === 20000){
               let result = res.data
+              result.sort(function(a, b){
+                return parseInt(a.year) > parseInt(b.year) ? 1:-1
+              })
               for (let i=0; i<result.length; i++){
                 that.population_data.population.data.push(parseFloat(result[i]['population']))
                 that.population_data.population.year.push(result[i]['year'])

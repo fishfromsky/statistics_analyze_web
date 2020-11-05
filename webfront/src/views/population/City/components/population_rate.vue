@@ -92,7 +92,7 @@
                     yAxis: [
                         {
                             type: 'value',
-                            name: '人口自然增长率 / %',
+                            name: '%',
                             axisLabel: {
                                 formatter: '{value}'
                             }

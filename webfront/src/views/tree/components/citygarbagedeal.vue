@@ -6,6 +6,11 @@
                    <span>{{row.year}}</span>
                </template>
            </el-table-column>
+           <el-table-column label="收集点数量" align="center">
+               <template slot-scope="{row}">
+                   <span>{{row.collect_factory_num}}</span>
+               </template>
+           </el-table-column>
            <el-table-column label="处理厂总数" align="center">
                <template slot-scope="{row}">
                    <span>{{row.factory_num_total}}</span>
@@ -40,6 +45,9 @@
        </el-table>
        <el-dialog :visible.sync="amend_dialog" title="修改数据" width="40%">
            <el-form :model="form">
+               <el-form-item label="生活垃圾收集点">
+                   <el-input v-model="form.collect_factory_num" auto-complete="off"></el-input>
+               </el-form-item>
                <el-form-item label="垃圾处理厂总数">
                    <el-input v-model="form.factory_num_total" auto-complete="off"></el-input>
                </el-form-item>
@@ -72,6 +80,9 @@
            <el-form :model="add_form">
                <el-form-item label="年份">
                    <el-input v-model="add_form.year" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="生活垃圾收集点">
+                   <el-input v-model="add_form.collect_factory_num" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="垃圾处理厂总数">
                    <el-input v-model="add_form.factory_num_total" auto-complete="off"></el-input>

@@ -94,20 +94,21 @@ class Population_Info_City(models.Model):
 class Garbage_Info_City(models.Model):
     city = models.ForeignKey(to='City', on_delete=models.CASCADE)
     year = models.CharField(max_length=200)
-    total_garbage = models.CharField(max_length=200)
-    collect_transport_garbage = models.CharField(max_length=200)  # 生活垃圾清运量
-    volume_of_treated = models.CharField(max_length=200)   # 生活垃圾处理量
+    collect_transport_garbage = models.CharField(max_length=200, default='')  # 生活垃圾清运量
+    volume_of_treated = models.CharField(max_length=200, default='')   # 生活垃圾处理量
+    rate_of_treated = models.CharField(max_length=200, default='')   # 生活垃圾处理率
 
 
 # 全市无害化处理厂信息
 class Gargabe_Deal_City(models.Model):
     city = models.ForeignKey(to='City', on_delete=models.CASCADE)
     year = models.CharField(max_length=200)
-    factory_num_total = models.IntegerField()
-    landFill = models.IntegerField()  # 垃圾填埋厂数量
-    incineration = models.IntegerField()  # 垃圾焚烧厂数量
-    compost = models.IntegerField()  # 垃圾堆肥场数量
-    else_num = models.IntegerField()  # 其他
+    collect_factory_num = models.CharField(max_length=255, default='')
+    factory_num_total = models.CharField(max_length=255, default='')  # 无害化处理厂数量
+    landFill = models.CharField(max_length=255, default='')  # 垃圾填埋厂数量
+    incineration = models.CharField(max_length=255, default='')  # 垃圾焚烧厂数量
+    compost = models.CharField(max_length=255, default='')  # 垃圾堆肥场数量
+    else_num = models.CharField(max_length=255, default='')  # 其他
 
 
 # 全市无害化处理能力信息

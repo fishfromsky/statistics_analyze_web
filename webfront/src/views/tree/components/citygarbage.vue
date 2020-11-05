@@ -6,9 +6,9 @@
                    <span>{{row.year}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="生活垃圾总量" align="center">
+           <el-table-column label="生活垃圾处理率" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.total_garbage}}</span>
+                   <span>{{row.rate_of_treated}}</span>
                </template>
            </el-table-column>
            <el-table-column label="生活垃圾清运量" align="center">
@@ -31,8 +31,8 @@
        </el-table>
        <el-dialog :visible.sync="amend_dialog" title="修改数据" width="40%">
            <el-form :model="form">
-               <el-form-item label="生活垃圾总量">
-                   <el-input v-model="form.total_garbage" auto-complete="off"></el-input>
+               <el-form-item label="生活垃圾处理率">
+                   <el-input v-model="form.rate_of_treated" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="生活垃圾清运量">
                    <el-input v-model="form.collect_transport_garbage" auto-complete="off"></el-input>
@@ -58,8 +58,8 @@
                <el-form-item label="年份">
                    <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="生活垃圾总量">
-                   <el-input v-model="add_form.total_garbage" auto-complete="off"></el-input>
+               <el-form-item label="生活垃圾处理率">
+                   <el-input v-model="add_form.rate_of_treated" auto-complete="off"></el-input>
                </el-form-item>
                <el-form-item label="生活垃圾清运量">
                    <el-input v-model="add_form.collect_transport_garbage" auto-complete="off"></el-input>

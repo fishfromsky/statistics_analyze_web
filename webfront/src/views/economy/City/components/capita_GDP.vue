@@ -66,7 +66,7 @@
                 let year = val.year
                 this.chart.setOption({
                     title:{
-                        text: '上海市近20年人均GDP'
+                        text: '上海市人均GDP'
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -87,7 +87,7 @@
                     },
                     yAxis: {
                         type: 'value',
-                        name: '人均GDP/元'
+                        name: '元'
                     },
                     series: [{
                         data: capital_gdp,

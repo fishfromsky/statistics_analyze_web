@@ -67,7 +67,7 @@
                 let year = val.year
                 this.chart.setOption({
                     title: {
-                        text: '上海市垃圾清运量与处理量对比'
+                        text: '上海市生活垃圾清运量与处理量'
                     },
                     tooltip: {
                         trigger: 'axis',

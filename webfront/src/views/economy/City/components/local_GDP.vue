@@ -67,7 +67,7 @@
                 let economy_rate = val.economy_rate
                 this.chart.setOption({
                     title: {
-                        text: 'GDP增长率'
+                        text: '上海市GDP增长率'
                     },
                     xAxis: {
                     data: year,
@@ -95,19 +95,18 @@
                     padding: [5, 10]
                     },
                     yAxis: {
-                    axisTick: {
-                        show: false
-                    }
+                        type: 'value',
+                        name: '%'
                     },
                     series: [{
                         name: 'GDP增长率',
-                         itemStyle: {
-                            normal: {
-                            color: '#FF005A',
-                            lineStyle: {
+                        itemStyle: {
+                                normal: {
                                 color: '#FF005A',
-                                width: 2
-                            }
+                                lineStyle: {
+                                    color: '#FF005A',
+                                    width: 2
+                                }
                             }
                         },
                         smooth: true,

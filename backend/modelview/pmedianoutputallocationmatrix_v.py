@@ -35,18 +35,25 @@ def to_dict(self, fields=None, exclude=None):
 def getalllist_utputallocation(request):
 	response = {'code': 20000, 'message': 'success', 'data': []}
 	project_id = request.GET.get('project_id')
-	data = PmedianOutputAllocationMatrix.objects.filter(project_id=project_id)
+	p_value = request.GET.get('p_value')
+	rrc = request.GET.get('rrc')
+	if PmedianRecyclingCenter.objects.filter(sub_district=rrc).count() == 0:
+		response['code'] = 50000
+		response['message'] = '不存在该集散厂'
+	else:
+		data = PmedianOutputAllocationMatrix.objects.filter(project_id=project_id, p_value=p_value, rrc=rrc)
 
-	for item in data:
-		# ts_info = PmedianTransferStation.objects.get(sub_names=item.ts)
-		# item.ts_lng = ts_info.lng
-		# item.ts_lat = ts_info.lat
-		# item.ts_district = ts_info.district
-		# rrc_info = PmedianRecyclingCenter.objects.get(sub_district=item.rrc)
-		# item.rrc_lng = rrc_info.lng
-		# item.rrc_lat = rrc_info.lat
-		# item.rrc_district = rrc_info.district
-		response['data'].append(to_dict(item))
+		for item in data:
+			item = to_dict(item)
+			ts_info = PmedianTransferStation.objects.get(sub_names=item['ts'])
+			item['ts_lng'] = ts_info.lng
+			item['ts_lat'] = ts_info.lat
+			item['ts_district'] = ts_info.district
+			rrc_info = PmedianRecyclingCenter.objects.get(sub_district=item['rrc'])
+			item['rrc_lng'] = rrc_info.lng
+			item['rrc_lat'] = rrc_info.lat
+			item['rrc_district'] = rrc_info.district
+			response['data'].append(item)
 
 	return JsonResponse(response, safe=False)
 
@@ -104,7 +111,6 @@ def utputallocation_update_post(request):
 def utputallocation_create_post(request):
 	response = {'code': 20000, 'message': 'success'}
 	post_info = json.loads(request.body)
-	print(post_info)
 	PmedianOutputAllocationMatrix.objects.create(**post_info)
 	return JsonResponse(response, safe=False)
 

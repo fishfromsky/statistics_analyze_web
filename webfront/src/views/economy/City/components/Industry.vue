@@ -68,7 +68,7 @@ export default {
             let year = val.year
             this.chart.setOption({
                 title: {
-                    text: '各产业生产总值'
+                    text: '上海市生产总值结构'
                 },
                 tooltip: {
                     trigger: 'axis',

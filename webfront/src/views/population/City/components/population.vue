@@ -66,7 +66,7 @@
                 let year = val.year
                 this.chart.setOption({
                     title:{
-                        text: '上海市近20年人口数据'
+                        text: '上海市常住人口数量'
                     },
                     grid:{
                    
@@ -92,7 +92,7 @@
                     yAxis: [
                         {
                             type: 'value',
-                            name: '人口数量 / 10,000',
+                            name: '万人',
                             axisLabel: {
                                 formatter: '{value}'
                             }

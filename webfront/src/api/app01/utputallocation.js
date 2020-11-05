@@ -10,7 +10,7 @@ export function fetchList(query) {
 
 export function fetchall_list(query){
   return request({
-    url: '/utputallocation/allist',
+    url: '/api/utputallocation/allist',
     method: 'get',
     params: query
   })

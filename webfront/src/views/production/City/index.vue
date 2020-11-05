@@ -3,63 +3,68 @@
         <el-row :gutter="20">
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
-                    <garbage :chart-data="garbageData.production"></garbage>
+                    <compare :chart-data="garbageData.compare"></compare>
                 </div>
             </el-col>
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
-                    <deal :chart-data="garbageData.deal"></deal>
+                    <rate :chart-data="garbageData.rate"></rate>
                 </div>
             </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 40px">
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
-                    <handle :chart-data="garbageData.handle"></handle>
+                    <collect :chart-data="garbageData.collect"></collect>
                 </div>
             </el-col>
             <el-col :xs="24" :sm=24 :lg="12">
                 <div class="chart-wrapper">
-                    <compare :chart-data="garbageData.compare"></compare>
-                </div>
+                    <dealelement :chart-data="garbageData.deal_element"></dealelement>
+                </div>   
             </el-col>
         </el-row>
     </div>
 </template>
 
 <script>
-    import { getcitygarbage } from '@/api/model'
-    import garbage from './components/garbage'
-    import deal from './components/deal'
-    import handle from './components/handle'
+    import { getcitygarbage, getcitygarbagedealdata } from '@/api/model'
     import compare from './components/compare'
+    import rate from './components/rate'
+    import collect from './components/collect'
+    import dealelement from './components/deal_element'
+    import { parse } from 'path-to-regexp'
     export default {
         name: "index",
         components: {
-            garbage,
-            deal,
-            handle,
-            compare
+            compare,
+            rate,
+            collect,
+            dealelement
         },
         data(){
             return {
                 garbageData: {
-                    production: {
-                        year: [],
-                        data: []
-                    },
-                    deal: {
-                        year: [],
-                        data: []
-                    },
-                    handle: {
-                        year: [],
-                        data: []
-                    },
                     compare: {
                         year: [],
                         deal: [],
                         handle: []
+                    },
+                    rate: {
+                        year: [],
+                        rate: []
+                    },
+                    collect: {
+                        year: [],
+                        collect_num: []
+                    },
+                    deal_element: {
+                        year: [],
+                        total: [],
+                        landfill: [],
+                        incineration: [],
+                        compost: [],
+                        else_num: []
                     }
                 }
             }
@@ -70,16 +75,34 @@
                 getcitygarbage().then(res=>{
                     if (res.code === 20000){
                         let result = res.data
+                        result.sort(function(a, b){
+                            return parseInt(a.year) > parseInt(b.year) ? 1:-1
+                        })
                         for (let i=0; i<result.length; i++){
-                            that.garbageData.production.year.push(result[i]['year'])
-                            that.garbageData.production.data.push(parseFloat(result[i]['total_garbage']))
-                            that.garbageData.deal.year.push(result[i]['year'])
-                            that.garbageData.deal.data.push(parseFloat(result[i]['collect_transport_garbage']))
-                            that.garbageData.handle.year.push(result[i]['year'])
-                            that.garbageData.handle.data.push(parseFloat(result[i]['volume_of_treated']))
                             that.garbageData.compare.year.push(result[i]['year'])
                             that.garbageData.compare.deal.push(parseFloat(result[i]['collect_transport_garbage']))
                             that.garbageData.compare.handle.push(parseFloat(result[i]['volume_of_treated']))
+                            that.garbageData.rate.year.push(parseFloat(result[i]['year']))
+                            that.garbageData.rate.rate.push(parseFloat(result[i]['rate_of_treated']))
+                        }
+                    }
+                })
+                getcitygarbagedealdata().then(res=>{
+                    if (res.code === 20000){
+                        let result = res.data
+                        console.log(result)
+                        result.sort(function(a, b){
+                            return parseInt(a.year) > parseInt(b.year) ? 1:-1
+                        })
+                        for (let i=0; i<result.length; i++){
+                            that.garbageData.collect.year.push(parseFloat(result[i]['year']))
+                            that.garbageData.collect.collect_num.push(parseFloat(result[i]['collect_factory_num']))
+                            that.garbageData.deal_element.year.push(parseFloat(result[i]['year']))
+                            that.garbageData.deal_element.total.push(parseFloat(result[i]['factory_num_total']))
+                            that.garbageData.deal_element.landfill.push(parseFloat(result[i]['landFill']))
+                            that.garbageData.deal_element.incineration.push(parseFloat(result[i]['incineration']))
+                            that.garbageData.deal_element.compost.push(parseFloat(result[i]['compost']))
+                            that.garbageData.deal_element.else_num.push(parseFloat(result[i]['else_num']))
                         }
                     }
                 })

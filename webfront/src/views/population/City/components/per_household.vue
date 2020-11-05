@@ -66,7 +66,7 @@
                 let year = val.year
                 this.chart.setOption({
                     title: {
-                        text: '每户平均人口数据'
+                        text: '上海市每户平均人口数据'
                     },
                     tooltip: {
                         trigger: 'axis'
