@@ -20,7 +20,7 @@ export default {
     },
     height: {
       type: String,
-      default: '350px'
+      default: '250px'
     },
     autoResize: {
       type: Boolean,
@@ -96,10 +96,7 @@ export default {
         },
         legend: {
           data: ['模型使用次数', '模型使用个数'],
-             textStyle:{//图例文字的样式
-                        color:'#fff',
-                        fontSize:16
-                    }
+            show:false
         },
         series: [{
           name: '模型使用次数', itemStyle: {

@@ -13,7 +13,7 @@
           </div>
         </div>
       </el-col>
-      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-card">
+      <!-- <el-col :xs="12" :sm="12" :lg="6" class="card-panel-card">
         <div class="card-panel">
           <div class="card-panel-icon-wrapper icon-eye">
             <svg-icon icon-class="eye-open" class-name="card-panel-icon" />
@@ -25,21 +25,9 @@
             <count-to :start-val="0" :end-val="128" :duration="2600" class="card-panel-num" />
           </div>
         </div>
-      </el-col>
-      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-card">
-        <div class="card-panel">
-          <div class="card-panel-icon-wrapper icon-use">
-            <svg-icon icon-class="clipboard" class-name="card-panel-icon" />
-          </div>
-          <div class="card-panel-description">
-            <div class="card-panel-text">
-              今日模型使用次数
-            </div>
-            <count-to :start-val="0" :end-val="34" :duration="2600" class="card-panel-num" />
-          </div>
-        </div>
-      </el-col>
-      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-card">
+      </el-col> -->
+     
+      <!-- <el-col :xs="12" :sm="12" :lg="6" class="card-panel-card">
         <div class="card-panel">
           <div class="card-panel-icon-wrapper icon-count">
             <svg-icon icon-class="shopping" class-name="card-panel-icon" />
@@ -51,7 +39,7 @@
             <count-to :start-val="0" :end-val="9" :duration="2600" class="card-panel-num" />
           </div>
         </div>
-      </el-col>
+      </el-col> -->
     </el-row>
 </template>
 
@@ -68,6 +56,7 @@ export default {
 <style lang="scss" scoped>
   .panel-group{
     margin-top: 18px;
+
   }
   .card-panel-col{
     margin-bottom: 32px;
