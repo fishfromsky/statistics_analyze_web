@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import da from 'element-ui/src/locale/lang/da'
+import { expr } from 'jquery'
 
 export function getmodel() {
   return request({
@@ -987,6 +988,94 @@ export function getexcelinfo(data){
 export function grouptestrelation(data){
   return request({
     url: '/grouptest_relation',
+    method: 'post',
+    data
+  })
+}
+
+// 批量导入危险垃圾处置表
+export function adddangerousgarbage(data){
+  return request({
+    url: '/adddangerousgarbagecity',
+    method: 'post',
+    data
+  })
+}
+
+// 获取危险垃圾处置表信息
+export function getdangerousgarbage(){
+  return request({
+    url: '/getdangerousgarbage',
+    method: 'get'
+  })
+}
+
+// 修改危险垃圾处置表信息
+export function amenddangerousgarbage(data){
+  return request({
+    url: '/amenddangerousgarbage',
+    method: 'post',
+    data
+  })
+}
+
+// 删除危险垃圾处置信息
+export function deletedangeroudgarbage(data){
+  return request({
+    url: '/deletedangerousgarbage',
+    method: 'post',
+    data
+  })
+}
+
+// 添加危险垃圾处置信息
+export function addbyrowdangerousgarbage(data){
+  return request({
+    url: '/addbyrow_dangerousgarbage',
+    method: 'post',
+    data
+  })
+}
+
+// 批量导入垃圾日均清运量信息
+export function addgarbageclearperday(data){
+  return request({
+    url: '/addgarbageclear',
+    method: 'post',
+    data
+  })
+}
+
+// 获取到所有垃圾日均清运量信息
+export function getgarbageclearperday(){
+  return request({
+    url: '/getgarbageclearperday',
+    method: 'get'
+  })
+}
+
+// 修改垃圾日均清运量
+export function amendgarbageclearperday(data){
+  return request({
+    url: '/amendgarbageclearperday',
+    method: 'post',
+    data
+  })
+}
+
+// 删除垃圾日均清运量
+export function deletegarbageclearperday(data){
+  return request({
+    url: '/deletegarbageclearperday',
+    method: 'post',
+    data
+  })
+}
+
+// 新增一条垃圾清运量数据
+export function addgarbageclearbyrow(data){
+  return request({
+    url: '/addsinglerowforgarbageclear',
     method: 'post',
     data
   })

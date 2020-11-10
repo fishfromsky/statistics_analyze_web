@@ -115,22 +115,32 @@ class Gargabe_Deal_City(models.Model):
 class Gargage_Deal_Capacity_City(models.Model):
     city = models.ForeignKey(to='City', on_delete=models.CASCADE)
     year = models.CharField(max_length=200)
-    deal_num_total = models.CharField(max_length=200)
-    landfill = models.CharField(max_length=200)
-    incineration = models.CharField(max_length=200)
-    compost = models.CharField(max_length=200)
-    else_num = models.CharField(max_length=200)
+    deal_num_total = models.CharField(max_length=200, default='')
+    landfill = models.CharField(max_length=200, default='')
+    incineration = models.CharField(max_length=200, default='')
+    compost = models.CharField(max_length=200, default='')
+    else_num = models.CharField(max_length=200, default='')
 
 
 # 全市无害化处理量表
 class Garbage_Deal_Volume_City(models.Model):
     city = models.ForeignKey(to='City', on_delete=models.CASCADE)
     year = models.CharField(max_length=200)
-    deal_volume_total = models.CharField(max_length=200)
-    landfill = models.CharField(max_length=200)
-    incineration = models.CharField(max_length=200)
-    compost = models.CharField(max_length=200)
-    else_num = models.CharField(max_length=200)
+    deal_volume_total = models.CharField(max_length=200, default='')
+    landfill = models.CharField(max_length=200, default='')
+    incineration = models.CharField(max_length=200, default='')
+    compost = models.CharField(max_length=200, default='')
+    else_num = models.CharField(max_length=200, default='')
+
+
+# 危险废弃物产生数据
+class Dangerous_Garbage_City(models.Model):
+    city = models.ForeignKey(to="City", on_delete=models.CASCADE)
+    year = models.CharField(max_length=200)
+    production = models.CharField(max_length=200, default='')
+    deal = models.CharField(max_length=200, default='')
+    use = models.CharField(max_length=200, default='')
+    store = models.CharField(max_length=200, default='')
 
 
 class Crawl_Data_Record(models.Model):
@@ -388,20 +398,27 @@ class relation_RF_result(models.Model):
 
 class garbage_element(models.Model):
     year = models.CharField(max_length=255)
-    cook = models.FloatField(null=False)
-    paper = models.FloatField(null=False)
-    plastic = models.FloatField(null=False)
-    clothe = models.FloatField(null=False)
-    wood = models.FloatField(null=False)
-    ash = models.FloatField(null=False)
-    china = models.FloatField(null=False)
-    glass = models.FloatField(null=False)
-    metal = models.FloatField(null=False)
-    other = models.FloatField(null=False)
-    mix = models.FloatField(null=False)
-    recycle = models.FloatField(null=False)
-    fire = models.FloatField(null=False)
+    cook = models.CharField(max_length=200, default='')
+    paper = models.CharField(max_length=200, default='')
+    plastic = models.CharField(max_length=200, default='')
+    clothe = models.CharField(max_length=200, default='')
+    wood = models.CharField(max_length=200, default='')
+    ash = models.CharField(max_length=200, default='')
+    china = models.CharField(max_length=200, default='')
+    glass = models.CharField(max_length=200, default='')
+    metal = models.CharField(max_length=200, default='')
+    other = models.CharField(max_length=200, default='')
     city_id = models.ForeignKey(to="City", on_delete=models.CASCADE)
+
+
+class garbage_clear(models.Model):
+    year = models.CharField(max_length=200, default='')
+    wet = models.CharField(max_length=200, default='')
+    dry = models.CharField(max_length=200, default='')
+    recycle = models.CharField(max_length=200, default='')
+    harm = models.CharField(max_length=200, default='')
+    total = models.CharField(max_length=200, default='')
+    city = models.ForeignKey(to="City", on_delete=models.CASCADE)
 
 
 class Img(models.Model):

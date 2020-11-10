@@ -99,52 +99,29 @@ export default {
             },
             series: [
                 {
-                    name: '纺织类',
+                    name: '湿垃圾',
                     type: 'line',
-                    stack: '总量',
-                    data: val.clothe
+                    data: val.wet
                 },
                 {
-                    name: '木竹类',
+                    name: '干垃圾',
                     type: 'line',
-                    stack: '总量',
-                    data: val.wood
+                    data: val.dry
                 },
                 {
-                    name: '灰土类',
+                    name: '可回收物',
                     type: 'line',
-                    stack: '总量',
-                    data: val.ash
+                    data: val.recycle
                 },
                 {
-                    name: '砖瓦陶瓷类',
+                    name: '有害垃圾',
                     type: 'line',
-                    stack: '总量',
-                    data: val.china
+                    data: val.harm
                 },
                 {
-                    name: '玻璃类',
+                    name: '清运总量',
                     type: 'line',
-                    stack: '总量',
-                    data: val.glass
-                },
-                {
-                    name: '金属类',
-                    type: 'line',
-                    stack: '总量',
-                    data: val.metal
-                },
-                {
-                    name: '其他',
-                    type: 'line',
-                    stack: '总量',
-                    data: val.other
-                },
-                 {
-                    name: '混合类',
-                    type: 'line',
-                    stack: '总量',
-                    data: val.mix
+                    data: val.total
                 },
             ]
       })

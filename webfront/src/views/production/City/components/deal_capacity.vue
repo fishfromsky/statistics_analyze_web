@@ -70,7 +70,7 @@
                 let else_num = val.else_num
                 this.chart.setOption({
                     title: {
-                        text: '上海市生活垃圾无害化处理能力'
+                        text: '上海市生活垃圾无害化处理量'
                     },
                     tooltip: {
                         trigger: 'axis',

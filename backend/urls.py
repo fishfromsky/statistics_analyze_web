@@ -34,6 +34,16 @@ urlpatterns = [
     url('addcitygarbagevolume', views.addGarbageDealVolumeCity, name='addGarbageDealVolumeCity'),  # 批量导入无害化处理量数据
     url('addcityeconomy', views.addEconomyCity, name='addEconomyCity'),  # 批量导入城市经济信息
     url('addcitypopulation', views.addPopulationCity, name='addPopulationCity'),  # 批量导入城市人口信息
+    url('adddangerousgarbagecity', views.addDangerousGarbageCity),  # 批量导入危险垃圾处置表
+    url('getdangerousgarbage', views.getDangerousGarbageCity),  # 获取危险垃圾处置表信息
+    url('amenddangerousgarbage', views.amenddangerousgarbage),  # 修改危险垃圾处置表信息
+    url('deletedangerousgarbage', views.deletedangerousgarbage),  # 删除危险垃圾处置信息
+    url('addbyrow_dangerousgarbage', views.addbyrow_dangerousgarbage),  # 添加危险垃圾处置信息
+    url('addgarbageclear', views.addGarbageClear),  # 添加日均清运量
+    url('getgarbageclearperday', views.getGarbageClearPerDay),  # 获取垃圾日均清运量
+    url('amendgarbageclearperday', views.amendGarbageClearPerDay),  # 修改垃圾日均清运量
+    url('deletegarbageclearperday', views.deleteGarbageClearPerDay),   # 删除垃圾日均清运量
+    url('addsinglerowforgarbageclear', views.addSingleRowforGarbageClear),   # 增加单条垃圾清运量数据
     url('geteconomycity', views.geteconomydata_city, name='geteconomycity'),  # 请求城市经济表
     url('getpopulationcity', views.getpopulation_city, name='getpopulationcity'),  # 请求城市人口表
     url('getgarbagecity', views.getgarbage_city, name='getgarbageinfo'),  # 请求城市生活垃圾表

@@ -4,7 +4,7 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
     relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
-    selected_algorithm_table, File
+    selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -541,23 +541,28 @@ def addGarbageDealCapacityCity(request):
     city_id = 1
     body = json.loads(request.body)
     data = body.get('data')
+    column_list = ['year', 'deal_num_total', 'landfill', 'incineration', 'compost', 'else_num']
     for i in range(len(data)):
-        if data[i].__contains__('year') and data[i].__contains__('deal_num_total') and data[i].__contains__('landfill') and data[i].__contains__('incineration') and data[i].__contains__('compost') and data[i].__contains__('else_num'):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+        if flag:
             if Gargage_Deal_Capacity_City.objects.filter(year=data[i]['year']).count() != 0:
                 response['code'] = 50000
                 response['message'] = '该年份数据已存在，请先删除'
             else:
                 year = data[i]['year']
-                deal_num_total = data[i]['deal_num_total']
-                landfill = data[i]['landfill']
-                incineration = data[i]['incineration']
-                compost = data[i]['compost']
-                else_num = data[i]['else_num']
+                deal_num_total = data[i]['deal_num_total'] if 'deal_num_total' in data[i].keys() else ''
+                landfill = data[i]['landfill'] if 'landfill' in data[i].keys() else ''
+                incineration = data[i]['incineration'] if 'incineration' in data[i].keys() else ''
+                compost = data[i]['compost'] if 'compost' in data[i].keys() else ''
+                else_num = data[i]['else_num'] if 'else_num' in data[i].keys() else ''
                 list = Gargage_Deal_Capacity_City.objects.create(city=City(id=city_id), year=year, deal_num_total=deal_num_total, landfill=landfill, incineration=incineration, compost=compost, else_num=else_num)
                 list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头与数据表不一致或者缺少数据！'
+            response['message'] = '表头与数据表不一致'
             break
     return JsonResponse(response, safe=False)
 
@@ -569,23 +574,121 @@ def addGarbageDealVolumeCity(request):
     city_id = 1
     body = json.loads(request.body)
     data = body.get('data')
+    column_list = ['year', 'deal_volume_total', 'landfill', 'incineration', 'compost', 'else_num']
     for i in range(len(data)):
-        if data[i].__contains__('year') and data[i].__contains__('deal_volume_total') and data[i].__contains__('landfill') and data[i].__contains__('incineration') and data[i].__contains__('compost') and data[i].__contains__('else_num'):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+        if flag:
             if Garbage_Deal_Volume_City.objects.filter(year=data[i]['year']).count() != 0:
                 response['code'] = 50000
                 response['message'] = '该年份数据已存在，请先删除'
             else:
                 year = data[i]['year']
-                deal_volume_total = data[i]['deal_volume_total']
-                landfill = data[i]['landfill']
-                incineration = data[i]['incineration']
-                compost = data[i]['compost']
-                else_num = data[i]['else_num']
+                deal_volume_total = data[i]['deal_volume_total'] if 'deal_volume_total' in data[i].keys() else ''
+                landfill = data[i]['landfill'] if 'landfill' in data[i].keys() else ''
+                incineration = data[i]['incineration'] if 'incineration' in data[i].keys() else ''
+                compost = data[i]['compost'] if 'compost' in data[i].keys() else ''
+                else_num = data[i]['else_num'] if 'else_num' in data[i].keys() else ''
                 list = Garbage_Deal_Volume_City.objects.create(city=City(id=city_id), year=year, deal_volume_total=deal_volume_total, landfill=landfill, incineration=incineration, compost=compost, else_num=else_num)
                 list.save()
         else:
             response['code'] = 50000
-            response['message'] = '表头与数据表不一致或者缺少数据！'
+            response['message'] = '表头与数据表不一致'
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addDangerousGarbageCity(request):
+    response = {'code': 20000, 'message': 'success'}
+    city_id = 1
+    body = json.loads(request.body)
+    data = body.get('data')
+    column_list = ['year', 'production', 'deal', 'use', 'store']
+    for i in range(len(data)):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+        if flag:
+            if Dangerous_Garbage_City.objects.filter(year=data[i]['year']).count() != 0:
+                response['code'] = 50000
+                response['message'] = '该年份数据已存在，请先删除'
+            else:
+                year = data[i]['year']
+                production = data[i]['production'] if 'production' in data[i].keys() else ''
+                deal = data[i]['deal'] if 'deal' in data[i].keys() else ''
+                use = data[i]['use'] if 'use' in data[i].keys() else ''
+                store = data[i]['store'] if 'store' in data[i].keys() else ''
+                list = Dangerous_Garbage_City.objects.create(city=City(id=city_id), year=year, production=production,
+                                                             deal=deal, use=use, store=store)
+                list.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据不一致'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getDangerousGarbageCity(request):
+    response = {'code': 20000, 'message': 'success'}
+    data = Dangerous_Garbage_City.objects.all()
+    response['data'] = []
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amenddangerousgarbage(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    data = Dangerous_Garbage_City.objects.get(id=id)
+    data.year = body.get('year')
+    data.production = body.get('production')
+    data.deal = body.get('deal')
+    data.use = body.get('use')
+    data.store = body.get('store')
+    data.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def deletedangerousgarbage(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    data = Dangerous_Garbage_City.objects.get(id=id)
+    data.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addbyrow_dangerousgarbage(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    city_id = 1
+    year = body.get('year')
+    production = body.get('production')
+    deal = body.get('deal')
+    use = body.get('use')
+    store = body.get('store')
+    if Dangerous_Garbage_City.objects.filter(year=year).count() != 0:
+        response['code'] = 50000
+        response['message'] = '该年份数据已存在，请删除'
+    else:
+        record = Dangerous_Garbage_City.objects.create(city=City(id=city_id), year=year, production=production,
+                                                       deal=deal, use=use, store=store)
+        record.save()
     return JsonResponse(response, safe=False)
 
 
@@ -691,7 +794,6 @@ def DeleteTransferFactory(request):
 def addtransferbyrow(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
-    print(body)
     name = body.get('name')
     address = body.get('address')
     longitude = body.get('longitude')
@@ -2345,21 +2447,31 @@ def input_garbage_element(request):
     city_id = 1
     body = json.loads(request.body)
     data = body.get('data')
+    column_list = ['year', 'cook', 'paper', 'plastic', 'clothe', 'wood', 'ash', 'china', 'glass', 'metal', 'other']
     for i in range(len(data)):
-        if data[i].__contains__('year') and data[i].__contains__('cook') and data[i].__contains__('paper') and \
-            data[i].__contains__('plastic') and data[i].__contains__('clothe') and data[i].__contains__('wood') and \
-            data[i].__contains__('ash') and data[i].__contains__('china') and data[i].__contains__('glass') \
-                and data[i].__contains__('metal') and data[i].__contains__('other') and data[i].__contains__('mix') \
-                and data[i].__contains__('recycle') and data[i].__contains__('fire'):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+        if flag:
             if garbage_element.objects.filter(year=data[i]['year']).count() != 0:
                 response['code'] = 50000
                 response['message'] = '该年份数据已经存在'
             else:
-                model = garbage_element.objects.create(city_id=City(id=city_id), year=data[i]['year'], cook=data[i]['cook'],
-                                                   paper=data[i]['paper'], plastic=data[i]['plastic'], clothe=data[i]['clothe'],
-                                                   wood=data[i]['wood'], ash=data[i]['ash'], china=data[i]['china'],
-                                                   glass=data[i]['glass'], metal=data[i]['metal'], other=data[i]['other'],
-                                                   mix=data[i]['mix'], recycle=data[i]['recycle'], fire=data[i]['fire'])
+                year = data[i]['year']
+                cook = data[i]['cook'] if 'cook' in data[i].keys() else ''
+                paper = data[i]['paper'] if 'paper' in data[i].keys() else ''
+                plastic = data[i]['plastic'] if 'plastic' in data[i].keys() else ''
+                clothe = data[i]['clothe'] if 'clothe' in data[i].keys() else ''
+                wood = data[i]['wood'] if 'wood' in data[i].keys() else ''
+                ash = data[i]['ash'] if 'ash' in data[i].keys() else ''
+                china = data[i]['china'] if 'china' in data[i].keys() else ''
+                glass = data[i]['glass'] if 'glass' in data[i].keys() else ''
+                metal = data[i]['metal'] if 'metal' in data[i].keys() else ''
+                other = data[i]['other'] if 'other' in data[i].keys() else ''
+                model = garbage_element.objects.create(city_id=City(id=city_id), year=year, cook=cook, paper=paper,
+                                                       plastic=plastic, clothe=clothe, wood=wood, ash=ash, china=china,
+                                                       glass=glass, metal=metal, other=other)
                 model.save()
 
         else:
@@ -2397,16 +2509,13 @@ def add_garbage_element(request):
     glass = body.get('glass')
     metal = body.get('metal')
     elsees = body.get('else')
-    mix = body.get('mix')
-    recycle = body.get('recycle')
-    fire = body.get('fire')
     if garbage_element.objects.filter(year=year).count() != 0:
         response['message'] = '该年份数据已经存在，请先删除'
         response['code'] = 50000
     else:
         model = garbage_element.objects.create(year=year, cook=cook, paper=paper, plastic=plastic, clothe=clothe,
                                                wood=wood, ash=ash, china=china, glass=glass, metal=metal, other=elsees,
-                                               mix=mix, recycle=recycle, fire=fire, city_id=City(id=city_id))
+                                               city_id=City(id=city_id))
         model.save()
 
     return JsonResponse(response, safe=False)
@@ -2440,9 +2549,6 @@ def amend_element_garbage(request):
     glass = body.get('glass')
     metal = body.get('metal')
     other = body.get('other')
-    mix = body.get('mix')
-    recycle = body.get('recycle')
-    fire = body.get('fire')
     data = garbage_element.objects.get(id=id)
     data.year = year
     data.year = year
@@ -2456,10 +2562,110 @@ def amend_element_garbage(request):
     data.glass = glass
     data.metal = metal
     data.other = other
-    data.mix = mix
-    data.recycle = recycle
-    data.fire = fire
     data.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addGarbageClear(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    city_id = 1
+    data = body.get('data')
+    column_list = ['year', 'wet', 'dry', 'recycle', 'harm', 'total']
+    for i in range(len(data)):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+
+        if flag:
+            if garbage_clear.objects.filter(year=data[i]['year']).count() != 0:
+                response['code'] = 50000
+                response['message'] = '该年份数据已存在，请先删除'
+            else:
+                year = data[i]['year']
+                wet = data[i]['wet'] if 'wet' in data[i].keys() else ''
+                dry = data[i]['dry'] if 'dry' in data[i].keys() else ''
+                recycle = data[i]['recycle'] if 'recycle' in data[i].keys() else ''
+                harm = data[i]['harm'] if 'harm' in data[i].keys() else ''
+                total = data[i]['total'] if 'total' in data[i].keys() else ''
+                model = garbage_clear.objects.create(city=City(id=city_id), year=year, wet=wet, dry=dry, recycle=recycle,
+                                                     harm=harm, total=total)
+                model.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据不一致'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getGarbageClearPerDay(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = garbage_clear.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendGarbageClearPerDay(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    year = body.get('year')
+    wet = body.get('wet')
+    dry = body.get('dry')
+    recycle = body.get('recycle')
+    harm = body.get('harm')
+    total = body.get('total')
+    data = garbage_clear.objects.get(id=id)
+    data.year = year
+    data.wet = wet
+    data.dry = dry
+    data.recycle = recycle
+    data.harm = harm
+    data.total = total
+    data.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def deleteGarbageClearPerDay(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    data = garbage_clear.objects.get(id=id)
+    data.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addSingleRowforGarbageClear(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    city_id = 1
+    year = body.get('year')
+    wet = body.get('wet')
+    dry = body.get('dry')
+    recycle = body.get('recycle')
+    harm = body.get('harm')
+    total = body.get('total')
+    if garbage_clear.objects.filter(year=year).count() != 0:
+        response['message'] = '该年份数据已经存在，请先删除'
+        response['code'] = 50000
+    else:
+        model = garbage_clear.objects.create(year=year, wet=wet, dry=dry, recycle=recycle, harm=harm, total=total,
+                                             city=City(id=city_id))
+        model.save()
+
     return JsonResponse(response, safe=False)
 
 

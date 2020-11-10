@@ -63,14 +63,13 @@
             },
             setOptions(val){
                 let year = val.year
-                let total = val.total
-                let landfill = val.landfill
-                let incineration = val.incineration
-                let compost = val.compost
-                let else_num = val.else_num
+                let production = val.production
+                let deal = val.deal
+                let use = val.use
+                let store = val.store
                 this.chart.setOption({
                     title: {
-                        text: '上海市生活垃圾无害化处理能力'
+                        text: '上海危险废弃物产生数据'
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -106,39 +105,32 @@
                     ],
                     series: [
                         {
-                            name: '处理总量',
+                            name: '产生量',
                             type: 'line',
                             stack: '总量',
                             areaStyle: {},
-                            data: total
+                            data: production
                         },
                         {
-                            name: '垃圾填埋',
+                            name: '处置量',
                             type: 'line',
                             stack: '总量',
                             areaStyle: {},
-                            data: landfill
+                            data: deal
                         },
                         {
-                            name: '焚烧',
+                            name: '综合利用',
                             type: 'line',
                             stack: '总量',
                             areaStyle: {},
-                            data: incineration
+                            data: use
                         },
                         {
-                            name: '堆肥',
+                            name: '储存量',
                             type: 'line',
                             stack: '总量',
                             areaStyle: {},
-                            data: compost
-                        },
-                        {
-                            name: '其他',
-                            type: 'line',
-                            stack: '总量',
-                            areaStyle: {},
-                            data: else_num
+                            data: store
                         }
                     ]
                 })

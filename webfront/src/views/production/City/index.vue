@@ -12,7 +12,7 @@
                 </div>
             </el-col>
         </el-row>
-        <el-row :gutter="20" style="margin-top: 40px">
+        <el-row :gutter="20" style="margin-top: 20px">
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
                     <collect :chart-data="garbageData.collect"></collect>
@@ -24,15 +24,29 @@
                 </div>   
             </el-col>
         </el-row>
+        <el-row :gutter="20" style="margin-top: 20px">
+            <el-col :xs="24" :sm="24" :lg="12">
+                <div class="chart-wrapper">
+                    <dealcapacity :chart-data="garbageData.deal_capacity"></dealcapacity>
+                </div>
+            </el-col>
+            <el-col :xs="24" :sm="24" :lg="12">
+                <div class="chart-wrapper">
+                    <danger :chart-data="garbageData.dangerous"></danger>
+                </div>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
 <script>
-    import { getcitygarbage, getcitygarbagedealdata } from '@/api/model'
+    import { getcitygarbage, getcitygarbagedealdata, getcitygarbagecapacitydata, getcitygarbagevolumdata, getdangerousgarbage } from '@/api/model'
     import compare from './components/compare'
     import rate from './components/rate'
     import collect from './components/collect'
     import dealelement from './components/deal_element'
+    import dealcapacity from './components/deal_capacity'
+    import danger from './components/danger'
     import { parse } from 'path-to-regexp'
     export default {
         name: "index",
@@ -40,7 +54,9 @@
             compare,
             rate,
             collect,
-            dealelement
+            dealelement,
+            dealcapacity,
+            danger
         },
         data(){
             return {
@@ -65,6 +81,21 @@
                         incineration: [],
                         compost: [],
                         else_num: []
+                    },
+                    deal_capacity: {
+                        year: [],
+                        total: [],
+                        landfill: [],
+                        incineration: [],
+                        compost: [],
+                        else_num: []
+                    },
+                    dangerous: {
+                        year: [],
+                        production: [],
+                        deal: [],
+                        use: [],
+                        store: []
                     }
                 }
             }
@@ -90,19 +121,59 @@
                 getcitygarbagedealdata().then(res=>{
                     if (res.code === 20000){
                         let result = res.data
-                        console.log(result)
                         result.sort(function(a, b){
                             return parseInt(a.year) > parseInt(b.year) ? 1:-1
                         })
                         for (let i=0; i<result.length; i++){
                             that.garbageData.collect.year.push(parseFloat(result[i]['year']))
                             that.garbageData.collect.collect_num.push(parseFloat(result[i]['collect_factory_num']))
-                            that.garbageData.deal_element.year.push(parseFloat(result[i]['year']))
-                            that.garbageData.deal_element.total.push(parseFloat(result[i]['factory_num_total']))
-                            that.garbageData.deal_element.landfill.push(parseFloat(result[i]['landFill']))
+                        }
+                    }
+                })
+                getcitygarbagecapacitydata().then(res=>{
+                    if (res.code === 20000){
+                        let result = res.data
+                        result.sort(function(a, b){
+                            return parseInt(a.year) > parseInt(b.year) ? 1:-1
+                        })
+                        for (let i=0; i<result.length; i++){
+                            that.garbageData.deal_element.year.push(result[i]['year'])
+                            that.garbageData.deal_element.total.push(parseFloat(result[i]['deal_num_total']))
+                            that.garbageData.deal_element.landfill.push(parseFloat(result[i]['landfill']))
                             that.garbageData.deal_element.incineration.push(parseFloat(result[i]['incineration']))
                             that.garbageData.deal_element.compost.push(parseFloat(result[i]['compost']))
                             that.garbageData.deal_element.else_num.push(parseFloat(result[i]['else_num']))
+                        }
+                    }
+                })
+                getcitygarbagevolumdata().then(res=>{
+                    if (res.code === 20000){
+                        let result = res.data
+                        result.sort(function(a, b){
+                            return parseInt(a.year) > parseInt(b.year) ? 1:-1
+                        })
+                        for (let i=0; i<result.length; i++){
+                            that.garbageData.deal_capacity.year.push(result[i]['year'])
+                            that.garbageData.deal_capacity.total.push(result[i]['deal_volume_total'])
+                            that.garbageData.deal_capacity.landfill.push(result[i]['landfill'])
+                            that.garbageData.deal_capacity.incineration.push(result[i]['incineration'])
+                            that.garbageData.deal_capacity.compost.push(result[i]['compost'])
+                            that.garbageData.deal_capacity.else_num.push(result[i]['else_num'])
+                        }
+                    }
+                })
+                getdangerousgarbage().then(res=>{
+                    if (res.code === 20000){
+                        let result = res.data
+                        result.sort(function(a, b){
+                            return parseInt(a.year) > parseInt(b.year) ? 1:-1
+                        })
+                        for (let i=0; i<result.length; i++){
+                            that.garbageData.dangerous.year.push(result[i]['year'])
+                            that.garbageData.dangerous.production.push(parseFloat(result[i]['production']))
+                            that.garbageData.dangerous.deal.push(parseFloat(result[i]['deal']))
+                            that.garbageData.dangerous.use.push(parseFloat(result[i]['use']))
+                            that.garbageData.dangerous.store.push(parseFloat(result[i]['store']))
                         }
                     }
                 })

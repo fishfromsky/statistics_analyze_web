@@ -6,97 +6,46 @@
                    <span>{{row.year}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="厨余垃圾" align="center">
+           <el-table-column label="危险废物产生量" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.cook}}</span>
+                   <span>{{row.production}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="纸类" align="center">
+           <el-table-column label="危险废物处置量" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.paper}}</span>
+                   <span>{{row.deal}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="塑料类" align="center">
+           <el-table-column label="危险废物综合利用" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.plastic}}</span>
+                   <span>{{row.use}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="纺织类" align="center">
+           <el-table-column label="危险废物储存量" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.clothe}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="木竹类" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.wood}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="灰土类" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.ash}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="陶瓷砖瓦类" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.china}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="玻璃类" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.glass}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="金属类" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.metal}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="其他" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.other}}</span>
+                   <span>{{row.store}}</span>
                </template>
            </el-table-column>
            <el-table-column label="数据操作" align="center">
                <template slot-scope="scope">
                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
-                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)">删除</el-button>
+                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)" style="margin-left: 30px">删除</el-button>
                </template>
            </el-table-column>
        </el-table>
        <el-dialog :visible.sync="amend_dialog" title="修改数据" width="40%">
            <el-form :model="form">
-               <el-form-item label="年份">
-                   <el-input v-model="form.year" auto-complete="off"></el-input>
+               <el-form-item label="危险垃圾产生量">
+                   <el-input v-model="form.production" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="厨余垃圾">
-                   <el-input v-model="form.cook" auto-complete="off"></el-input>
+               <el-form-item label="危险垃圾处置量">
+                   <el-input v-model="form.deal" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="纸类">
-                   <el-input v-model="form.paper" auto-complete="off"></el-input>
+               <el-form-item label="危险垃圾综合利用">
+                   <el-input v-model="form.use" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="塑料类">
-                   <el-input v-model="form.plastic" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="纺织类">
-                   <el-input v-model="form.clothe" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="木竹类">
-                   <el-input v-model="form.wood" auto-complete="off"></el-input>
-               </el-form-item>
-                <el-form-item label="灰土类">
-                   <el-input v-model="form.ash" auto-complete="off"></el-input>
-               </el-form-item>
-                <el-form-item label="陶瓷砖瓦类">
-                   <el-input v-model="form.china" auto-complete="off"></el-input>
-               </el-form-item>
-                <el-form-item label="玻璃类">
-                   <el-input v-model="form.glass" auto-complete="off"></el-input>
-               </el-form-item>
-                <el-form-item label="金属类">
-                   <el-input v-model="form.metal" auto-complete="off"></el-input>
-               </el-form-item>
-                <el-form-item label="其他">
-                   <el-input v-model="form.other" auto-complete="off"></el-input>
+               <el-form-item label="危险垃圾储存量">
+                   <el-input v-model="form.store" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -111,40 +60,22 @@
                 <el-button type="danger" @click="DeleteDataConfirm">确 定</el-button>
             </div>
        </el-dialog>
-        <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
+       <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
            <el-form :model="add_form">
-           <el-form-item label="年份">
+               <el-form-item label="年份">
                    <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="厨余垃圾">
-                   <el-input v-model="add_form.cook" auto-complete="off"></el-input>
+               <el-form-item label="危险垃圾产生量">
+                   <el-input v-model="add_form.production" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="纸类">
-                   <el-input v-model="add_form.paper" auto-complete="off"></el-input>
+               <el-form-item label="危险垃圾处置量">
+                   <el-input v-model="add_form.deal" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="橡塑类">
-                   <el-input v-model="add_form.plastic" auto-complete="off"></el-input>
+               <el-form-item label="危险垃圾综合利用">
+                   <el-input v-model="add_form.use" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="纺织类">
-                   <el-input v-model="add_form.clothe" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="木竹类">
-                   <el-input v-model="add_form.wood" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="灰土类">
-                   <el-input v-model="add_form.ash" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="砖瓦陶瓷类">
-                   <el-input v-model="add_form.china" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="玻璃类">
-                   <el-input v-model="add_form.glass" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="金属类">
-                   <el-input v-model="add_form.metal" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="其他类">
-                   <el-input v-model="add_form.else" auto-complete="off"></el-input>
+               <el-form-item label="危险垃圾储存量">
+                   <el-input v-model="add_form.store" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -166,7 +97,7 @@
 </template>
 
 <script>
-import { getgarbageelement, amendelementgarbage, deleteelementgarbage, addelementbyrow } from '@/api/model'
+import { getdangerousgarbage, amenddangerousgarbage, deletedangeroudgarbage, addbyrowdangerousgarbage } from '@/api/model'
 export default {
     data(){
         return{
@@ -191,7 +122,7 @@ export default {
     methods: {
         getData(){
             let that = this
-            getgarbageelement().then(res=>{
+            getdangerousgarbage().then(res=>{
                 if (res.code === 20000){
                     that.table_loading = false
                     that.tableData = res.data
@@ -214,7 +145,7 @@ export default {
         AmendDataConfirm(){
             let data = this.form
             let that = this
-            amendelementgarbage(data).then(res=>{
+            amenddangerousgarbage(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -232,7 +163,7 @@ export default {
         },
         DeleteDataConfirm(){
             let that = this
-            deleteelementgarbage(this.delete_form).then(res=>{
+            deletedangeroudgarbage(this.delete_form).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -245,12 +176,12 @@ export default {
             })
         },
         addData(){
-        this.add_dialog = true
+          this.add_dialog = true
         },
         addDataConfirm(){
             let data = this.add_form
             let that = this
-            addelementbyrow(data).then(res=>{
+            addbyrowdangerousgarbage(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',

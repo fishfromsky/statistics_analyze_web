@@ -15,7 +15,7 @@
                         </el-col>
                         <el-col :xs="24" :sm="24" :lg="24">
                             <div class="chart-wrapper">
-                                <div class="titlebox">次要垃圾生产量变化</div>
+                                <div class="titlebox">日均垃圾清运量变化</div>
                                 <smallgarbage :chartData="data3"></smallgarbage>                               
                             </div>
                         </el-col>
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-    import { getgarbageelement } from '@/api/model'
+    import { getgarbageclearperday, getgarbageelement } from '@/api/model'
     import biggarbage from './components/biggarbage.vue'
     import graphchart from './components/graphchart.vue'
     import smallgarbage from './components/smallgarbage.vue'
@@ -55,19 +55,15 @@
                     cook: [],
                     paper: [],
                     plastic: [],
-                    recycle: [],
-                    fire: []
+                    other: [],
                 },
                 data3: {
-                    year: [],
-                    clothe: [],
-                    wood: [],
-                    ash: [],
-                    china: [],
-                    glass: [],
-                    metal: [],
-                    other: [],
-                    mix: []
+                   year: [],
+                   wet: [],
+                   dry: [],
+                   recycle: [],
+                   harm: [],
+                   total: []
                 },
                 data2:[],
                 graphyear: '2016',
@@ -84,19 +80,16 @@
                 for (let i=0; i<this.data.length; i++){
                     if (this.data[i].year === year){
                         let list = []
-                        list.push({value: this.data[i].cook.toFixed(2), name: '厨余类'})
-                        list.push({value: this.data[i].paper.toFixed(2), name: '纸类'})
-                        list.push({value: this.data[i].plastic.toFixed(2), name: '橡塑类'})
-                        list.push({value: this.data[i].clothe.toFixed(2), name: '纺织类'})
-                        list.push({value: this.data[i].wood.toFixed(2), name: '木竹类'})
-                        list.push({value: this.data[i].ash.toFixed(2), name: '灰土类'})
-                        list.push({value: this.data[i].china.toFixed(2), name: '砖瓦陶瓷类'})
-                        list.push({value: this.data[i].glass.toFixed(2), name: '玻璃类'})
-                        list.push({value: this.data[i].metal.toFixed(2), name: '金属类'})
-                        list.push({value: this.data[i].other.toFixed(2), name: '其他类'})
-                        list.push({value: this.data[i].mix.toFixed(2), name: '混合类'})
-                        list.push({value: this.data[i].recycle.toFixed(2), name: '可回收类'})
-                        list.push({value: this.data[i].fire.toFixed(2), name: '可燃类'})
+                        list.push({value: parseFloat(this.data[i].cook).toFixed(2), name: '厨余类'})
+                        list.push({value: parseFloat(this.data[i].paper).toFixed(2), name: '纸类'})
+                        list.push({value: parseFloat(this.data[i].plastic).toFixed(2), name: '橡塑类'})
+                        list.push({value: parseFloat(this.data[i].clothe).toFixed(2), name: '纺织类'})
+                        list.push({value: parseFloat(this.data[i].wood).toFixed(2), name: '木竹类'})
+                        list.push({value: parseFloat(this.data[i].ash).toFixed(2), name: '灰土类'})
+                        list.push({value: parseFloat(this.data[i].china).toFixed(2), name: '砖瓦陶瓷类'})
+                        list.push({value: parseFloat(this.data[i].glass).toFixed(2), name: '玻璃类'})
+                        list.push({value: parseFloat(this.data[i].metal).toFixed(2), name: '金属类'})
+                        list.push({value: parseFloat(this.data[i].other).toFixed(2), name: '其他类'})
                         this.data2 = list
                         break
                     }
@@ -106,25 +99,36 @@
                 getgarbageelement().then(res=>{
                     if (res.code === 20000){
                         this.data = res.data
+                        this.data.sort(function(a, b){
+                            return parseInt(a.year) > parseInt(b.year) ? 1:-1
+                        })
                         for (let i=0; i<this.data.length; i++){
                             this.data1.year.push(this.data[i].year)
                             this.chooseyear.push({value: this.data[i].year, label: this.data[i].year})
-                            this.data1.cook.push(this.data[i].cook.toFixed(2))
-                            this.data1.paper.push(this.data[i].paper.toFixed(2))
-                            this.data1.plastic.push(this.data[i].plastic.toFixed(2))
-                            this.data1.recycle.push(this.data[i].recycle.toFixed(2))
-                            this.data1.fire.push(this.data[i].fire.toFixed(2))
-                            this.data3.year.push(this.data[i].year)
-                            this.data3.clothe.push(this.data[i].clothe.toFixed(2))
-                            this.data3.wood.push(this.data[i].wood.toFixed(2))
-                            this.data3.ash.push(this.data[i].ash.toFixed(2))
-                            this.data3.china.push(this.data[i].china.toFixed(2))
-                            this.data3.glass.push(this.data[i].glass.toFixed(2))
-                            this.data3.metal.push(this.data[i].metal.toFixed(2))
-                            this.data3.other.push(this.data[i].other.toFixed(2))
-                            this.data3.mix.push(this.data[i].mix.toFixed(2))
+                            this.data1.cook.push(parseFloat(parseFloat(this.data[i].cook).toFixed(2)))
+                            this.data1.paper.push(parseFloat(parseFloat(this.data[i].paper).toFixed(2)))
+                            this.data1.plastic.push(parseFloat(parseFloat(this.data[i].plastic).toFixed(2)))
+                            this.data1.other.push(parseFloat(parseFloat(this.data[i].other).toFixed(2))+parseFloat(parseFloat(this.data[i].clothe).toFixed(2))+
+                            parseFloat(parseFloat(this.data[i].wood).toFixed(2))+parseFloat(parseFloat(this.data[i].ash).toFixed(2))+parseFloat(parseFloat(this.data[i].china).toFixed(2))+
+                            parseFloat(parseFloat(this.data[i].glass).toFixed(2))+parseFloat(parseFloat(this.data[i].metal).toFixed(2)))
                         }
                         this.getGraphData(this.data[this.data.length-1].year)
+                    }
+                })
+                getgarbageclearperday().then(res=>{
+                    if (res.code === 20000){
+                        let result = res.data
+                        result.sort(function(a, b){
+                            return parseInt(a.year) > parseInt(b.year)
+                        })
+                        for (let i=0; i<result.length; i++){
+                            this.data3.year.push(result[i].year)
+                            this.data3.wet.push(parseFloat(result[i].wet))
+                            this.data3.dry.push(parseFloat(result[i].dry))
+                            this.data3.recycle.push(parseFloat(result[i].recycle))
+                            this.data3.harm.push(parseFloat(result[i].harm))
+                            this.data3.total.push(parseFloat(result[i].total))
+                        }
                     }
                 })
             }

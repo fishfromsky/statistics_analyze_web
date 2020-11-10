@@ -23,6 +23,8 @@
       <factorylist v-if="level == '1' && kind == '7'" ref="factorylist"></factorylist>
       <transfer v-if="level == '1' && kind == '8'" ref="transfer"></transfer>
       <garbageelement v-if="level=='1' && kind == '9'" ref="garbageelement"></garbageelement>
+      <dangerous v-if="level=='1' && kind == '10'" ref="dangerous"></dangerous>
+      <garbageclearperday v-if="level=='1' && kind=='11'" ref="garbageclear"></garbageclearperday>
     </div>
   </div>
 </template>
@@ -37,6 +39,8 @@ import citygarbagevolume from './components/citygarbagevolume'
 import factorylist from './components/factorylist'
 import transfer from './components/transfer'
 import garbageelement from './components/garbageelement'
+import dangerous from './components/dangerousgarbage'
+import garbageclearperday from './components/garbageclearperday'
 export default {
   components: {
     cityeconomy,
@@ -47,7 +51,9 @@ export default {
     citygarbagevolume,
     factorylist,
     transfer,
-    garbageelement
+    garbageelement,
+    dangerous,
+    garbageclearperday
   },
   data() {
     return {
@@ -96,6 +102,14 @@ export default {
         {
           value: '9',
           label: '固废成分表'
+        },
+        {
+          value: '10',
+          label: '危险垃圾处置表'
+        },
+        {
+          value: '11',
+          label: '日均清运量'
         }
       ],
     }
@@ -129,6 +143,10 @@ export default {
           this.$refs.transfer.addData()
         }else if (that.level === '1' && that.kind === '9'){
           this.$refs.garbageelement.addData()
+        }else if (that.level === '1' && that.kind === '10'){
+          this.$refs.dangerous.addData()
+        }else if (that.level === '1' && that.kind === '11'){
+          this.$refs.garbageclear.addData()
         }
       }
     }

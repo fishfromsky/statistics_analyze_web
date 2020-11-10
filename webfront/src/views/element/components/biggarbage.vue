@@ -91,43 +91,40 @@ export default {
                     show: false
                 }
             },
-            yAxis: {
+            yAxis: [
+              {
                 type: 'value',
-                splitLine:{
-                    show: false
+                name: '万吨',
+                splitLine: {
+                  show: false
                 }
-            },
+              }
+            ],
             series: [
                 {
                     name: '厨余垃圾',
                     type: 'line',
-                    stack: '总量',
+                    yAxisIndex: 0,
                     data: val.cook
                 },
                 {
                     name: '纸类垃圾',
                     type: 'line',
-                    stack: '总量',
+                    yAxisIndex: 0,
                     data: val.paper
                 },
                 {
                     name: '橡塑垃圾',
                     type: 'line',
-                    stack: '总量',
+                    yAxisIndex: 0,
                     data: val.plastic
-                },
+                },               
                 {
-                    name: '可回收',
+                    name: '其他',
                     type: 'line',
-                    stack: '总量',
-                    data: val.recycle
+                    yAxisIndex: 0,
+                    data: val.other
                 },
-                {
-                    name: '可燃垃圾',
-                    type: 'line',
-                    stack: '总量',
-                    data: val.fire
-                }
             ]
       })
     }
