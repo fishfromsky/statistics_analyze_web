@@ -44,6 +44,9 @@ urlpatterns = [
     url('amendgarbageclearperday', views.amendGarbageClearPerDay),  # 修改垃圾日均清运量
     url('deletegarbageclearperday', views.deleteGarbageClearPerDay),   # 删除垃圾日均清运量
     url('addsinglerowforgarbageclear', views.addSingleRowforGarbageClear),   # 增加单条垃圾清运量数据
+    url('addirongarbage', views.addirongarbage),  # 增加废钢铁数据
+    url('amendirongarbage', views.amendIronGarbage),  # 修改废钢铁数据
+    url('getirongarbage', views.getIronGarbage),  # 获取废钢铁数据
     url('geteconomycity', views.geteconomydata_city, name='geteconomycity'),  # 请求城市经济表
     url('getpopulationcity', views.getpopulation_city, name='getpopulationcity'),  # 请求城市人口表
     url('getgarbagecity', views.getgarbage_city, name='getgarbageinfo'),  # 请求城市生活垃圾表
@@ -150,6 +153,7 @@ urlpatterns = [
     url('delete_algorithm_list', views.delete_algorithm_list),  # 删除算法模型列表
     url('get_idlist_algorithm', views.get_algorithm_idlist),  # 获取算法模型ID列表
     url('getbyid_algorithm', views.getbyid_algorithm),   # 根据ID获取模型
+    url('getrelationexcelresult', views.getRelaionExcelResultList),  # 获取多元回归excel
 
     url('getallmodels', views.getallmodels),  # 获取所有模型列表
     url('upload_img', views.upload_img),  # 上传图片文件

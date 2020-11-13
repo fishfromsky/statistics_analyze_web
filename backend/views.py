@@ -4,7 +4,7 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
     relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
-    selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear
+    selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -2850,8 +2850,9 @@ def getexceldetail(request):
     return JsonResponse(response, safe=False)
 
 
-def groupthread_relation():
-    pass
+def groupthread_relation(user, file_path, relative_max, select_list, choose_col):
+    os.system('python backend/experiment/relation/relation.py %s %s %s %s %s' % (user, file_path, relative_max,
+                                                                                 select_list, choose_col))
 
 
 @csrf_exempt
@@ -2869,8 +2870,95 @@ def grouptest_relation(request):
     user_id = UserProfile.objects.get(username=user).id
     model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
                                                  algorithm=algorithm_project(project_id=algorithm_id))
-    model.status = '正在运行'
+    task = threading.Thread(target=groupthread_relation, args=(user, file_path, relative_max, select_list, choose_col))
+    task.start()
+    # model.status = '正在运行'
+    # model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getRelaionExcelResultList(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    user = request.GET.get('user')
+    path = 'media/static/result/'+user+'/relation'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(root+'/'+file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def save_grouptest_result(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    user = body.get('user')
+    url = body.get('url')
+    user_id = UserProfile.objects.get(username=user).id
+    model = Experiment_Result_Excel.objects.create(user=UserProfile(id=user_id), url=url)
     model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addirongarbage(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    city_id = 1
+    column_list = ['year', 'produce']
+    for i in range(len(data)):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+
+        if flag:
+            if GarbageIron.objects.filter(year=data[i]['year']).count() != 0:
+                response['code'] = 50000
+                response['message'] = '该年份已经存在，请先删除'
+            else:
+                year = data[i]['year']
+                produce = data[i]['produce'] if 'produce' in data[i].keys() else ''
+                model = GarbageIron.objects.create(city=City(id=city_id), year=year, produce=produce)
+                model.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据库不一致'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getIronGarbage(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = GarbageIron.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendIronGarbage(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    year = body.get('year')
+    produce = body.get('produce')
+    id = body.get('id')
+    data = GarbageIron.objects.get(id=id)
+    data.year = year
+    data.produce = produce
+    data.save()
+
     return JsonResponse(response, safe=False)
 
 

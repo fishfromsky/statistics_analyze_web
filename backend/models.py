@@ -427,3 +427,14 @@ class Img(models.Model):
 
 class File(models.Model):
     file_url = models.FileField("文件", upload_to="static/file/%Y/%m/%d")
+
+
+class Experiment_Result_Excel(models.Model):
+    user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
+    url = models.CharField(max_length=255, default='')
+
+
+class GarbageIron(models.Model):
+    city = models.ForeignKey(to="City", on_delete=models.CASCADE)
+    year = models.CharField(max_length=255, default='')
+    produce = models.CharField(max_length=255, default='')

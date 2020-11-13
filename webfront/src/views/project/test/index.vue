@@ -16,21 +16,29 @@
                         <el-step v-for="item in modellist" :key="item.id" :title="item.name">
                             <template slot="description">
                                 <div class="detail-card">
-                                    <div class="detail-img">
-                                        <el-image :src="item.pic_url" style="width:100%;height:100%" :preview-src-list="[item.pic_url]"></el-image>
-                                    </div>
-                                    <div class="detail-title">
-                                        <span class="detail-title-1">{{item.name}}</span>
-                                        <div class="divider"></div>
-                                        <span class="detail-title-2">{{item.description}}</span>
-                                    </div>
-                                    <div class="vertical-divider"></div>
-                                    <div class="status-box">
-                                        <span class="status-title">模型运行状态</span>
-                                        <div class="status-label">
-                                            <el-tag type="primary">{{item.status}}</el-tag>
+                                    <div class="detail-card-container">
+                                        <div class="detail-img">
+                                            <el-image :src="item.pic_url" style="width:100%;height:100%" :preview-src-list="[item.pic_url]"></el-image>
                                         </div>
-                                    </div> 
+                                        <div class="detail-title">
+                                            <span class="detail-title-1">{{item.name}}</span>
+                                            <div class="divider"></div>
+                                            <span class="detail-title-2">{{item.description}}</span>
+                                        </div>
+                                        <div class="vertical-divider"></div>
+                                        <div class="status-box">
+                                            <span class="status-title">模型运行状态</span>
+                                            <div class="status-label">
+                                                <el-tag type="primary">{{item.status}}</el-tag>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                    <div class="row-divider"></div>
+                                    <div class="detail-card-result">
+                                        <el-table :data="excelList" border style="margin-top: 20px">
+                                            <el-table-column label="运行结果文件" prop="name"></el-table-column>
+                                        </el-table>
+                                    </div>
                                 </div>
                             </template>
                         </el-step>
@@ -100,7 +108,7 @@
 </template>
 
 <script>
-import { algorithmtestinfo, getexcelinfo, getfilelist, grouptestrelation } from '@/api/model'
+import { algorithmtestinfo, getexcelinfo, getfilelist, grouptestrelation, getrelationexcelresult } from '@/api/model'
 export default {
     data(){
         return{
@@ -122,7 +130,8 @@ export default {
             select_cols_num: 0,
             reference_col: null,
             col_dialog: false,
-            relative_max: null
+            relative_max: null,
+            excelList: []
         }
     },
     watch:{
@@ -183,7 +192,7 @@ export default {
                     data['model_id'] = this.modellist[0].id
                     data['path'] = this.selectfilePath
                     data['relative_max'] = this.relative_max
-                    data['select_list'] = index_list
+                    data['select_list'] = index_list.toString()
                     data['choose_col'] = index_select
                     grouptestrelation(data).then(res=>{
                         if (res.code === 20000){
@@ -207,6 +216,24 @@ export default {
         },
         handleSuccess:function(){
             this.getFileList()
+        },
+        getExcelResult(){
+            let that = this
+            let username = this.getCookie('environment_name')
+            let data = {}
+            data['user'] = username
+            getrelationexcelresult(data).then(res=>{
+                if (res.code === 20000){
+                    let result = res.data
+                    for (let i=0; i<result.length; i++){
+                        let dict = {}
+                        dict['url'] = result[i]
+                        let name = result[i].split("/")
+                        dict['name'] = name[name.length-1]
+                        that.excelList.push(dict)
+                    }
+                }
+            })
         },
         getFileList:function(){
             let that = this
@@ -285,6 +312,7 @@ export default {
     },
     mounted(){
         this.getFileList()
+        this.getExcelResult()
     }
 }
 </script>
@@ -333,10 +361,6 @@ export default {
         min-height: 120px;
         background: #fff;
         box-shadow: 0 0 10px 5px rgba(153, 153, 153, 0.1);
-        padding: 10px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
     }
     .detail-img{
         width: 20%;
@@ -422,5 +446,23 @@ export default {
         min-height: 100px;
         display: flex;
         flex-direction: column;
+    }
+    .detail-card-container{
+        width: 100%;
+        min-height:120px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px;
+    }
+    .row-divider{
+        width: 90%;
+        margin-left: 5%;
+        border-top: #999 1px solid;
+    }
+    .detail-card-result{
+        width: 100%;
+        height: 100%;
+        padding: 20px;
     }
 </style>

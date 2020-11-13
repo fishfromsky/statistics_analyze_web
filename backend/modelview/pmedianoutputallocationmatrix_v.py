@@ -1,5 +1,5 @@
 import urllib.parse as parse
-from backend.modelview import PmedianOutputAllocationMatrix, PmedianTransferStation, PmedianRecyclingCenter
+from backend.modelview import PmedianOutputAllocationMatrix, PmedianTransferStation, PmedianRecyclingCenter, PmedianOutputBuildScale
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
@@ -36,24 +36,22 @@ def getalllist_utputallocation(request):
 	response = {'code': 20000, 'message': 'success', 'data': []}
 	project_id = request.GET.get('project_id')
 	p_value = request.GET.get('p_value')
-	rrc = request.GET.get('rrc')
-	if PmedianRecyclingCenter.objects.filter(sub_district=rrc).count() == 0:
-		response['code'] = 50000
-		response['message'] = '不存在该集散厂'
-	else:
-		data = PmedianOutputAllocationMatrix.objects.filter(project_id=project_id, p_value=p_value, rrc=rrc)
 
-		for item in data:
-			item = to_dict(item)
-			ts_info = PmedianTransferStation.objects.get(sub_names=item['ts'])
-			item['ts_lng'] = ts_info.lng
-			item['ts_lat'] = ts_info.lat
-			item['ts_district'] = ts_info.district
-			rrc_info = PmedianRecyclingCenter.objects.get(sub_district=item['rrc'])
-			item['rrc_lng'] = rrc_info.lng
-			item['rrc_lat'] = rrc_info.lat
-			item['rrc_district'] = rrc_info.district
-			response['data'].append(item)
+	data = PmedianOutputAllocationMatrix.objects.filter(project_id=project_id, p_value=p_value)
+
+	for item in data:
+		item = to_dict(item)
+		ts_info = PmedianTransferStation.objects.get(sub_names=item['ts'])
+		item['ts_lng'] = ts_info.lng
+		item['ts_lat'] = ts_info.lat
+		item['ts_district'] = ts_info.district
+		rrc_info = PmedianRecyclingCenter.objects.get(sub_district=item['rrc'])
+		rrc_deal = PmedianOutputBuildScale.objects.get(p_value=p_value, rrc=item['rrc']).rrc_scale
+		item['rrc_lng'] = rrc_info.lng
+		item['rrc_lat'] = rrc_info.lat
+		item['rrc_district'] = rrc_info.district
+		item['rrc_deal'] = rrc_deal
+		response['data'].append(item)
 
 	return JsonResponse(response, safe=False)
 

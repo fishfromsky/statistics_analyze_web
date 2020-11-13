@@ -1080,3 +1080,12 @@ export function addgarbageclearbyrow(data){
     data
   })
 }
+
+// 根据用户获取多元回归运行结果
+export function getrelationexcelresult(data){
+  return request({
+    url: '/getrelationexcelresult',
+    method: 'get',
+    params: data
+  })
+}
