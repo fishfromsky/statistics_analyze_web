@@ -2850,9 +2850,14 @@ def getexceldetail(request):
     return JsonResponse(response, safe=False)
 
 
-def groupthread_relation(user, file_path, relative_max, select_list, choose_col):
-    os.system('python backend/experiment/relation/relation.py %s %s %s %s %s' % (user, file_path, relative_max,
-                                                                                 select_list, choose_col))
+def groupthread_relation(selected_id, user, file_path, relative_max, select_list, choose_col, algorithm_id, model_id):
+    ret = os.system('python backend/experiment/relation/relation.py %s %s %s %s %s %s %s' % (user, file_path, relative_max,
+                                                                                       select_list, choose_col,
+                                                                                       algorithm_id, model_id))
+    if ret != 0:
+        model = selected_algorithm_table.objects.get(id=selected_id)
+        model.status = '运行出错'
+        model.save()
 
 
 @csrf_exempt
@@ -2870,10 +2875,28 @@ def grouptest_relation(request):
     user_id = UserProfile.objects.get(username=user).id
     model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
                                                  algorithm=algorithm_project(project_id=algorithm_id))
-    task = threading.Thread(target=groupthread_relation, args=(user, file_path, relative_max, select_list, choose_col))
+    selected_id = model.id
+    task = threading.Thread(target=groupthread_relation, args=(selected_id, user, file_path, relative_max, select_list, choose_col,
+                                                               algorithm_id, model_id))
     task.start()
-    # model.status = '正在运行'
-    # model.save()
+    model.status = '正在运行'
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def grouptest_finish_relation(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    model_id = body.get('model_id')
+    user = body.get('user')
+    user_id = UserProfile.objects.get(username=user).id
+    algorithm_id = body.get('algorithm_id')
+    model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
+                                                 algorithm=algorithm_project(project_id=algorithm_id))
+    model.status = '未运行'
+    model.save()
     return JsonResponse(response, safe=False)
 
 
@@ -2886,9 +2909,26 @@ def getRelaionExcelResultList(request):
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append(root+'/'+file)
+            file_list.append('http://127.0.0.1:8000/'+root+'/'+file)
 
     response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def DeleteRelationExcelResult(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    path = body.get('url').split('/')[3:]
+    url = ''
+    for i in range(len(path)):
+        if i == 0:
+            url = url+path[i]
+        else:
+            url = url+'/'+path[i]
+    print(url)
+    os.remove(url)
     return JsonResponse(response, safe=False)
 
 

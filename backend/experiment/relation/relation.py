@@ -4,17 +4,45 @@ from sklearn.ensemble import RandomForestClassifier
 import sys
 import os
 import datetime
+import requests
+import json
+import numpy as np
 
 user = sys.argv[1]
 file_path = sys.argv[2]
 relative_max = sys.argv[3]
 select_list = sys.argv[4]
 choose_col = sys.argv[5]
-
-print(file_path)
+algorithm_id = sys.argv[6]
+model_id = sys.argv[7]
 
 column_list = select_list.split(',')
 column_list = list(map(int, column_list))
+
+
+class MyEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        """
+        只要检查到了是bytes类型的数据就把它转为str类型
+        :param obj:
+        :return:
+        """
+        if isinstance(obj, bytes):
+            return str(obj, encoding='utf-8')
+        return json.JSONEncoder.default(self, obj)
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(NpEncoder, self).default(obj)
 
 
 def filter_list(main_list, tmp_list):
@@ -86,3 +114,9 @@ if __name__ == '__main__':
     }
     df = pd.DataFrame(my_dict)
     df.to_csv(path+'/'+time+'.csv')
+    json_data = {}
+    json_data['user'] = user
+    json_data['algorithm_id'] = algorithm_id
+    json_data['model_id'] = model_id
+    json_data = json.dumps(json_data, cls=NpEncoder)
+    requests.post('http://127.0.0.1:8000/api/finishgrouptestrelation', data=json_data)

@@ -153,7 +153,9 @@ urlpatterns = [
     url('delete_algorithm_list', views.delete_algorithm_list),  # 删除算法模型列表
     url('get_idlist_algorithm', views.get_algorithm_idlist),  # 获取算法模型ID列表
     url('getbyid_algorithm', views.getbyid_algorithm),   # 根据ID获取模型
-    url('getrelationexcelresult', views.getRelaionExcelResultList),  # 获取多元回归excel
+    url('getrelationexcelresult', views.getRelaionExcelResultList),  # 获取关联分析excel
+    url('deleterelationexcel', views.DeleteRelationExcelResult),  # 删除关联分析excel
+    url('finishgrouptestrelation', views.grouptest_finish_relation),  # 完成关联分析
 
     url('getallmodels', views.getallmodels),  # 获取所有模型列表
     url('upload_img', views.upload_img),  # 上传图片文件

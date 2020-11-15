@@ -1089,3 +1089,12 @@ export function getrelationexcelresult(data){
     params: data
   })
 }
+
+// 删除多元回归运行结果文件
+export function deleterelationexcelresult(data){
+  return request({
+    url: '/deleterelationexcel',
+    method: 'post',
+    data
+  })
+}

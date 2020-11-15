@@ -1,5 +1,5 @@
 <template>
-  <div class="inner index_tabs" style="height: 100%">
+  <div class="inner index_tabs">
     <!--header-->
     <div class="header">
       <div class="bg_header">
@@ -57,9 +57,14 @@
           <div class="map_title_box" style="height: 6%">
             <div class="map_title_innerbox">
               <div class="map_title">集散厂优化动图</div>
-
             </div>
-            <div id="map" style="width: 100%; height: 550px"></div>
+            <div
+              id="map"
+              v-loading="map_loading"
+              element-loading-background="rgba(0, 0, 0, 0.5)"
+              element-loading-text="加载中，请稍后"
+              style="width: 100%; height: 550px"
+            ></div>
           </div>
 
           <div class="select-box">
@@ -67,11 +72,6 @@
               type="number"
               placeholder="输入p值"
               v-model="selectP"
-            ></el-input>
-            <el-input
-              placeholder="输入集散厂"
-              v-model="selectRRC"
-              style="margin-top: 20px"
             ></el-input>
             <el-button class="confirm-btn" @click="selectConfirm"
               >确定</el-button
@@ -89,10 +89,10 @@
           <el-row>
             <div class="main_title">
               <img src="../../image/t_1.png" alt="" />
-              人口网格图
+              无害化处理厂可视化
             </div>
             <el-col :xs="48" :sm="48" :lg="24">
-              <visit-chart :chart-data="lineChartData" />
+              <bar-chart/>
             </el-col>
           </el-row>
         </div>
@@ -104,7 +104,7 @@
           <el-row>
             <div class="main_title">
               <img src="../../image/t_1.png" alt="" />
-              固废产量网格图
+              人口网格图
             </div>
             <el-col :xs="50" :sm="50" :lg="24">
               <model-visit :chart-data="modelChartData" />
@@ -314,7 +314,7 @@ const lineChartData = {
 import echarts from "echarts";
 import shanghai from "../../repository/p_median/test/mapdata/shanghai.json";
 echarts.registerMap("shanghai", shanghai);
-import { fetchall_list } from "@/api/app01/utputallocation";
+import { fetchall_list } from "@/api/app01/utputallocation";;
 export default {
   name: "Dashboard",
 
@@ -324,7 +324,7 @@ export default {
     VisitChart,
     ModelVisit,
     Student,
-    BarChart,
+    BarChart
   },
   data() {
     return {
@@ -333,15 +333,17 @@ export default {
       modelKindData: lineChartData.modelkind,
       studentData: lineChartData.student,
       barchart: lineChartData.barchart,
+      map_loading: false,
       project_id: "p001",
       chinaGeoCoordMap: {},
       chinaDatas: [],
       series: [],
       centrl_geo: [121.477665, 31.226048],
-      zoom: 1,
-      selectP: "",
-      selectRRC: "",
+      zoom: 1.2,
+      selectP: 6,
       chart: null,
+      max_deal: null,
+      min_deal: null,
     };
   },
   computed: {
@@ -376,17 +378,6 @@ export default {
           },
         },
         backgroundColor: "",
-        visualMap: {
-          //图例值控制
-          min: 6,
-          max: 27,
-          calculable: true,
-          show: true,
-          color: ["#f44336", "#fc9700", "#ffde00", "#ffde00", "#00eaff"],
-          textStyle: {
-            color: "#fff",
-          },
-        },
         geo: {
           map: "shanghai",
           zoom: this.zoom,
@@ -419,23 +410,24 @@ export default {
   methods: {
     controlSeries: function (centrl, centrl_geo) {
       let that = this;
-      [[centrl, that.chinaDatas]].forEach(function (item, i) {
+      [[centrl.name, that.chinaDatas]].forEach(function (item, i) {
         that.series.push(
           {
             type: "lines",
             zlevel: 2,
             effect: {
               show: true,
-              period: 4, //箭头指向速度，值越小速度越快
-              trailLength: 0.02, //特效尾迹长度[0,1]值越大，尾迹越长重
+              period: 2, //箭头指向速度，值越小速度越快
+              trailLength: 0.01, //特效尾迹长度[0,1]值越大，尾迹越长重
               symbol: "arrow", //箭头图标
-              symbolSize: 5, //图标大小
+              symbolSize: 4, //图标大小
             },
             lineStyle: {
               normal: {
-                width: 1, //尾迹线条宽度
+                width: 0.5, //尾迹线条宽度
                 opacity: 1, //尾迹线条透明度
-                curveness: 0.3, //尾迹线条曲直度
+                curveness: 0.2, //尾迹线条曲直度
+                color: "#33ffff", // 飞线颜色
               },
             },
             data: that.convertData(item[1], centrl_geo),
@@ -452,7 +444,7 @@ export default {
             },
             label: {
               normal: {
-                show: true,
+                show: false,
                 position: "right", //显示位置
                 offset: [5, 0], //偏移设置
                 formatter: function (params) {
@@ -467,12 +459,12 @@ export default {
             },
             symbol: "circle",
             symbolSize: function (val) {
-              return 3; //圆环大小
+              return 1; //圆环大小
             },
             itemStyle: {
               normal: {
                 show: false,
-                color: "#f00",
+                color: "#FF8C00",
               },
             },
             data: item[1].map(function (dataItem) {
@@ -484,11 +476,54 @@ export default {
                 ]),
               };
             }),
+          },
+          {
+            type: "effectScatter",
+            coordinateSystem: "geo",
+            zlevel: 3,
+            symbolSize: function (val) {
+              return 5 + (val[2] * 10) / that.max_deal;
+            },
+            rippleEffect: {
+              brushType: "stroke",
+            },
+            hoverAnimation: true,
+            rippleEffect: {
+              //涟漪特效
+              period: 4,
+              brushType: "stroke",
+              scale: 4,
+            },
+            label: {
+              formatter: "{b}",
+              position: "right",
+              show: true,
+            },
+            itemStyle: {
+              color: "#ff3300",
+              shadowBlur: 10,
+              shadowColor: "#333",
+            },
+            data: [
+              {
+                name: item[0],
+                value: that.chinaGeoCoordMap[item[0]].concat([centrl.value]),
+              },
+            ],
           }
         );
       });
     },
+    isInArray: function (arr, value) {
+      for (var i = 0; i < arr.length; i++) {
+        if (value === arr[i]) {
+          return true;
+        }
+      }
+      return false;
+    },
     selectConfirm: function () {
+      this.map_loading = true;
       this.chinaGeoCoordMap = {};
       this.chinaDatas = [];
       this.series = [];
@@ -496,31 +531,52 @@ export default {
       let data = {};
       data["project_id"] = this.project_id;
       data["p_value"] = this.selectP;
-      data["rrc"] = this.selectRRC;
       fetchall_list(data).then((res) => {
         if (res.code === 20000) {
           let data = res.data;
+          let rrc_list = [];
+          let rrc_detail = [];
+          that.max_deal = data[0].rrc_deal;
+          that.min_deal = data[0].rrc_deal;
           for (let i = 0; i < data.length; i++) {
+            if (!that.isInArray(rrc_list, data[i].rrc)) {
+              rrc_list.push(data[i].rrc);
+              rrc_detail.push(data[i]);
+            }
             that.chinaGeoCoordMap[data[i].ts] = [
               data[i].ts_lng,
               data[i].ts_lat,
             ];
-            that.chinaDatas.push([
-              { name: data[i].ts, value: data[i].p_value },
-            ]);
+            if (data[i].rrc_deal > that.max_deal) {
+              that.max_deal = data[i].rrc_deal;
+            }
+            if (data[i].rrc_deal < that.min_deal) {
+              that.min_deal = data[i].rrc_deal;
+            }
           }
-          that.chinaGeoCoordMap[data[0].rrc] = [
-            data[0].rrc_lng,
-            data[0].rrc_lat,
-          ];
-          that.chinaDatas.push([{ name: data[0].rrc, value: data[0].p_value }]);
-          that.controlSeries(this.selectRRC, [
-            data[0].rrc_lng,
-            data[0].rrc_lat,
-          ]);
-          that.centrl_geo = [data[0].rrc_lng, data[0].rrc_lat];
-          that.zoom = 8;
+          for (let i = 0; i < rrc_list.length; i++) {
+            that.chinaDatas = [];
+            for (let j = 0; j < data.length; j++) {
+              if (data[j].rrc === rrc_list[i]) {
+                that.chinaDatas.push([
+                  { name: data[j].ts, value: data[j].p_value },
+                ]);
+              }
+            }
+            that.chinaGeoCoordMap[rrc_detail[i].rrc] = [
+              rrc_detail[i].rrc_lng,
+              rrc_detail[i].rrc_lat,
+            ];
+            that.chinaDatas.push([
+              { name: rrc_detail[i].rrc, value: rrc_detail[i].p_value },
+            ]);
+            that.controlSeries(
+              { name: rrc_detail[i].rrc, value: rrc_detail[i].rrc_deal },
+              [rrc_detail[i].rrc_lng, rrc_detail[i].rrc_lat]
+            );
+          }
           that.chart.setOption(that.option);
+          that.map_loading = false;
         } else if (res.code === 50000) {
           this.$message.error(res.message);
         }
@@ -557,7 +613,7 @@ export default {
   mounted() {
     // this.getList()
     this.chart = echarts.init(document.getElementById("map"));
-    this.chart.setOption(this.option);
+    this.selectConfirm()
     window.WIDGET = {
       CONFIG: {
         layout: 1,
@@ -770,22 +826,22 @@ export default {
 .index_tabs {
   float: left;
   width: 100%;
-  height: 24px;
   background-color: #080f3e;
-  background: url("../../image/true.png") no-repeat;
-  border-top-left-radius: 9px;
-  border-top-right-radius: 9px;
+  background: url("../../image/true.png");
+  background-size: 100% 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 .chart-wrapper {
   //子组件框
   background: linear-gradient(#00faff, #00faff) left top,
     linear-gradient(#00faff, #00faff) left top,
-    linear-gradient(#00faff, #00faff) right top,
-    linear-gradient(#00faff, #00faff) right top,
-    linear-gradient(#00faff, #00faff) left bottom,
-    linear-gradient(#00faff, #00faff) left bottom,
-    linear-gradient(#00faff, #00faff) right bottom,
-    linear-gradient(#00faff, #00faff) right bottom;
+      linear-gradient(#00faff, #00faff) right top,
+        linear-gradient(#00faff, #00faff) right top,
+          linear-gradient(#00faff, #00faff) left bottom,
+            linear-gradient(#00faff, #00faff) left bottom,
+              linear-gradient(#00faff, #00faff) right bottom,
+                linear-gradient(#00faff, #00faff) right bottom;
   background-repeat: no-repeat;
   background-size: 5px 20px, 20px 5px;
   background-color: rgba(0, 161, 255, 0.1);
@@ -829,12 +885,12 @@ export default {
   background-color: rgba(2, 8, 23, 0.1);
   background: linear-gradient(#00faff, #00faff) left top,
     linear-gradient(#00faff, #00faff) left top,
-    linear-gradient(#00faff, #00faff) right top,
-    linear-gradient(#00faff, #00faff) right top,
-    linear-gradient(#00faff, #00faff) left bottom,
-    linear-gradient(#00faff, #00faff) left bottom,
-    linear-gradient(#00faff, #00faff) right bottom,
-    linear-gradient(#00faff, #00faff) right bottom;
+      linear-gradient(#00faff, #00faff) right top,
+        linear-gradient(#00faff, #00faff) right top,
+          linear-gradient(#00faff, #00faff) left bottom,
+            linear-gradient(#00faff, #00faff) left bottom,
+              linear-gradient(#00faff, #00faff) right bottom,
+                linear-gradient(#00faff, #00faff) right bottom;
 
   background-repeat: no-repeat;
   background-size: 5px 20px, 20px 5px;

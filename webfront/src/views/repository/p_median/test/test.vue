@@ -116,8 +116,8 @@ export default {
               normal: {
                 width: 0.5, //尾迹线条宽度
                 opacity: 1, //尾迹线条透明度
-                curveness: 0.3, //尾迹线条曲直度
-                color:'#FFFF00',  // 飞线颜色
+                curveness: 0.2, //尾迹线条曲直度
+                color:'#33ffff',  // 飞线颜色
               },
             },
             data: that.convertData(item[1], centrl_geo),
@@ -190,7 +190,7 @@ export default {
                 show: true
             },
             itemStyle: {
-                color: '#FF7F50',
+                color: '#ff3300',
                 shadowBlur: 10,
                 shadowColor: '#333'
             },
