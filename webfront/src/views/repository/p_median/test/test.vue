@@ -13,7 +13,8 @@
       element-loading-background="rgba(0, 0, 0, 0.5)"
       element-loading-text="加载中，请稍后"
       id="map"
-      style="width: 100%; height: 95vh"
+      class="map-container"
+      style="width: 100%; height: 100vh"
     ></div>
   </div>
 </template>
@@ -71,7 +72,7 @@ export default {
             return res;
           },
         },
-        backgroundColor: "#013954",
+        // backgroundColor: "#013954",
         geo: {
           map: "shanghai",
           zoom: this.zoom,
@@ -154,7 +155,7 @@ export default {
             itemStyle: {
               normal: {
                 show: false,
-                color: "#FF8C00",
+                color: "#ffff00",
               },
             },
             data: item[1].map(function (dataItem) {
@@ -190,7 +191,7 @@ export default {
                 show: true
             },
             itemStyle: {
-                color: '#ff3300',
+                color: '#FFB90F',
                 shadowBlur: 10,
                 shadowColor: '#333'
             },
@@ -329,5 +330,13 @@ export default {
   background: rgba(0, 161, 255, 0.2);
   color: #00faff;
   border: #00a1ff 1px solid;
+}
+.map-container {
+  width: 100%;
+  height: 100%;
+  background: url("../../../image/factory_bg.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 </style>
