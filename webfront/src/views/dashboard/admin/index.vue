@@ -2,11 +2,13 @@
   <div class="inner index_tabs">
     <!--header-->
     <div class="header">
+      <div class="school-badge"></div>
+      <div class="college-badge"></div>
       <div class="bg_header">
-        <img class="school-badge" src="../../image/badge.png" />
-        <img class="college-badge" src="../../image/college.png" />
-        <div class="header_nav fl t_title" style="font-size: 25px">
-          <div>上海市固废智慧管理与仿真决策平台</div>
+        <!-- <img class="school-badge" src="../../image/badge.png" />
+        <img class="college-badge" src="../../image/college.png" /> -->
+        <div class="fl t_title">
+          <div class="header-title-text">上海市固废智慧管理与仿真决策平台</div>
         </div>
       </div>
     </div>
@@ -763,39 +765,56 @@ export default {
   margin-left: -10px;
 }
 .t_title {
-  width: 58%;
+  width: 100%;
   height: 100%;
-  text-align: center;
-  font-size: 2.5em;
-  line-height: 80px;
-  color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 /*header开始*/
 .header {
   width: 100%;
   height: 80px;
 }
+.header-title-text{
+  color: #fff;
+  font-size: 1.7em;
+
+}
 .bg_header {
+  position: relative;
   width: 100%;
-  height: 80px;
+  height: 10vh;
   background: url(../../image/title.png) no-repeat;
   background-size: 100% 100%;
   display: flex;
   flex-direction: row;
 }
 
-.header > .header_nav {
-  float: left;
-}
-
 .school-badge {
-  width: 150px;
-  height: 100px;
+  width: 10%;
+  height: 9%;
+  position: absolute;
+  z-index: 100;
+  margin-top: 5px;
+  margin-left: 1%;
+  background: url("../../image/badge.png");
+  background-size: 100% 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 .college-badge {
-  margin-top: 10px;
-  width: 120px;
-  height: 75px;
+  width: 9%;
+  height: 8%;
+  position: absolute;
+  z-index: 100;
+  margin-top: 5px;
+  margin-left: 12%;
+  background: url("../../image/college.png");
+  background-size: 100% 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 .dashboard {
