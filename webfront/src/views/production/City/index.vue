@@ -3,36 +3,36 @@
         <el-row :gutter="20">
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
-                    <compare :chart-data="garbageData.compare"></compare>
+                    <compare :chart-data="garbageData.compare" style="height: 35vh"></compare>
                 </div>
             </el-col>
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
-                    <rate :chart-data="garbageData.rate"></rate>
+                    <rate :chart-data="garbageData.rate" style="height: 35vh"></rate>
                 </div>
             </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 20px">
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
-                    <collect :chart-data="garbageData.collect"></collect>
+                    <collect :chart-data="garbageData.collect" style="height: 35vh"></collect>
                 </div>
             </el-col>
             <el-col :xs="24" :sm=24 :lg="12">
                 <div class="chart-wrapper">
-                    <dealelement :chart-data="garbageData.deal_element"></dealelement>
+                    <dealelement :chart-data="garbageData.deal_element" style="height: 35vh"></dealelement>
                 </div>   
             </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 20px">
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
-                    <dealcapacity :chart-data="garbageData.deal_capacity"></dealcapacity>
+                    <dealcapacity :chart-data="garbageData.deal_capacity" style="height: 35vh"></dealcapacity>
                 </div>
             </el-col>
             <el-col :xs="24" :sm="24" :lg="12">
                 <div class="chart-wrapper">
-                    <danger :chart-data="garbageData.dangerous"></danger>
+                    <danger :chart-data="garbageData.dangerous" style="height: 35vh"></danger>
                 </div>
             </el-col>
         </el-row>

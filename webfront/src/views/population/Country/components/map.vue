@@ -1,14 +1,14 @@
 <template>
-  <div :class="className" :style="{ width: width, height: height }" />
+  <div ref="map" class="map-container"></div>
 </template>
 
 <script>
 import echarts from 'echarts'
-require('echarts/theme/westeros') // echarts
 import resize from './mixins/resize'
-import 'echarts/extension/bmap/bmap'
 
 import data from './mapdata/heat_data.json'
+import shanghai from "./mapdata/shanghai.json"
+echarts.registerMap("shanghai", shanghai);
 
 var lngExtent = [30.6882888542, 31.8830482032]
 var latExtent = [120.863603906, 122.247009468]
@@ -20,46 +20,16 @@ var cellSizeCoord = [
 
 export default {
   name: 'GDP',
-  mixins: [resize],
-  props: {
-    className: {
-      type: String,
-      default: 'chart'
-    },
-    width: {
-      type: String,
-      default: '100%'
-    },
-    height: {
-      type: String,
-      default: '700px'
-    },
-    autoResize: {
-      type: Boolean,
-      default: true
-    },
-    chartData: {
-      type: Object,
-      required: true
-    }
-  },
   data() {
     return {
-      chart: null
+      chart: echarts.ECharts
     }
   },
   watch: {
-    chartData: {
-      deep: true,
-      handler(val) {
-        this.setOptions(val)
-      }
-    }
+    
   },
   mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+    this.initChart()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -101,13 +71,8 @@ export default {
         styleEmphasis: api.styleEmphasis()
       }
     },
-
     initChart() {
-      this.chart = echarts.init(this.$el)
-      this.setOptions(this.chartData)
-    },
-    setOptions(val) {
-
+      this.chart = echarts.init(this.$refs.map);
       this.chart.setOption({
         tooltip: {},
         visualMap: {
@@ -129,7 +94,7 @@ export default {
         series: [
           {
             type: 'custom',
-            coordinateSystem: 'bmap',
+            coordinateSystem: 'geo',
             renderItem: this.renderItem,
             animation: false,
             emphasis: {
@@ -143,115 +108,43 @@ export default {
             data: data
           }
         ],
-        bmap: {
-          center: [121.5, 31.2],
-          zoom: 12,
-          roam: true,
-          mapStyle: {
-            styleJson: [{
-              'featureType': 'water',
-              'elementType': 'all',
-              'stylers': {
-                'color': '#d1d1d1'
-              }
-            }, {
-              'featureType': 'land',
-              'elementType': 'all',
-              'stylers': {
-                'color': '#f3f3f3'
-              }
-            }, {
-              'featureType': 'railway',
-              'elementType': 'all',
-              'stylers': {
-                'visibility': 'off'
-              }
-            }, {
-              'featureType': 'highway',
-              'elementType': 'all',
-              'stylers': {
-                'color': '#999999'
-              }
-            }, {
-              'featureType': 'highway',
-              'elementType': 'labels',
-              'stylers': {
-                'visibility': 'off'
-              }
-            }, {
-              'featureType': 'arterial',
-              'elementType': 'geometry',
-              'stylers': {
-                'color': '#fefefe'
-              }
-            }, {
-              'featureType': 'arterial',
-              'elementType': 'geometry.fill',
-              'stylers': {
-                'color': '#fefefe'
-              }
-            }, {
-              'featureType': 'poi',
-              'elementType': 'all',
-              'stylers': {
-                'visibility': 'off'
-              }
-            }, {
-              'featureType': 'green',
-              'elementType': 'all',
-              'stylers': {
-                'visibility': 'off'
-              }
-            }, {
-              'featureType': 'subway',
-              'elementType': 'all',
-              'stylers': {
-                'visibility': 'off'
-              }
-            }, {
-              'featureType': 'manmade',
-              'elementType': 'all',
-              'stylers': {
-                'color': '#d1d1d1'
-              }
-            }, {
-              'featureType': 'local',
-              'elementType': 'all',
-              'stylers': {
-                'color': '#d1d1d1'
-              }
-            }, {
-              'featureType': 'arterial',
-              'elementType': 'labels',
-              'stylers': {
-                'visibility': 'off'
-              }
-            }, {
-              'featureType': 'boundary',
-              'elementType': 'all',
-              'stylers': {
-                'color': '#fefefe'
-              }
-            }, {
-              'featureType': 'building',
-              'elementType': 'all',
-              'stylers': {
-                'color': '#d1d1d1'
-              }
-            }, {
-              'featureType': 'label',
-              'elementType': 'labels.text.fill',
-              'stylers': {
-                'color': 'rgba(0,0,0,0)'
-              }
-            }]
-          }
-        }
+        geo: {
+          map: "shanghai",
+          zoom: 1.2,
+          center: [121.477665, 31.226048],
+          label: {
+            emphasis: {
+              show: true,
+              textStyle: {
+                color: "#fff",
+              },
+            },
+          },
+          roam: true, //是否允许缩放
+          itemStyle: {
+            normal: {
+              color: "#101f32", //地图背景色
+              borderColor: "#43d0d6", //省市边界线
+              borderWidth: 1.1,
+            },
+            emphasis: {
+              color: "#43d0d6", //悬浮背景
+            },
+          },
+        },
       })
-    }
+    },
   }
 }
 </script>
 
 <style scoped>
+.map-container {
+  width: 100%;
+  height: 100%;
+  background: url("../../../image/factory_bg.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
 </style>

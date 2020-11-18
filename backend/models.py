@@ -438,3 +438,12 @@ class GarbageIron(models.Model):
     city = models.ForeignKey(to="City", on_delete=models.CASCADE)
     year = models.CharField(max_length=255, default='')
     produce = models.CharField(max_length=255, default='')
+
+
+class Garbage_Info_Country(models.Model):
+    name = models.CharField(max_length=255, default='', null=False)
+    production = models.CharField(max_length=255, default='', null=False)
+    district = models.ForeignKey(to="District", on_delete=models.CASCADE)
+    year = models.CharField(max_length=255, null=False)
+    longitude = models.FloatField()
+    latitude = models.FloatField()

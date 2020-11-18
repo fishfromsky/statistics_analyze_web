@@ -15,9 +15,14 @@ select_list = sys.argv[4]
 choose_col = sys.argv[5]
 algorithm_id = sys.argv[6]
 model_id = sys.argv[7]
+test_type = sys.argv[8]
+next_list = sys.argv[9]
 
 column_list = select_list.split(',')
 column_list = list(map(int, column_list))
+
+next_index = next_list.split(',')
+next_index = list(map(int, next_index))
 
 
 class MyEncoder(json.JSONEncoder):
@@ -98,6 +103,23 @@ def rf(data, special):
     return importance
 
 
+def get_column_index(path, reference_col, choose_col):
+    df = pd.read_excel(path)
+    index_columns = df.columns.values
+    drop_col = []
+    reference_index = None
+    for i in range(len(index_columns)):
+        if index_columns[i] not in choose_col:
+            drop_col.append(i)
+
+    for i in range(len(index_columns)):
+        if index_columns[i] == reference_col:
+            reference_index = i
+            break
+
+    return drop_col, reference_index
+
+
 if __name__ == '__main__':
     data, use_cols, drop_cols, reference_col = read_csv(file_path, column_list, choose_col)
     data = deal_nan(data)
@@ -112,11 +134,24 @@ if __name__ == '__main__':
         'label': use_cols,
         'result': importance
     }
-    df = pd.DataFrame(my_dict)
-    df.to_csv(path+'/'+time+'.csv')
+    importance, use_cols = zip(*sorted(zip(importance, use_cols), reverse=True))
+    next_cols = list(use_cols[:int(relative_max)])
+    drop_col, reference_index = get_column_index(file_path, reference_col, use_cols)
+    # df = pd.DataFrame(my_dict)
+    # df.to_excel(path+'/'+time+'.xlsx')
     json_data = {}
     json_data['user'] = user
     json_data['algorithm_id'] = algorithm_id
     json_data['model_id'] = model_id
     json_data = json.dumps(json_data, cls=NpEncoder)
     requests.post('http://127.0.0.1:8000/api/finishgrouptestrelation', data=json_data)
+
+    if test_type == '2':
+        post_data = {}
+        post_data['path'] = file_path
+        post_data['special'] = reference_index
+        post_data['drop_col'] = drop_col
+        post_data['name'] = user
+        post_data['algorithm_id'] = algorithm_id
+        post_data['model_id'] = next_list[0]
+

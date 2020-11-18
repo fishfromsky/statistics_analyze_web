@@ -1,13 +1,6 @@
 <template>
-  <div class="dashboard-container">
-    <el-row>
-      <el-col :xs="24" :sm="24" :lg="24">
-        <div class="chart-wrapper">
-          <!-- 放置mymap -->
-          <mymap />
-        </div>
-      </el-col>
-    </el-row>
+  <div>
+    <mymap style="height: 100vh" />
   </div>
 </template>
 

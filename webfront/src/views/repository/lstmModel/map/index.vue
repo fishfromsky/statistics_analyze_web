@@ -1,35 +1,18 @@
 <template>
-    <div :class="className" :style="{width: width,height: height}" ref="myEchart"></div>
+  <div class="echarts">
+    <div :style="{ height: '100vh', width: '100%' }" ref="myEchart"></div>
+  </div>
 </template>
 <script>
 import { getgarbagecountry } from '@/api/model'
-import echarts from "echarts"
-import resize from './mixins/resize'
+import echarts from "echarts";
 import $ from "jquery"
 import "../../../../../node_modules/echarts-gl/dist/echarts-gl.js";
 import "../../../../../node_modules/echarts/map/js/province/shanghai.js";
 
 export default {
   name: "echarts",
-  mixins:[resize],
-  props:{
-    className: {
-      type: String,
-      default: 'chart'
-    },
-    width: {
-      type: String,
-      default: '100%'
-    },
-    height: {
-      type: String,
-      default: '300px'
-    },
-    autoResize: {
-      type: Boolean,
-      default: true
-    },
-  },
+  props: ["userJson"],
   data() {
     return {
       chart: null,
@@ -75,6 +58,14 @@ export default {
       let myChart = echarts.init(this.$refs.myEchart); //这里是为了获得容器所在位置
       window.onresize = myChart.resize;
       myChart.setOption({
+        title:{
+          text: '上海市2020年城镇固废产量',
+          textStyle:{
+            color: '#fff'
+          },
+          left: "20",
+          top: "20",
+        },
         // 进行相关配置
         backgroundColor: "rgba(0, 0, 0, 0)",
         tooltip: {
@@ -205,7 +196,7 @@ export default {
             },
           },
           viewControl: {
-            distance: 170,
+            distance: 130,
             panMouseButton: "left",
             rotateMouseButton: "right",
             alpha:40,

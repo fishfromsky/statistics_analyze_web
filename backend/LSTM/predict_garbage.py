@@ -107,7 +107,7 @@ def get_data(list):
 # 初始化训练集和测试集
 def train_data(reframed, split):
     values = reframed.values
-    train = values
+    train = values[:split]
     test = values[split:]
 
     train_X, train_Y = train[:, :-1], train[:, -1]

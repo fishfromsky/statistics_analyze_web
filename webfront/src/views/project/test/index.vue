@@ -295,13 +295,20 @@ export default {
         }
         if (flag) {
           let data = {};
+          let Idlist = []
+          for (let i=0; i<this.modellist.length; i++){
+            Idlist.push(this.modellist[i].id)
+          }
+          Idlist.shift()
           data["name"] = this.getCookie("environment_name");
           data["algorithm_id"] = this.algorithm_Id;
           data["model_id"] = this.modellist[0].id;
           data["path"] = this.selectfilePath;
           data["relative_max"] = this.relative_max;
           data["select_list"] = index_list.toString();
+          data['next_list'] = Idlist.toString();
           data["choose_col"] = index_select;
+          data["test_type"] = this.rule[1]
           grouptestrelation(data).then((res) => {
             if (res.code === 20000) {
               this.$message({

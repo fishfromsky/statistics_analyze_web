@@ -50,6 +50,11 @@ urlpatterns = [
     url('geteconomycity', views.geteconomydata_city, name='geteconomycity'),  # 请求城市经济表
     url('getpopulationcity', views.getpopulation_city, name='getpopulationcity'),  # 请求城市人口表
     url('getgarbagecity', views.getgarbage_city, name='getgarbageinfo'),  # 请求城市生活垃圾表
+    url('inputgarbagecountry', views.InputGarbageCountry),  # 批量导入城镇垃圾产量表
+    url('getgarbagecountry', views.getGarbageCountry),  # 获取城镇垃圾产量表
+    url('amendgarbagecountry', views.amendGarbageCountry),  # 修改城镇垃圾产量表
+    url('deletegarbagecountry', views.deleteGarbageCountry),  # 删除城镇垃圾产量表
+    url('addgarbagecountry', views.addGarbageCountry),  # 增加城镇垃圾产量表
     url('getgarbagedealcity', views.getgarbagedeal_city, name='getgarbagedeal'),  # 请求城市无害化处理厂表
     url('getgarbagecapacitycity', views.getgarbagecapacity_city, name='getgarbagecapacity'),  # 请求城市无害化处理能力表
     url('getgarbagevolumecity', views.getgarbagevolume_city, name='getgarbagevolume'),  # 请求城市无害化处理能力表
@@ -156,6 +161,8 @@ urlpatterns = [
     url('getrelationexcelresult', views.getRelaionExcelResultList),  # 获取关联分析excel
     url('deleterelationexcel', views.DeleteRelationExcelResult),  # 删除关联分析excel
     url('finishgrouptestrelation', views.grouptest_finish_relation),  # 完成关联分析
+
+    url('startgrouptestlstm', views.grouptest_lstm),  # 开始lstm模型实验
 
     url('getallmodels', views.getallmodels),  # 获取所有模型列表
     url('upload_img', views.upload_img),  # 上传图片文件

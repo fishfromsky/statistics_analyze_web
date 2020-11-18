@@ -3,24 +3,24 @@
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <gdp-chart :chart-data="BasicInfo.GDPData"/>
+          <gdp-chart :chart-data="BasicInfo.GDPData" style="height: 35vh"/>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <capita_-gdp :chart-data="BasicInfo.CapitaGDP"/>
+          <capita_-gdp :chart-data="BasicInfo.CapitaGDP" style="height: 35vh"/>
         </div>
       </el-col>
     </el-row>
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <local_-gdp :chart-data="BasicInfo.Rate"></local_-gdp>
+          <local_-gdp :chart-data="BasicInfo.Rate" style="height: 35vh"></local_-gdp>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <industry :chart-data="BasicInfo.Industry"></industry>
+          <industry :chart-data="BasicInfo.Industry" style="height: 35vh"></industry>
         </div>
       </el-col>
     </el-row>

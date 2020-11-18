@@ -406,6 +406,12 @@ export const constantRoutes = [
             name: 'result',
             component: () => import('@/views/repository/lstmModel/result/index'),
             meta: { title: '结果查询'}
+          },
+          {
+            path: 'map',
+            name: 'map',
+            component: () => import('@/views/repository/lstmModel/map/index'),
+            meta: { title: '地图展示' }
           }
         ]
       },

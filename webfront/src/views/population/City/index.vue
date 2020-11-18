@@ -3,26 +3,26 @@
     <el-row :gutter="20" style="margin-top: 20px">
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper1">
-          <population_-map :chart-data="population_data.density"></population_-map>
+          <population_-map :chart-data="population_data.density" style="height: 100vh"></population_-map>
         </div>
         <div class="chart-wrapper">
-          <perhousehold :chart-data="population_data.perhousehold"></perhousehold>
+          <perhousehold :chart-data="population_data.perhousehold" style="35vh"></perhousehold>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="12">
         <el-row>
           <el-col :xs="24" :sm="24" :lg="24">
             <div class="chart-wrapper">
-              <population :chart-data="population_data.population"></population>
+              <population :chart-data="population_data.population" style="height: 30vh"></population>
             </div>
             <div class="chart-wrapper">
-              <household :chart-data="population_data.household"></household>
+              <household :chart-data="population_data.household" style="height: 30vh"></household>
             </div>
             <div class="chart-wrapper">
-              <density :chart-data="population_data.population_density"></density>
+              <density :chart-data="population_data.population_density" style="height: 30vh"></density>
             </div>
             <div class="chart-wrapper">
-              <populationrate :chart-data="population_data.population_rate"></populationrate>
+              <populationrate :chart-data="population_data.population_rate" style="height: 30vh"></populationrate>
             </div>
           </el-col>
         </el-row>
@@ -134,14 +134,12 @@
     background: #fff;
     padding: 16px 16px 0;
     margin-bottom: 32px;
-    height: 100%;
     box-shadow: 0 0 10px 5px rgba(153,153,153,0.1);
   }
   .chart-wrapper{
     background: #fff;
     padding: 16px 16px 0;
     margin-bottom: 32px;
-    height: 250px;
     box-shadow: 0 0 10px 5px rgba(153,153,153,0.1);
   }
 </style>

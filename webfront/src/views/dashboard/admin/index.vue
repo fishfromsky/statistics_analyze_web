@@ -23,7 +23,7 @@
               中转站可视化
             </div>
             <el-col :xs="48" :sm="48" :lg="24">
-              <visit-chart :chart-data="lineChartData" />
+              <visit-chart :chart-data="lineChartData" style="height: 35vh" />
             </el-col>
           </el-row>
         </div>
@@ -37,8 +37,8 @@
               <img src="../../image/t_1.png" alt="" />
               生活垃圾产量预测
             </div>
-            <el-col :xs="50" :sm="50" :lg="24">
-              <model-visit :chart-data="modelChartData" />
+            <el-col :xs="48" :sm="48" :lg="24">
+              <model-visit style="height: 35vh" />
             </el-col>
           </el-row>
         </div>
@@ -49,7 +49,7 @@
           style="
             position: relative;
             overflow: hidden;
-            height: 580px;
+            height: 80vh;
             margin-top: 3% !important;
           "
         >
@@ -63,7 +63,7 @@
               v-loading="map_loading"
               element-loading-background="rgba(0, 0, 0, 0.5)"
               element-loading-text="加载中，请稍后"
-              style="width: 100%; height: 550px"
+              style="width: 100%; height: 80vh"
             ></div>
           </div>
 
@@ -92,7 +92,7 @@
               无害化处理厂可视化
             </div>
             <el-col :xs="48" :sm="48" :lg="24">
-              <bar-chart/>
+              <bar-chart style="height: 35vh"/>
             </el-col>
           </el-row>
         </div>
@@ -106,8 +106,8 @@
               <img src="../../image/t_1.png" alt="" />
               人口网格图
             </div>
-            <el-col :xs="50" :sm="50" :lg="24">
-              <model-visit :chart-data="modelChartData" />
+            <el-col :xs="48" :sm="48" :lg="24">
+              <model-kind style="height: 35vh" />
             </el-col>
           </el-row>
         </div>
@@ -117,7 +117,7 @@
     <div
       style="
         width: calc(100% - 20px);
-        height: 250px;
+        height: 30vh;
         margin: 10px;
         display: flex;
         flex-direction: row;
@@ -314,7 +314,8 @@ const lineChartData = {
 import echarts from "echarts";
 import shanghai from "../../repository/p_median/test/mapdata/shanghai.json";
 echarts.registerMap("shanghai", shanghai);
-import { fetchall_list } from "@/api/app01/utputallocation";;
+import { fetchall_list } from "@/api/app01/utputallocation";
+
 export default {
   name: "Dashboard",
 
@@ -762,7 +763,7 @@ export default {
   margin-left: -10px;
 }
 .t_title {
-  width: 65%;
+  width: 58%;
   height: 100%;
   text-align: center;
   font-size: 2.5em;
@@ -788,11 +789,12 @@ export default {
 }
 
 .school-badge {
-  width: 10%;
-  height: 85px;
+  width: 150px;
+  height: 100px;
 }
 .college-badge {
-  width: 8%;
+  margin-top: 10px;
+  width: 120px;
   height: 75px;
 }
 

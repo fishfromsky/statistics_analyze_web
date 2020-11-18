@@ -166,8 +166,8 @@ export default {
             },
             rippleEffect: {
               brushType: "stroke",
-              period: 2, //特效动画时长
-              scale: 2, //波纹的最大缩放比例
+              period: 3, //特效动画时长
+              scale: 4, //波纹的最大缩放比例
             },
             hoverAnimation: true,
             label: {

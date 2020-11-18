@@ -27,7 +27,7 @@
 <script>
 import UploadExcelComponent from './components/UploadFile'
 import { getName } from '@/utils/auth'
-import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory, addcollectfactory, addelementgarbage, adddangerousgarbage, addgarbageclearperday } from '@/api/model'
+import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory, addcollectfactory, addelementgarbage, adddangerousgarbage, addgarbageclearperday, inputgarbagecountry } from '@/api/model'
 export default {
   name: 'UploadExcel',
   components: { UploadExcelComponent },
@@ -42,15 +42,15 @@ export default {
         {
           value: '1',
           label: '市级'
+        },
+        {
+            value: '2',
+            label: '区级'
+        },
+        {
+            value: '3',
+            label: '乡级'
         }
-        // {
-        //     value: '2',
-        //     label: '区级'
-        // },
-        // {
-        //     value: '3',
-        //     label: '乡级'
-        // }
       ],
       kind_list: [
         {
@@ -100,6 +100,10 @@ export default {
         {
           value: '12',
           label: '日均清运量'
+        },
+        {
+          value: '13',
+          label: '乡镇垃圾产量表'
         }
       ],
       star: null,
@@ -191,6 +195,9 @@ export default {
         }
         else if (that.area === '1' && that.kind === '12'){
           this.DataInput(addgarbageclearperday)
+        }
+        else if (that.area === '3' && that.kind === '13'){
+          this.DataInput(inputgarbagecountry)
         }
       }
     }

@@ -1,104 +1,146 @@
 <template>
-    <div :class="className" :style="{width: width,height: height}"></div>
+  <div ref="map" class="map-container"></div>
 </template>
 
 <script>
-    import echarts from 'echarts'
-    require('echarts/theme/westeros') // echarts theme
-    import resize from './mixins/resize'
-    export default {
-        name: "ModelKind",
-        mixins:[resize],
-        props:{
-          className: {
-            type: String,
-            default: 'chart'
-          },
-          width: {
-            type: String,
-            default: '100%'
-          },
-          height: {
-            type: String,
-            default: '300px'
-          },
-          autoResize: {
-            type: Boolean,
-            default: true
-          },
-          chartData: {
-            type: Array,
-            required: true
-          }
-        },
-        data(){
-          return {
-            chart: null
-          }
-        },
-        watch:{
-          chartData:{
-            deep: true,
-            handler(val) {
-              this.setOptions(val)
-            }
-          }
-        },
-        mounted() {
-          this.$nextTick(() => {
-            this.initChart()
-          })
-        },
-        beforeDestroy() {
-          if (!this.chart) {
-            return
-          }
-          this.chart.dispose();
-          this.chart = null
-        },
-        methods:{
-            initChart() {
-                this.chart = echarts.init(this.$el, 'westeros');
-                let pieData = [];
-                let nameData = [];
-                for (let i=0; i<this.chartData.length; i++){
-                  let dict = {};
-                  dict['name'] = this.chartData[i].name;
-                  dict['value'] = this.chartData[i].value;
-                  pieData.push(dict);
-                  nameData.push(this.chartData[i].name);
-                }
-                this.setOptions(pieData, nameData)
-            },
-            setOptions(pieData, nameData){
-              this.chart.setOption({
-                  tooltip: {
-                    trigger: 'item',
-                    formatter: '{a} <br/>{b} : {c} ({d}%)'
-                  },
-                  legend: {
-                      left: 'center',
-                      bottom: '10',
-                      data: nameData
-                  },
-                  series: [
-                  {
-                      name: '模型类型',
-                      type: 'pie',
-                      roseType: 'radius',
-                      radius: [15, 95],
-                      center: ['50%', '38%'],
-                      data: pieData,
-                      animationEasing: 'cubicInOut',
-                      animationDuration: 2600
-                  }
-                ]
-              })
-            }
-        }
+import echarts from 'echarts'
+import resize from './mixins/resize'
+
+import data from './mapdata/heat_data.json'
+import shanghai from "./mapdata/shanghai.json"
+echarts.registerMap("shanghai", shanghai);
+
+var lngExtent = [30.6882888542, 31.8830482032]
+var latExtent = [120.863603906, 122.247009468]
+var cellCount = [134, 155]
+var cellSizeCoord = [
+  (lngExtent[1] - lngExtent[0]) / cellCount[0],
+  (latExtent[1] - latExtent[0]) / cellCount[1]
+]
+
+export default {
+  name: 'GDP',
+  data() {
+    return {
+      chart: echarts.ECharts
     }
+  },
+  watch: {
+    
+  },
+  mounted() {
+    this.initChart()
+  },
+  beforeDestroy() {
+    if (!this.chart) {
+      return
+    }
+    this.chart.dispose()
+    this.chart = null
+  },
+  methods: {
+    getCoord(params, api, lngIndex, latIndex) {
+      var coords = params.context.coords || (params.context.coords = [])
+      var key = lngIndex + '-' + latIndex
+
+      // bmap returns point in integer, which makes cell width unstable.
+      // So we have to use right bottom point.
+      return coords[key] || (coords[key] = api.coord([
+        +(latExtent[0] + lngIndex * cellSizeCoord[0]).toFixed(6),
+        +(lngExtent[0] + latIndex * cellSizeCoord[1]).toFixed(6)
+      ]))
+    },
+
+    renderItem(params, api) {
+      var lngIndex = api.value(0)
+      var latIndex = api.value(1)
+      var pointLeftTop = this.getCoord(params, api, lngIndex, latIndex)
+      var pointRightBottom = this.getCoord(params, api, lngIndex + 1, latIndex + 1)
+
+      return {
+        type: 'rect',
+        shape: {
+          x: pointLeftTop[0],
+          y: pointLeftTop[1],
+          width: pointRightBottom[0] - pointLeftTop[0],
+          height: pointRightBottom[1] - pointLeftTop[1]
+        },
+        style: api.style({
+          stroke: 'rgba(0,0,0,0)'
+        }),
+        styleEmphasis: api.styleEmphasis()
+      }
+    },
+    initChart() {
+      this.chart = echarts.init(this.$refs.map);
+      this.chart.setOption({
+        tooltip: {},
+        visualMap: {
+          type: 'continuous',
+          min: 0,
+          max: 60000,
+          top: 10,
+          left: 10,
+          range: [1, 60000],
+          inRange: {
+            color: ['#AFEEEE', '#FAE900', '#F6AE00', '#C41A1A'],
+            colorAlpha: [0.8, 0.9]
+          },
+          outOfRange: {
+            color: ['rgba(0,0,0,0)'],
+            opacity: 0
+          }
+        },
+        series: [
+          {
+            type: 'custom',
+            coordinateSystem: 'geo',
+            renderItem: this.renderItem,
+            animation: false,
+            emphasis: {
+              itemStyle: {
+                color: 'yellow'
+              }
+            },
+            encode: {
+              tooltip: 2
+            },
+            data: data
+          }
+        ],
+        geo: {
+          map: "shanghai",
+          zoom: 1.2,
+          center: [121.477665, 31.226048],
+          label: {
+            emphasis: {
+              show: true,
+              textStyle: {
+                color: "#fff",
+              },
+            },
+          },
+          roam: true, //是否允许缩放
+          itemStyle: {
+            normal: {
+              color: "#101f32", //地图背景色
+              borderColor: "#43d0d6", //省市边界线
+              borderWidth: 1.1,
+            },
+            emphasis: {
+              color: "#43d0d6", //悬浮背景
+            },
+          },
+        },
+      })
+    },
+  }
+}
 </script>
 
 <style scoped>
-
+.map-container {
+  width: 100%;
+  height: 100%
+}
 </style>

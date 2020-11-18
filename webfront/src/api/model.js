@@ -1098,3 +1098,48 @@ export function deleterelationexcelresult(data){
     data
   })
 }
+
+// 批量导入城镇垃圾产量表
+export function inputgarbagecountry(data){
+  return request({
+    url: '/inputgarbagecountry',
+    method: 'post',
+    data
+  })
+}
+
+// 获取城镇垃圾产量表
+export function getgarbagecountry(data){
+  return request({
+    url: '/getgarbagecountry',
+    method: 'get',
+    params: data
+  })
+}
+
+// 修改城镇垃圾产量表
+export function amendgarbagecountry(data){
+  return request({
+    url: '/amendgarbagecountry',
+    method: 'post',
+    data
+  })
+}
+
+// 删除城镇垃圾产量表
+export function deletegarbagecountry(data){
+  return request({
+    url: '/deletegarbagecountry',
+    method: 'post',
+    data
+  })
+}
+
+// 增加城镇垃圾产量表
+export function addgarbagecountry(data){
+  return request({
+    url: '/addgarbagecountry',
+    method: 'post',
+    data
+  })
+}

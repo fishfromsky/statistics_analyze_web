@@ -4,7 +4,8 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
     relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
-    selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel
+    selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
+    Garbage_Info_Country
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -2850,10 +2851,13 @@ def getexceldetail(request):
     return JsonResponse(response, safe=False)
 
 
-def groupthread_relation(selected_id, user, file_path, relative_max, select_list, choose_col, algorithm_id, model_id):
-    ret = os.system('python backend/experiment/relation/relation.py %s %s %s %s %s %s %s' % (user, file_path, relative_max,
-                                                                                       select_list, choose_col,
-                                                                                       algorithm_id, model_id))
+def groupthread_relation(selected_id, user, file_path, relative_max, select_list, choose_col, algorithm_id, model_id,
+                         test_type, next_list):
+    ret = os.system('python backend/experiment/relation/relation.py %s %s %s %s %s %s %s %s %s' % (user, file_path,
+                                                                                                relative_max, select_list,
+                                                                                                choose_col, algorithm_id,
+                                                                                                model_id, test_type,
+                                                                                                   next_list))
     if ret != 0:
         model = selected_algorithm_table.objects.get(id=selected_id)
         model.status = '运行出错'
@@ -2872,12 +2876,14 @@ def grouptest_relation(request):
     user = body.get('name')
     algorithm_id = body.get('algorithm_id')
     model_id = body.get('model_id')
+    test_type = body.get('test_type')
+    next_list = body.get('next_list')
     user_id = UserProfile.objects.get(username=user).id
     model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
                                                  algorithm=algorithm_project(project_id=algorithm_id))
     selected_id = model.id
     task = threading.Thread(target=groupthread_relation, args=(selected_id, user, file_path, relative_max, select_list, choose_col,
-                                                               algorithm_id, model_id))
+                                                               algorithm_id, model_id, test_type, next_list))
     task.start()
     model.status = '正在运行'
     model.save()
@@ -2897,6 +2903,38 @@ def grouptest_finish_relation(request):
                                                  algorithm=algorithm_project(project_id=algorithm_id))
     model.status = '未运行'
     model.save()
+    return JsonResponse(response, safe=False)
+
+
+def groupthread_lstm(selected_id, file_path, drop_col, special):
+    ret = os.system('python backend/experiment/lstm/lstm.py %s %s %s' % (file_path, drop_col, special))
+    if ret != 0:
+        model = selected_algorithm_table.objects.get(id=selected_id)
+        model.status = '运行出错'
+        model.save()
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def grouptest_lstm(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    file_path = body.get('path')
+    special = body.get('special')
+    drop_col = body.get('drop_col')
+    user = body.get('name')
+    algorithm_id = body.get('algorithm_id')
+    model_id = body.get('model_id')
+    user_id = UserProfile.objects.get(username=user).id
+    model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
+                                                 algorithm=algorithm_project(project_id=algorithm_id))
+    selected_id = model.id
+    task = threading.Thread(target=groupthread_lstm, args=(selected_id, file_path, drop_col, special))
+    task.start()
+
+    model.status = '正在运行'
+    model.save()
+
     return JsonResponse(response, safe=False)
 
 
@@ -2927,7 +2965,6 @@ def DeleteRelationExcelResult(request):
             url = url+path[i]
         else:
             url = url+'/'+path[i]
-    print(url)
     os.remove(url)
     return JsonResponse(response, safe=False)
 
@@ -2999,6 +3036,128 @@ def amendIronGarbage(request):
     data.produce = produce
     data.save()
 
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def InputGarbageCountry(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    column_list = ['name', 'production', 'district', 'year', 'longitude', 'latitude']
+    for i in range(len(data)):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+
+        if flag:
+            if District.objects.filter(name=data[i]['district']).count() == 0:
+                response['code'] = 20000
+                response['message'] = '数据库中找不到该行政区'
+            elif data[i]['district'] is None:
+                response['code'] = 50000
+                response['message'] = '导入数据中所属区域不能为空'
+            else:
+                district = data[i]['district']
+                production = data[i]['production'] if 'production' in data[i].keys() else ''
+                name = data[i]['name'] if 'name' in data[i].keys() else ''
+                year = data[i]['year'] if 'year' in data[i].keys() else ''
+                longitude = data[i]['longitude']
+                latitude = data[i]['latitude']
+                district_id = District.objects.get(name=district).id
+                model = Garbage_Info_Country.objects.create(name=name, district=District(id=district_id), year=year,
+                                                            production=production, longitude=longitude, latitude=latitude)
+                model.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据库不一致'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getGarbageCountry(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = Garbage_Info_Country.objects.all()
+    for item in data:
+        dict = {}
+        dict['name'] = item.name
+        dict['district'] = item.district.name
+        dict['production'] = item.production
+        dict['year'] = item.year
+        dict['longitude'] = item.longitude
+        dict['latitude'] = item.latitude
+        dict['id'] = item.id
+        response['data'].append(dict)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendGarbageCountry(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    name = body.get('name')
+    district = body.get('district')
+    year = body.get('year')
+    production = body.get('production')
+    longitude = body.get('longitude')
+    latitude = body.get('latitude')
+    if District.objects.filter(name=district).count() == 0:
+        response['code'] = 50000
+        response['message'] = '数据库中不存在该行政区'
+    else:
+        district_id = District.objects.get(name=district).id
+        model = Garbage_Info_Country.objects.get(id=id)
+        model.name = name
+        model.district = District(id=district_id)
+        model.year = year
+        model.production = production
+        model.longitude = longitude
+        model.latitude = latitude
+        model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def deleteGarbageCountry(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    model = Garbage_Info_Country.objects.get(id=id)
+    model.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addGarbageCountry(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    name = body.get('name')
+    district = body.get('district')
+    year = body.get('year')
+    production = body.get('production')
+    longitude = body.get('longitude')
+    latitude = body.get('latitude')
+    if District.objects.filter(name=district).count() == 0:
+        response['code'] = 50000
+        response['message'] = '数据库中不存在该行政区'
+    else:
+        district_id = District.objects.get(name=district).id
+        if Garbage_Info_Country.objects.filter(name=name, year=year).count() != 0:
+            response['code'] = 50000
+            response['message'] = '该城镇该年份下数据已存在，请先删除'
+        else:
+            model = Garbage_Info_Country.objects.create(name=name, year=year, district=District(id=district_id),
+                                                        production=production, longitude=longitude, latitude=latitude)
+            model.save()
     return JsonResponse(response, safe=False)
 
 

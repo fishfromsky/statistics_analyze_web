@@ -10,13 +10,13 @@
                         <el-col :xs="24" :sm="24" :lg="24">
                             <div class="chart-wrapper">
                                 <div class="titlebox">主要垃圾生产量变化</div>
-                                <biggarbage :chartData="data1"></biggarbage>
+                                <biggarbage :chartData="data1" style="height: 40vh"></biggarbage>
                             </div> 
                         </el-col>
                         <el-col :xs="24" :sm="24" :lg="24">
                             <div class="chart-wrapper">
                                 <div class="titlebox">日均垃圾清运量变化</div>
-                                <smallgarbage :chartData="data3"></smallgarbage>                               
+                                <smallgarbage :chartData="data3" style="height: 40vh"></smallgarbage>                               
                             </div>
                         </el-col>
                     </el-row>
