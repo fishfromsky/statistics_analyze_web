@@ -775,7 +775,7 @@ export default {
 /*header开始*/
 .header {
   width: 100%;
-  height: 80px;
+  height: 10vh;
 }
 .header-title-text{
   color: #fff;
