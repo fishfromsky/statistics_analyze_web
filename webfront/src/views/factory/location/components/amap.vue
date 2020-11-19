@@ -26,6 +26,8 @@ export default {
       data0: [], // 其他
       data1: [], //焚烧厂
       data2: [], //填埋场
+      data3: [], 
+      data4: [],
       geoCoordMap: {},
       labelstatus: false,
       centrl_geo: [121.477665, 31.226048],
@@ -65,7 +67,11 @@ export default {
               that.data1.push({ name: f_name, value: f_value });
             } else if (fac_data[i]["typeId"] === 2) {
               that.data2.push({ name: f_name, value: f_value });
-            }
+            } else if (fac_data[i]["typeId"] === 3){
+              that.data3.push({ name: f_name, value: f_value });
+            } else if (fac_data[i]["typeId"] === 4){
+              that.data4.push({ name: f_name, value: f_value });
+            } 
             that.geoCoordMap[f_name] = [f_longitude, f_latitude];
           }
           that.initChart();
@@ -89,7 +95,7 @@ export default {
           top: "20",
         },
         legend:{
-            data: ['其他(万吨)', '焚烧厂(万吨)', '填埋场(万吨)'],
+            data: ['其他(万吨)', '填埋厂', '焚烧场', '预处理+厌氧处理', '预处理+好氧处理'],
             top: '100',
             right: '20',
             textStyle: {
@@ -159,7 +165,7 @@ export default {
               value: 2,
             },
             symbolSize: function (val) {
-              return val[2] / 5;
+              return val[2] / 200;
             },
             rippleEffect: {
               brushType: "stroke",
@@ -180,7 +186,7 @@ export default {
             zlevel: 1,
           },
           {
-            name: "焚烧厂(万吨)",
+            name: "填埋厂",
             type: "effectScatter",
             coordinateSystem: "geo",
             data: this.convertData(this.data1),
@@ -188,7 +194,7 @@ export default {
               value: 2,
             },
             symbolSize: function (val) {
-              return val[2] / 5;
+              return val[2] / 200;
             },
             rippleEffect: {
               brushType: "stroke",
@@ -209,7 +215,7 @@ export default {
             zlevel: 1,
           },
           {
-            name: "填埋场(万吨)",
+            name: "焚烧场",
             type: "effectScatter",
             coordinateSystem: "geo",
             data: this.convertData(this.data2),
@@ -217,7 +223,7 @@ export default {
               value: 2,
             },
             symbolSize: function (val) {
-              return val[2] / 5;
+              return val[2] / 200;
             },
             rippleEffect: {
               brushType: "stroke",
@@ -232,6 +238,64 @@ export default {
             },
             itemStyle: {
               color: "#00ff00",
+              shadowBlur: 10,
+              shadowColor: "#333",
+            },
+            zlevel: 1,
+          },
+          {
+            name: "预处理+厌氧处理",
+            type: "effectScatter",
+            coordinateSystem: "geo",
+            data: this.convertData(this.data3),
+            encode: {
+              value: 2,
+            },
+            symbolSize: function (val) {
+              return val[2] / 200;
+            },
+            rippleEffect: {
+              brushType: "stroke",
+              period: 2, //特效动画时长
+              scale: 3, //波纹的最大缩放比例
+            },
+            hoverAnimation: true,
+            label: {
+              formatter: "{b}",
+              position: "top",
+              show: this.labelstatus,
+            },
+            itemStyle: {
+              color: "#C6E2FF",
+              shadowBlur: 10,
+              shadowColor: "#333",
+            },
+            zlevel: 1,
+          },
+          {
+            name: "预处理+好氧处理",
+            type: "effectScatter",
+            coordinateSystem: "geo",
+            data: this.convertData(this.data4),
+            encode: {
+              value: 2,
+            },
+            symbolSize: function (val) {
+              return val[2] / 200;
+            },
+            rippleEffect: {
+              brushType: "stroke",
+              period: 2, //特效动画时长
+              scale: 3, //波纹的最大缩放比例
+            },
+            hoverAnimation: true,
+            label: {
+              formatter: "{b}",
+              position: "top",
+              show: this.labelstatus,
+            },
+            itemStyle: {
+              color: "#ff0000",
               shadowBlur: 10,
               shadowColor: "#333",
             },

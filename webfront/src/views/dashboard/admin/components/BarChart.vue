@@ -1,5 +1,5 @@
 <template>
-  <div :class="className" :style="{ width: width, height: height }">
+  <div>
     <div ref="map" class="map-container"></div>
     <div class="control-panel">
       <div class="button-list">
@@ -13,30 +13,10 @@
 import { getfactorylist } from "@/api/model";
 import echarts from "echarts";
 import shanghai from "./mapdata/shanghai.json";
-import resize from "./mixins/resize";
 echarts.registerMap("shanghai", shanghai);
 export default {
   name: "amap",
   components: {},
-  mixins: [resize],
-  props: {
-    className: {
-      type: String,
-      default: "chart",
-    },
-    width: {
-      type: String,
-      default: "100%",
-    },
-    height: {
-      type: String,
-      default: "300px",
-    },
-    autoResize: {
-      type: Boolean,
-      default: true,
-    },
-  },
   data() {
     return {
       bmap: {},
@@ -45,6 +25,8 @@ export default {
       data0: [], // 其他
       data1: [], //焚烧厂
       data2: [], //填埋场
+      data3: [], 
+      data4: [],
       geoCoordMap: {},
       labelstatus: false,
       centrl_geo: [121.477665, 31.226048],
@@ -84,7 +66,11 @@ export default {
               that.data1.push({ name: f_name, value: f_value });
             } else if (fac_data[i]["typeId"] === 2) {
               that.data2.push({ name: f_name, value: f_value });
-            }
+            } else if (fac_data[i]["typeId"] === 3){
+              that.data3.push({ name: f_name, value: f_value });
+            } else if (fac_data[i]["typeId"] === 4){
+              that.data4.push({ name: f_name, value: f_value });
+            } 
             that.geoCoordMap[f_name] = [f_longitude, f_latitude];
           }
           that.initChart();
@@ -160,12 +146,12 @@ export default {
               value: 2,
             },
             symbolSize: function (val) {
-              return val[2] / 8;
+              return val[2] / 200;
             },
             rippleEffect: {
               brushType: "stroke",
-              period: 3, //特效动画时长
-              scale: 4, //波纹的最大缩放比例
+              period: 2, //特效动画时长
+              scale: 3, //波纹的最大缩放比例
             },
             hoverAnimation: true,
             label: {
@@ -181,7 +167,7 @@ export default {
             zlevel: 1,
           },
           {
-            name: "焚烧厂(万吨)",
+            name: "填埋厂",
             type: "effectScatter",
             coordinateSystem: "geo",
             data: this.convertData(this.data1),
@@ -189,7 +175,7 @@ export default {
               value: 2,
             },
             symbolSize: function (val) {
-              return val[2] / 8;
+              return val[2] / 200;
             },
             rippleEffect: {
               brushType: "stroke",
@@ -210,7 +196,7 @@ export default {
             zlevel: 1,
           },
           {
-            name: "填埋场(万吨)",
+            name: "焚烧场",
             type: "effectScatter",
             coordinateSystem: "geo",
             data: this.convertData(this.data2),
@@ -218,7 +204,7 @@ export default {
               value: 2,
             },
             symbolSize: function (val) {
-              return val[2] / 8;
+              return val[2] / 200;
             },
             rippleEffect: {
               brushType: "stroke",
@@ -233,6 +219,64 @@ export default {
             },
             itemStyle: {
               color: "#00ff00",
+              shadowBlur: 10,
+              shadowColor: "#333",
+            },
+            zlevel: 1,
+          },
+          {
+            name: "预处理+厌氧处理",
+            type: "effectScatter",
+            coordinateSystem: "geo",
+            data: this.convertData(this.data3),
+            encode: {
+              value: 2,
+            },
+            symbolSize: function (val) {
+              return val[2] / 200;
+            },
+            rippleEffect: {
+              brushType: "stroke",
+              period: 2, //特效动画时长
+              scale: 3, //波纹的最大缩放比例
+            },
+            hoverAnimation: true,
+            label: {
+              formatter: "{b}",
+              position: "top",
+              show: this.labelstatus,
+            },
+            itemStyle: {
+              color: "#C6E2FF",
+              shadowBlur: 10,
+              shadowColor: "#333",
+            },
+            zlevel: 1,
+          },
+          {
+            name: "预处理+好氧处理",
+            type: "effectScatter",
+            coordinateSystem: "geo",
+            data: this.convertData(this.data4),
+            encode: {
+              value: 2,
+            },
+            symbolSize: function (val) {
+              return val[2] / 200;
+            },
+            rippleEffect: {
+              brushType: "stroke",
+              period: 2, //特效动画时长
+              scale: 3, //波纹的最大缩放比例
+            },
+            hoverAnimation: true,
+            label: {
+              formatter: "{b}",
+              position: "top",
+              show: this.labelstatus,
+            },
+            itemStyle: {
+              color: "#ff0000",
               shadowBlur: 10,
               shadowColor: "#333",
             },
@@ -258,7 +302,7 @@ export default {
   height: 30px;
   position: absolute;
   top: 10px;
-  right: 0px;
+  right: 0;
   z-index: 100;
 }
 .button-list {
@@ -268,5 +312,9 @@ export default {
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
+}
+.button-list span {
+  font-size: 10px;
+  color: #fff;
 }
 </style>

@@ -173,41 +173,41 @@
         </div>
 
         <div style="min-height: 190px; width: 100%; font-size: 13px; color: white">
-          <div class="newText">
+          <div class="newText news-title">
             <a
               href="http://lhsr.sh.gov.cn/srgl/20180515/0039-C94EEFE3-34F0-4450-B0AB-1107E0AF9D87.html"
             >
               上海市生活垃圾全程分类体系建设行动计划（2018-2020年）
             </a>
           </div>
-          <div style="margin-bottom: 5px">
+          <div style="margin-bottom: 5px" class="news-title">
             <a
               href="http://lhsr.sh.gov.cn/gggs/20190219/0039-E2825314-7F1A-4D9D-9FA5-5C70894C2776.html"
             >
               上海市生活垃圾管理条例
             </a>
           </div>
-          <div class="newText">
+          <div class="newText news-title">
             <a href="http://www.sh.xinhuanet.com/2020-07/02/c_139183140.html">
               上海：九成居民区垃圾分类已达标 年底基本实现原生生活垃圾零填埋
             </a>
           </div>
-          <div style="margin-bottom: 5px">
+          <div style="margin-bottom: 5px" class="news-title">
             <a href="http://www.sh.xinhuanet.com/2020-07/02/c_139183140.html">
               上海：九成居民区垃圾分类已达标 年底基本实现原生生活垃圾零填埋
             </a>
           </div>
-          <div class="newText">
+          <div class="newText news-title">
             <a href="http://www.chinanews.com/sh/2020/10-11/9309877.shtml">
               新闻调查丨上海垃圾分类，前端的努力如何不被浪费？后端怎么处理？
             </a>
           </div>
-          <div style="margin-bottom: 5px">
+          <div style="margin-bottom: 5px" class="news-title">
             <a href="https://news.sjtu.edu.cn/mtjj/20190713/107281.html">
               上海市生活垃圾分类立法实施现状解读及建议
             </a>
           </div>
-          <div class="newText">
+          <div class="newText news-title">
             <a href="https://www.thepaper.cn/newsDetail_forward_9681877">
               上海虹口垃圾分类大数据接入一网统管，无人清扫机有望上路
             </a>
@@ -768,6 +768,13 @@ export default {
     /*å·¦è¾¹é˜´å½±*/ 10px 0px 15px #2c58a6 inset;
   border-radius: 5%;
 }
+.news-title{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 3vh;
+  font-size: 0.8vw;
+}
 .main_title {
   width: 200px;
   height: 30px;
@@ -1038,7 +1045,7 @@ export default {
   color: white;
 }
 .scroll_box {
-  height: 30px;
+  height: 4vh;
   width: 100%;
   position: absolute;
   bottom: 0;
@@ -1129,7 +1136,7 @@ export default {
 }
 .scroll-item-box span{
   color: #fff;
-  font-size: 13px;
+  font-size: 0.8vw;
 }
 .scroll-item-innerbox{
   width: 100%;

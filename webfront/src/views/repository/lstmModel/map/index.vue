@@ -16,7 +16,9 @@ export default {
   data() {
     return {
       chart: null,
-      datax: []
+      datax: [],
+      min: null,
+      max: null
     };
   },
   mounted() {
@@ -33,12 +35,24 @@ export default {
     getData:function(){
       let that = this
       this.datax = []
+      this.min = null
+      this.max = null
       getgarbagecountry().then(res=>{
         if (res.code === 20000){
           let result = res.data
+          let min_val = parseFloat(result[0].production)
+          let max_val = parseFloat(result[0].production)
           for (let i=0; i<result.length; i++){
-            that.datax.push([result[i].longitude, result[i].latitude, parseFloat(result[i].production), result[i].name, result[i].production, result[i].district])
+            if (parseFloat(result[i].production) > max_val){
+              max_val = result[i].production
+            }
+            if (parseFloat(result[i].production) < min_val){
+              min_val = result[i].production
+            }
+            that.datax.push([result[i].longitude, result[i].latitude, parseFloat(result[i].production)])
           }
+          that.min = min_val
+          that.max = max_val
           that.chinaConfigure()
         }
       })
@@ -65,6 +79,22 @@ export default {
           },
           left: "20",
           top: "20",
+        },
+        visualMap: {
+          type: 'continuous',
+          min: parseInt(that.min),
+          max: parseInt(that.max),
+          bottom: 10,
+          left: 10,
+          range: [parseInt(that.min), parseInt(that.max)],
+          inRange: {
+            color: ['#AFEEEE', '#FAE900', '#F6AE00', '#C41A1A'],
+            colorAlpha: [0.8, 0.9]
+          },
+          outOfRange: {
+            color: ['rgba(0,0,0,0)'],
+            opacity: 0
+          }
         },
         // 进行相关配置
         backgroundColor: "rgba(0, 0, 0, 0)",
