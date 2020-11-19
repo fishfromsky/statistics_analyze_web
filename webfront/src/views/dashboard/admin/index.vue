@@ -25,7 +25,7 @@
               中转站可视化
             </div>
             <el-col :xs="48" :sm="48" :lg="24">
-              <visit-chart :chart-data="lineChartData" style="height: 35vh" />
+              <visit-chart :chart-data="lineChartData" style="height: 30vh" />
             </el-col>
           </el-row>
         </div>
@@ -40,7 +40,7 @@
               生活垃圾产量预测
             </div>
             <el-col :xs="48" :sm="48" :lg="24">
-              <model-visit style="height: 35vh" />
+              <model-visit style="height: 30vh" />
             </el-col>
           </el-row>
         </div>
@@ -51,7 +51,7 @@
           style="
             position: relative;
             overflow: hidden;
-            height: 80vh;
+            height: 70vh;
             margin-top: 3% !important;
           "
         >
@@ -65,7 +65,7 @@
               v-loading="map_loading"
               element-loading-background="rgba(0, 0, 0, 0.5)"
               element-loading-text="加载中，请稍后"
-              style="width: 100%; height: 80vh"
+              style="width: 100%; height: 70vh"
             ></div>
           </div>
 
@@ -94,7 +94,7 @@
               无害化处理厂可视化
             </div>
             <el-col :xs="48" :sm="48" :lg="24">
-              <bar-chart style="height: 35vh"/>
+              <bar-chart style="height: 30vh"/>
             </el-col>
           </el-row>
         </div>
@@ -109,7 +109,7 @@
               人口网格图
             </div>
             <el-col :xs="48" :sm="48" :lg="24">
-              <model-kind style="height: 35vh" />
+              <model-kind style="height: 30vh" />
             </el-col>
           </el-row>
         </div>
@@ -119,7 +119,7 @@
     <div
       style="
         width: calc(100% - 20px);
-        height: 30vh;
+        height: 35vh;
         margin: 10px;
         display: flex;
         flex-direction: row;
@@ -132,31 +132,33 @@
         <div class="message_scroll_box">
           <div class="message_scroll">
             <div class="scroll_top">
-              <span class="scroll_title">爬虫数据</span>
+              <span class="scroll_title">空气污染爬虫数据</span>
               <span class="scroll_level">一级</span>
               <a class="localize"></a>
               <span class="scroll_timer">20-10-20/9:52</span>
             </div>
-            <div class="msg_cage">
+            <div style="height: 25vh; width: 100%">
+              <el-scrollbar style="height: 100%">
+                <div v-for="item in spiderlist" :key="item.id" class="scroll-item-box">
+                  <div class="scroll-item-innerbox" v-if="item.index%2==0">
+                    <span>{{item.date}}</span>
+                    <span style="margin-left: 10px">{{item.time}}</span>
+                    <span class="crawldata-download">下载</span>
+                  </div>
+                  <div class="scroll-item-innerbox newText" v-else>
+                    <span>{{item.date}}</span>
+                    <span style="margin-left: 10px">{{item.time}}</span>
+                    <span class="crawldata-download">下载</span>
+                  </div>
+                </div>
+              </el-scrollbar>
+            </div>
+            <!-- <div class="msg_cage">
               <a class="localize_title">下载大量数据</a>
             </div>
             <div class="msg_cage">
               <a class="localize_msg">xxx资源网站</a>
-            </div>
-          </div>
-          <div class="message_scroll">
-            <div class="scroll_top">
-              <span class="scroll_title">爬虫数据</span>
-              <span class="scroll_level">一级</span>
-              <a class="localize"></a>
-              <span class="scroll_timer">20-10-20/9:52</span>
-            </div>
-            <div class="msg_cage">
-              <a class="localize_title">下载大量数据</a>
-            </div>
-            <div class="msg_cage">
-              <a class="localize_msg">xxx资源网站</a>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -170,7 +172,7 @@
           <span class="scroll_title">政策新闻</span>
         </div>
 
-        <div style="height: 190px; width: 100%; font-size: 13px; color: white">
+        <div style="min-height: 190px; width: 100%; font-size: 13px; color: white">
           <div class="newText">
             <a
               href="http://lhsr.sh.gov.cn/srgl/20180515/0039-C94EEFE3-34F0-4450-B0AB-1107E0AF9D87.html"
@@ -276,6 +278,8 @@
 
 <script>
 import { mapGetters } from "vuex";
+import CountTo from 'vue-count-to'
+import { getCrawlDataRecord } from '@/api/model'
 import PanelGroup from "./components/PanelGroup";
 import VisitChart from "./components/VisitChart";
 import ModelVisit from "./components/ModelVisit";
@@ -347,6 +351,7 @@ export default {
       chart: null,
       max_deal: null,
       min_deal: null,
+      spiderlist: []
     };
   },
   computed: {
@@ -411,6 +416,22 @@ export default {
     },
   },
   methods: {
+    getCrawlData:function(){
+      let that = this
+      let datatype = '国内空气污染数据'
+      getCrawlDataRecord(datatype).then(res=>{
+        if (res.code === 20000){
+          let result = res.data
+          for (let i=0; i<result.length; i++){
+            let dict = {}
+            dict['time'] = result[i].time
+            dict['date'] = result[i].date
+            dict['index'] = i
+            that.spiderlist.push(dict)
+          }
+        }
+      })
+    },
     controlSeries: function (centrl, centrl_geo) {
       let that = this;
       [[centrl.name, that.chinaDatas]].forEach(function (item, i) {
@@ -614,6 +635,7 @@ export default {
     },
   },
   mounted() {
+    this.getCrawlData()
     // this.getList()
     this.chart = echarts.init(document.getElementById("map"));
     this.selectConfirm()
@@ -647,6 +669,9 @@ export default {
 
 <style lang="scss" scoped>
 // 浏览人数
+/deep/ .el-scrollbar__wrap{
+  overflow-x: hidden;
+}
 .card-panel-col {
   margin-bottom: 32px;
 }
@@ -779,7 +804,7 @@ export default {
 }
 .header-title-text{
   color: #fff;
-  font-size: 1.7em;
+  font-size: 1.5vw;
 
 }
 .bg_header {
@@ -793,7 +818,7 @@ export default {
 }
 
 .school-badge {
-  width: 10%;
+  width: 11%;
   height: 9%;
   position: absolute;
   z-index: 100;
@@ -805,7 +830,7 @@ export default {
   background-repeat: no-repeat;
 }
 .college-badge {
-  width: 9%;
+  width: 10%;
   height: 8%;
   position: absolute;
   z-index: 100;
@@ -944,12 +969,14 @@ export default {
 .message_scroll {
   border: rgba(12, 122, 200, 0.5) 1px solid;
   background-color: rgba(20, 66, 125, 0.12);
-  height: 90px;
+  min-height: 10vh;
   cursor: pointer;
   margin-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 .scroll_top {
-  height: 25px;
+  height: 5vh;
 }
 .scroll_title {
   float: left;
@@ -1091,5 +1118,28 @@ export default {
   background: rgba(0, 161, 255, 0.2);
   color: #00faff;
   border: #00a1ff 1px solid;
+}
+.scroll-item{
+  width: 100%;
+  height: 30vh;
+}
+.scroll-item-box{
+  width: 100%;
+  height: 30px;
+}
+.scroll-item-box span{
+  color: #fff;
+  font-size: 13px;
+}
+.scroll-item-innerbox{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.crawldata-download{
+  position: absolute;
+  right: 20px
 }
 </style>

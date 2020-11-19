@@ -10,6 +10,11 @@ file_path = sys.argv[1]
 drop_col = sys.argv[2]
 special = sys.argv[3]
 
+print(drop_col)
+
+drop_index = drop_col.split(',')
+drop_index = list(map(int, drop_index))
+
 
 class MyEncoder(json.JSONEncoder):
 
@@ -36,9 +41,9 @@ class NpEncoder(json.JSONEncoder):
             return super(NpEncoder, self).default(obj)
 
 
-def read_csv(path, drop_col):
+def read_csv(path, drop_index):
     dataframe = pd.read_excel(path)
-    df = dataframe.drop(dataframe.columns[drop_col], axis=1)
+    df = dataframe.drop(dataframe.columns[drop_index], axis=1)
     return df
 
 
@@ -100,4 +105,5 @@ def load_data_to_supervision(path, drop_col):
 
 
 if __name__ == '__main__':
-    reframed, scaler, scaled = load_data_to_supervision(file_path, drop_col)
+    reframed, scaler, scaled = load_data_to_supervision(file_path, drop_index)
+    print(reframed)

@@ -2922,6 +2922,13 @@ def grouptest_lstm(request):
     file_path = body.get('path')
     special = body.get('special')
     drop_col = body.get('drop_col')
+    drop_index = ''
+    for i in range(len(drop_col)):
+        if i != len(drop_col)-1:
+            drop_index = drop_index+str(drop_col[i])+','
+        else:
+            drop_index = drop_index+str(drop_col[i])
+
     user = body.get('name')
     algorithm_id = body.get('algorithm_id')
     model_id = body.get('model_id')
@@ -2929,7 +2936,7 @@ def grouptest_lstm(request):
     model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
                                                  algorithm=algorithm_project(project_id=algorithm_id))
     selected_id = model.id
-    task = threading.Thread(target=groupthread_lstm, args=(selected_id, file_path, drop_col, special))
+    task = threading.Thread(target=groupthread_lstm, args=(selected_id, file_path, drop_index, special))
     task.start()
 
     model.status = '正在运行'

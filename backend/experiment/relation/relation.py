@@ -153,5 +153,7 @@ if __name__ == '__main__':
         post_data['drop_col'] = drop_col
         post_data['name'] = user
         post_data['algorithm_id'] = algorithm_id
-        post_data['model_id'] = next_list[0]
+        post_data['model_id'] = next_index[0]
+        post_data = json.dumps(post_data, cls=NpEncoder)
+        requests.post('http://127.0.0.1:8000/api/startgrouptestlstm', data=post_data)
 

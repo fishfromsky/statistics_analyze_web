@@ -70,7 +70,6 @@ export default {
       var that = this;
       gettransferfactory().then((res) => {
         if (res.code === 20000) {
-          console.log(res);
           let fac_data = res.data;
           for (let i = 0; i < fac_data.length; i++) {
             let f_name = fac_data[i]["name"];
