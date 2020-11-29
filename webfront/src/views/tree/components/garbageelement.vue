@@ -185,10 +185,37 @@ export default {
             add_form: {},
             delete_form: {
                 id: ''
-            }
+            },
+            filename: 'garbage_element',
+            autoWidth: true,
+            bookType: 'xlsx',
         }
     },
     methods: {
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'timestamp') {
+                return parseTime(v[j])
+                } else {
+                return v[j]
+                }
+            }))
+        },
+        DownLoad:function(){
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['year', 'cook', 'paper', 'plastic', 'clothe', 'wood', 'ash', 'china', 'glass', 'metal', 'other']
+                const filterVal = ['year', 'cook', 'paper', 'plastic', 'clothe', 'wood', 'ash', 'china', 'glass', 'metal', 'other']
+                const list = this.tableData
+                const data = this.formatJson(filterVal, list)
+                excel.export_json_to_excel({
+                header: tHeader,
+                data,
+                filename: this.filename,
+                autoWidth: this.autoWidth,
+                bookType: this.bookType
+                })
+            })
+        },
         getData(){
             let that = this
             getgarbageelement().then(res=>{

@@ -107,6 +107,23 @@ urlpatterns = [
     url('delete_element_garbage', views.delete_garbage_element),  # 删除一条垃圾成分数据
     url('amend_element_garbage', views.amend_element_garbage),  # 修改一条垃圾成分数据
 
+    url('geteconomydistrict', views.getEconomyDistrict),  # 获取区级经济信息
+    url('amendeconomydistrict', views.amendEconomyDistrict),   # 修改区级经济信息
+    url('inputeconomydistrict', views.InputEconomyDistrict),  # 批量导入区级经济信息
+    url('addeconomydistrict', views.addEconomyDistrict),  # 添加一条区级经济信息
+    url('deleteeconomydistrict', views.deleteEconomyDistrict),  # 删除区级经济信息
+    url('filtereconomydistrict', views.filterEconomyDsitrict),  # 根据行政区筛选经济信息
+    url('filterPieeconomydistrict', views.filterPieDataEconomyDistrict),   # 根据区域和年份筛选区域经济信息
+    url('filterBareconomydistrict', views.filterBarDataEconomyDistrict),  # 根据年份筛选数据
+
+    url('getpopulationdistrict', views.getPopulationDistrict),  # 获取人口区域信息
+    url('inputpopulationdistrict', views.InputPopulationDistrict),  # 批量导入人口区域信息表
+    url('addpopulationdistrict', views.addPopulationDistrict),   # 添加人口区域信息表
+    url('amendpopulationdistrict', views.amendPopulationDistrict),  # 修改人口区域信息表
+    url('deletepopulationdistrict', views.deletePopulationDistrict),  # 删除人口区域信息表
+    url('filterlinepopulationdistrict', views.filterLinepopulationDistrict),   # 根据地区筛选人口数据
+    url('filterbarpopulationdistrict', views.filterBarPopulationDistrict),  # 根据年份筛选人口数据
+
     url('getlstmproject', views.get_lstm_project, name='getlstmproject'),  # 获取lstm项目
     url('addlstmproject', views.add_lstm_project, name='addlstmproject'),  # 添加lstm项目
     url('amendlstmproject', views.amend_lstm_project, name='amendlstmproject'),  # 修改lstm项目
@@ -163,6 +180,8 @@ urlpatterns = [
     url('finishgrouptestrelation', views.grouptest_finish_relation),  # 完成关联分析
 
     url('startgrouptestlstm', views.grouptest_lstm),  # 开始lstm模型实验
+    url('getlstmexcelresult', views.getLSTMExcelResultList),  # 获取lstm算法实验结果
+    url('grouptestfinishlstm', views.grouptest_finish_lstm),  # 完成LSTM算法实验
 
     url('getallmodels', views.getallmodels),  # 获取所有模型列表
     url('upload_img', views.upload_img),  # 上传图片文件

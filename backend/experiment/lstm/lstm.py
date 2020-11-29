@@ -1,16 +1,24 @@
-import sys
 import json
 import numpy as np
 import pandas as pd
 from scipy.interpolate import lagrange
 from sklearn.preprocessing import MinMaxScaler
+from keras.models import Sequential
+from keras.layers import LSTM, Dense
+import os
+import sys
+import datetime
+import requests
 
 
 file_path = sys.argv[1]
 drop_col = sys.argv[2]
 special = sys.argv[3]
+user = sys.argv[4]
+algorithm_id = sys.argv[5]
+model_id = sys.argv[6]
 
-print(drop_col)
+special = int(special)
 
 drop_index = drop_col.split(',')
 drop_index = list(map(int, drop_index))
@@ -42,9 +50,14 @@ class NpEncoder(json.JSONEncoder):
 
 
 def read_csv(path, drop_index):
+    drop_index.remove(special)
     dataframe = pd.read_excel(path)
+    head_list = dataframe.columns.values
+    special_head = head_list[special]
     df = dataframe.drop(dataframe.columns[drop_index], axis=1)
-    return df
+    new_head_list = df.columns.values
+    new_special = list(new_head_list).index(special_head)
+    return df, new_special
 
 
 def ploy(s, n, k=3):   # 拉格朗日插值函数
@@ -91,7 +104,9 @@ def series_to_supervision(data, n_in=1, n_out=1, dropnan=True):
 
 
 def load_data_to_supervision(path, drop_col):
-    data = read_csv(path, drop_col)
+    global special
+    data, head_special = read_csv(path, drop_col)
+    special = head_special
     data = deal_nan(data)
     values = data.values
     scaler = MinMaxScaler(feature_range=(0, 1))
@@ -104,6 +119,76 @@ def load_data_to_supervision(path, drop_col):
     return reframed, scaler, scaled
 
 
+def train_data(reframed, split, special):
+    values = reframed.values
+    train = values[:split]
+    test = values[split:]
+
+    train_X, train_Y = np.concatenate((train[:, :special], train[:, special+1:]), axis=1), train[:, special]
+    test_X, test_Y = np.concatenate((test[:, :special], test[:, special+1:]), axis=1), test[:, special]
+
+    train_X = train_X.reshape((train_X.shape[0], 1, train_X.shape[1]))
+    test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
+
+    return train_X, train_Y, test_X, test_Y
+
+
+def LSTMmodel(trainX):
+    model = Sequential()
+    model.add(LSTM(50, input_shape=(trainX.shape[1], trainX.shape[2])))
+    model.add(Dense(1))
+    model.compile(loss='mae', optimizer='adam', metrics=['accuracy'])
+
+    return model
+
+
+def train_model(trainX, trainY, testX, testY):
+
+    model = LSTMmodel(trainX)
+
+    history = model.fit(trainX, trainY, validation_data=(testX, testY), epochs=200, batch_size=5, verbose=2)
+
+    model.save(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
+
+
 if __name__ == '__main__':
+    # 训练模型
     reframed, scaler, scaled = load_data_to_supervision(file_path, drop_index)
-    print(reframed)
+    split = int((3 / 4)*reframed.values.shape[0])
+    trainX, trainY, testX, testY = train_data(reframed, split, special)
+    train_model(trainX, trainY, testX, testY)
+
+    # 预测模型
+    model = LSTMmodel(trainX)
+    model.load_weights(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
+    predict_data = np.concatenate((trainX, testX), axis=0)
+    result = model.predict(predict_data)
+
+    origin_data = scaler.inverse_transform(scaled[3:])
+    origin_result = origin_data[:, special]
+
+    scaled[3:, special] = result[:, 0]
+    final_result = scaled[3:]
+
+    final_result = scaler.inverse_transform(final_result)[:, special]
+
+    path = 'media/static/result/' + user + '/lstm'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+    my_dict = {
+        'fact': origin_result,
+        'pred': final_result
+    }
+    df = pd.DataFrame(my_dict)
+    df.to_excel(path+'/'+time+'.xlsx')
+
+    json_data = {}
+    json_data['user'] = user
+    json_data['algorithm_id'] = algorithm_id
+    json_data['model_id'] = model_id
+    json_data = json.dumps(json_data, cls=NpEncoder)
+    requests.post('http://127.0.0.1:8000/api/grouptestfinishlstm', data=json_data)
+
+
+

@@ -6,31 +6,22 @@
                    <span>{{row.year}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="垃圾总处理能力" align="center">
+           <el-table-column label="生活垃圾处理率" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.deal_num_total}}</span>
+                   <span>{{row.rate_of_treated}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="填埋场垃圾处理能力" align="center">
+           <el-table-column label="生活垃圾清运量" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.landfill}}</span>
+                   <span>{{row.collect_transport_garbage}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="焚烧厂垃圾处理能力" align="center">
+           <el-table-column label="生活垃圾处理量" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.incineration}}</span>
+                   <span>{{row.volume_of_treated}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="堆肥厂垃圾处理能力" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.compost}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="其他垃圾处理能力" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.else_num}}</span>
-               </template>
-           </el-table-column>
+
            <el-table-column label="数据操作" align="center">
                <template slot-scope="scope">
                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
@@ -40,20 +31,14 @@
        </el-table>
        <el-dialog :visible.sync="amend_dialog" title="修改数据" width="40%">
            <el-form :model="form">
-               <el-form-item label="垃圾总处理能力">
-                   <el-input v-model="form.deal_num_total" auto-complete="off"></el-input>
+               <el-form-item label="生活垃圾处理率">
+                   <el-input v-model="form.rate_of_treated" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="填埋场垃圾处理能力">
-                   <el-input v-model="form.landfill" auto-complete="off"></el-input>
+               <el-form-item label="生活垃圾清运量">
+                   <el-input v-model="form.collect_transport_garbage" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="焚烧厂垃圾处理能力">
-                   <el-input v-model="form.incineration" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="堆肥厂垃圾处理能力">
-                   <el-input v-model="form.compost" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="其他垃圾处理能力">
-                   <el-input v-model="form.else_num" auto-complete="off"></el-input>
+               <el-form-item label="生活垃圾处理量">
+                   <el-input v-model="form.volume_of_treated" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -68,25 +53,19 @@
                 <el-button type="danger" @click="DeleteDataConfirm">确 定</el-button>
             </div>
        </el-dialog>
-       <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%" >
+       <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
            <el-form :model="add_form">
-            <el-form-item label="年份">
+               <el-form-item label="年份">
                    <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="垃圾总处理能力">
-                   <el-input v-model="add_form.deal_num_total" auto-complete="off"></el-input>
+               <el-form-item label="生活垃圾处理率">
+                   <el-input v-model="add_form.rate_of_treated" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="填埋场垃圾处理能力">
-                   <el-input v-model="add_form.landfill" auto-complete="off"></el-input>
+               <el-form-item label="生活垃圾清运量">
+                   <el-input v-model="add_form.collect_transport_garbage" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="焚烧厂垃圾处理能力">
-                   <el-input v-model="add_form.incineration" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="堆肥厂垃圾处理能录">
-                   <el-input v-model="add_form.compost" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="其他垃圾处理能力">
-                   <el-input v-model="add_form.else_num" auto-complete="off"></el-input>
+               <el-form-item label="生活垃圾处理量">
+                   <el-input v-model="add_form.volume_of_treated" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -108,7 +87,7 @@
 </template>
 
 <script>
-import { getcitygarbagecapacitydata, amendcitygarbagecapacitydata, deletecitygarbagecapacitydata, addsinglecapacitygarbage } from '@/api/model'
+import { getcitygarbagedata, amendcitygarbagedata, deletecitygarbagedata, addsinglegarbage } from '@/api/model'
 export default {
     data(){
         return{
@@ -127,13 +106,40 @@ export default {
             add_form: {},
             delete_form: {
                 id: ''
-            }
+            },
+            filename: 'city_garbage',
+            autoWidth: true,
+            bookType: 'xlsx',
         }
     },
     methods: {
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'timestamp') {
+                return parseTime(v[j])
+                } else {
+                return v[j]
+                }
+            }))
+        },
+        DownLoad:function(){
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['year', 'rate_of_treated', 'collect_transport_garbage', 'volume_of_treated']
+                const filterVal = ['year', 'rate_of_treated', 'collect_transport_garbage', 'volume_of_treated']
+                const list = this.tableData
+                const data = this.formatJson(filterVal, list)
+                excel.export_json_to_excel({
+                header: tHeader,
+                data,
+                filename: this.filename,
+                autoWidth: this.autoWidth,
+                bookType: this.bookType
+                })
+            })
+        },
         getData(){
             let that = this
-           getcitygarbagecapacitydata().then(res=>{
+            getcitygarbagedata().then(res=>{
                 if (res.code === 20000){
                     that.table_loading = false
                     that.tableData = res.data
@@ -156,7 +162,7 @@ export default {
         AmendDataConfirm(){
             let data = this.form
             let that = this
-            amendcitygarbagecapacitydata(data).then(res=>{
+            amendcitygarbagedata(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -174,7 +180,7 @@ export default {
         },
         DeleteDataConfirm(){
             let that = this
-            deletecitygarbagecapacitydata(this.delete_form).then(res=>{
+            deletecitygarbagedata(this.delete_form).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -187,12 +193,12 @@ export default {
             })
         },
         addData(){
-        this.add_dialog = true
+          this.add_dialog =true
         },
         addDataConfirm(){
             let data = this.add_form
             let that = this
-            addsinglecapacitygarbage(data).then(res=>{
+            addsinglegarbage(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',

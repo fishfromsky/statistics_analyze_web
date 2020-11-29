@@ -11,7 +11,7 @@
           </el-option>
         </el-select>
         <div class="divider"></div>
-        <el-button type="primary" icon="el-icon-download" class="input-item">导出数据</el-button>
+        <el-button type="primary" icon="el-icon-download" @click="Download" class="input-item">导出数据</el-button>
         <el-button  type="info" icon="el-icon-upload2" @click="addData" style="text-align: center" plain>添加数据</el-button>
       </div>
       <cityeconomy v-if="level == '1' && kind == '1'" ref="economy"></cityeconomy>
@@ -26,23 +26,27 @@
       <dangerous v-if="level=='1' && kind == '10'" ref="dangerous"></dangerous>
       <garbageclearperday v-if="level=='1' && kind=='11'" ref="garbageclear"></garbageclearperday>
       <countrygarbage v-if="level=='3' && kind=='12'" ref="countrygarbage"></countrygarbage>
+      <economydistrict v-if="level=='2' && kind=='1'" ref="districteconomy"></economydistrict>
+      <populationdistrict v-if="level=='2' && kind=='2'" ref="districtpopulation"></populationdistrict>
     </div>
   </div>
 </template>
 
 <script>
-import cityeconomy from './components/cityeconomy'
-import citypopulation from './components/citypopulation'
-import citygarbage from './components/citygarbage'
-import citygarbagedeal from './components/citygarbagedeal'
-import citygarbagecapacity from './components/citygarbagecapacity'
-import citygarbagevolume from './components/citygarbagevolume'
+import cityeconomy from './components/city/cityeconomy'
+import citypopulation from './components/city/citypopulation'
+import citygarbage from './components/city/citygarbage'
+import citygarbagedeal from './components/city/citygarbagedeal'
+import citygarbagecapacity from './components/city/citygarbagecapacity'
+import citygarbagevolume from './components/city/citygarbagevolume'
 import factorylist from './components/factorylist'
 import transfer from './components/transfer'
 import garbageelement from './components/garbageelement'
 import dangerous from './components/dangerousgarbage'
 import garbageclearperday from './components/garbageclearperday'
 import countrygarbage from './components/countrygarbage'
+import economydistrict from './components/district/districteconomy'
+import populationdistrict from './components/district/districtpopulation'
 export default {
   components: {
     cityeconomy,
@@ -56,7 +60,9 @@ export default {
     garbageelement,
     dangerous,
     garbageclearperday,
-    countrygarbage
+    countrygarbage,
+    economydistrict,
+    populationdistrict
   },
   data() {
     return {
@@ -133,6 +139,58 @@ export default {
 
   },
   methods: {
+    Download:function(){
+      if (this.level === ''){
+        this.$message.error('数据级别不能为空')
+      }
+      else if (this.kind === ''){
+        this.$message.error('数据表类型不能为空')
+      }
+      else{
+        if (this.level === '1' && this.kind === '1'){
+          this.$refs.economy.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '2'){
+          this.$refs.population.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '3'){
+          this.$refs.garbage.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '4'){
+          this.$refs.deal.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '5'){
+          this.$refs.capacity.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '6'){
+          this.$refs.volume.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '7'){
+          this.$refs.factorylist.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '8'){
+          this.$refs.transfer.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '9'){
+          this.$refs.garbageelement.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '10'){
+          this.$refs.dangerous.DownLoad()
+        }
+        else if (this.level === '1' && this.kind === '11'){
+          this.$refs.garbageclear.DownLoad()
+        }
+        else if (this.level === '3' && this.kind === '12'){
+          this.$refs.countrygarbage.DownLoad()
+        }
+        else if (this.level === '2' && this.kind === '1'){
+          this.$refs.districteconomy.DownLoad()
+        }
+        else if (this.level === '2' && this.kind === '2'){
+          this.$refs.districtpopulation.DownLoad()
+        }
+      }
+    },
     addData() {
       var that = this
       if (that.level === '') {
@@ -164,6 +222,10 @@ export default {
           this.$refs.garbageclear.addData()
         }else if (that.level === '3' && that.kind === '12'){
           this.$refs.countrygarbage.addData()
+        }else if (that.level === '2' && that.kind === '1'){
+          this.$refs.districteconomy.addData()
+        }else if (that.level === '2' && that.kind === '2'){
+          this.$refs.districtpopulation.addData()
         }
       }
     }
@@ -190,7 +252,7 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: center; 
   }
   .input-item{
     float: left;

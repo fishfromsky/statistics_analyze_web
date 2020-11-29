@@ -6,62 +6,54 @@
                    <span>{{row.year}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="全市GDP" align="center">
+           <el-table-column label="垃圾总处理能力" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.gdp}}</span>
+                   <span>{{row.deal_num_total}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="人均生产总值" align="center">
+           <el-table-column label="填埋场垃圾处理能力" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.gdp_per_capita}}</span>
+                   <span>{{row.landfill}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="GDP增长率" align="center">
+           <el-table-column label="焚烧厂垃圾处理能力" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.gdp_growth_rate}}</span>
+                   <span>{{row.incineration}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="第一产业生产总值" align="center">
+           <el-table-column label="堆肥厂垃圾处理能力" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.gdp_first_industry}}</span>
+                   <span>{{row.compost}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="第二产业生产总值" align="center">
+           <el-table-column label="其他垃圾处理能力" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.gdp_second_industry}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="第三产业生产总值" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.gdp_third_industry}}</span>
+                   <span>{{row.else_num}}</span>
                </template>
            </el-table-column>
            <el-table-column label="数据操作" align="center">
                <template slot-scope="scope">
                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
-                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)">删除</el-button>
+                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)" style="margin-left: 30px">删除</el-button>
                </template>
            </el-table-column>
        </el-table>
        <el-dialog :visible.sync="amend_dialog" title="修改数据" width="40%">
            <el-form :model="form">
-               <el-form-item label="GDP总量">
-                   <el-input v-model="form.gdp" auto-complete="off"></el-input>
+               <el-form-item label="垃圾总处理能力">
+                   <el-input v-model="form.deal_num_total" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="人均生产总值">
-                   <el-input v-model="form.gdp_per_capita" auto-complete="off"></el-input>
+               <el-form-item label="填埋场垃圾处理能力">
+                   <el-input v-model="form.landfill" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="GDP增长率">
-                   <el-input v-model="form.gdp_growth_rate" auto-complete="off"></el-input>
+               <el-form-item label="焚烧厂垃圾处理能力">
+                   <el-input v-model="form.incineration" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="第一产业生产总值">
-                   <el-input v-model="form.gdp_first_industry" auto-complete="off"></el-input>
+               <el-form-item label="堆肥厂垃圾处理能力">
+                   <el-input v-model="form.compost" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="第二产业生产总值">
-                   <el-input v-model="form.gdp_second_industry" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="第三产业生产总值">
-                   <el-input v-model="form.gdp_third_industry" auto-complete="off"></el-input>
+               <el-form-item label="其他垃圾处理能力">
+                   <el-input v-model="form.else_num" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -76,28 +68,25 @@
                 <el-button type="danger" @click="DeleteDataConfirm">确 定</el-button>
             </div>
        </el-dialog>
-        <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
+       <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%" >
            <el-form :model="add_form">
-           <el-form-item label="年份">
+            <el-form-item label="年份">
                    <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="GDP总量">
-                   <el-input v-model="add_form.gdp" auto-complete="off"></el-input>
+               <el-form-item label="垃圾总处理能力">
+                   <el-input v-model="add_form.deal_num_total" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="人均生产总值">
-                   <el-input v-model="add_form.gdp_per_capita" auto-complete="off"></el-input>
+               <el-form-item label="填埋场垃圾处理能力">
+                   <el-input v-model="add_form.landfill" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="GDP增长率">
-                   <el-input v-model="add_form.gdp_growth_rate" auto-complete="off"></el-input>
+               <el-form-item label="焚烧厂垃圾处理能力">
+                   <el-input v-model="add_form.incineration" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="第一产业生产总值">
-                   <el-input v-model="add_form.gdp_first_industry" auto-complete="off"></el-input>
+               <el-form-item label="堆肥厂垃圾处理能录">
+                   <el-input v-model="add_form.compost" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="第二产业生产总值">
-                   <el-input v-model="add_form.gdp_second_industry" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="第三产业生产总值">
-                   <el-input v-model="add_form.gdp_third_industry" auto-complete="off"></el-input>
+               <el-form-item label="其他垃圾处理能力">
+                   <el-input v-model="add_form.else_num" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -119,7 +108,7 @@
 </template>
 
 <script>
-import { getcityeconomydata, amendcityeconomydata, deletecityeconomydata, addsinglerowdata } from '@/api/model'
+import { getcitygarbagecapacitydata, amendcitygarbagecapacitydata, deletecitygarbagecapacitydata, addsinglecapacitygarbage } from '@/api/model'
 export default {
     data(){
         return{
@@ -138,13 +127,40 @@ export default {
             add_form: {},
             delete_form: {
                 id: ''
-            }
+            },
+            filename: 'garbage_capacity',
+            autoWidth: true,
+            bookType: 'xlsx',
         }
     },
     methods: {
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'timestamp') {
+                return parseTime(v[j])
+                } else {
+                return v[j]
+                }
+            }))
+        },
+        DownLoad:function(){
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['year', 'deal_num_total', 'landfill', 'incineration', 'compost', 'else_num']
+                const filterVal = ['year', 'deal_num_total', 'landfill', 'incineration', 'compost', 'else_num']
+                const list = this.tableData
+                const data = this.formatJson(filterVal, list)
+                excel.export_json_to_excel({
+                header: tHeader,
+                data,
+                filename: this.filename,
+                autoWidth: this.autoWidth,
+                bookType: this.bookType
+                })
+            })
+        },
         getData(){
             let that = this
-            getcityeconomydata().then(res=>{
+           getcitygarbagecapacitydata().then(res=>{
                 if (res.code === 20000){
                     that.table_loading = false
                     that.tableData = res.data
@@ -167,7 +183,7 @@ export default {
         AmendDataConfirm(){
             let data = this.form
             let that = this
-            amendcityeconomydata(data).then(res=>{
+            amendcitygarbagecapacitydata(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -185,7 +201,7 @@ export default {
         },
         DeleteDataConfirm(){
             let that = this
-            deletecityeconomydata(this.delete_form).then(res=>{
+            deletecitygarbagecapacitydata(this.delete_form).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -203,7 +219,7 @@ export default {
         addDataConfirm(){
             let data = this.add_form
             let that = this
-            addsinglerowdata(data).then(res=>{
+            addsinglecapacitygarbage(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',

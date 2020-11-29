@@ -5,7 +5,7 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
     relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
     selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
-    Garbage_Info_Country
+    Garbage_Info_Country, Economy_Info_District, Population_Info_District
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -2906,8 +2906,9 @@ def grouptest_finish_relation(request):
     return JsonResponse(response, safe=False)
 
 
-def groupthread_lstm(selected_id, file_path, drop_col, special):
-    ret = os.system('python backend/experiment/lstm/lstm.py %s %s %s' % (file_path, drop_col, special))
+def groupthread_lstm(selected_id, file_path, drop_col, special, user, algorithm_id, model_id):
+    ret = os.system('python backend/experiment/lstm/lstm.py %s %s %s %s %s %s' % (file_path, drop_col, special, user,
+                                                                                  algorithm_id, model_id))
     if ret != 0:
         model = selected_algorithm_table.objects.get(id=selected_id)
         model.status = '运行出错'
@@ -2936,12 +2937,44 @@ def grouptest_lstm(request):
     model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
                                                  algorithm=algorithm_project(project_id=algorithm_id))
     selected_id = model.id
-    task = threading.Thread(target=groupthread_lstm, args=(selected_id, file_path, drop_index, special))
+    task = threading.Thread(target=groupthread_lstm, args=(selected_id, file_path, drop_index, special, user,
+                                                           algorithm_id, model_id))
     task.start()
 
     model.status = '正在运行'
     model.save()
 
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def grouptest_finish_lstm(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    model_id = body.get('model_id')
+    user = body.get('user')
+    user_id = UserProfile.objects.get(username=user).id
+    algorithm_id = body.get('algorithm_id')
+    model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
+                                                 algorithm=algorithm_project(project_id=algorithm_id))
+    model.status = '未运行'
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getLSTMExcelResultList(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    path = 'media/static/result/'+user+'/lstm'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append('http://127.0.0.1:8000/'+root+'/'+file)
+
+    response['data'] = file_list
     return JsonResponse(response, safe=False)
 
 
@@ -3168,10 +3201,333 @@ def addGarbageCountry(request):
     return JsonResponse(response, safe=False)
 
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(crawl_water_pollution_data, 'cron', day_of_week='mon-sun', hour='11', minute='27', second='40')
-scheduler.add_job(crawl_nation_air_pllution_data, 'cron', day_of_week='mon-sun', hour='10', minute='10', second='10')
-scheduler.start()
+@csrf_exempt
+@require_http_methods(['GET'])
+def getEconomyDistrict(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = Economy_Info_District.objects.all()
+    for item in data:
+        dict = {}
+        dict['year'] = item.year
+        dict['district'] = item.district.name
+        dict['gdp'] = item.gdp
+        dict['gdp_first_industry'] = item.gdp_first_industry
+        dict['gdp_second_industry'] = item.gdp_second_industry
+        dict['gdp_third_industry'] = item.gdp_third_industry
+        dict['id'] = item.id
+        response['data'].append(dict)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def InputEconomyDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    column_list = ['year', 'gdp', 'gdp_first_industry', 'gdp_second_industry', 'gdp_third_industry', 'district']
+    for i in range(len(data)):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+
+        if flag:
+            if District.objects.filter(name=data[i]['district']).count() == 0:
+                response['code'] = 20000
+                response['message'] = '数据库中找不到该行政区'
+            elif data[i]['district'] is None:
+                response['code'] = 50000
+                response['message'] = '导入数据中所属区域不能为空'
+            else:
+                district = data[i]['district']
+                gdp = data[i]['gdp'] if 'gdp' in data[i].keys() else ''
+                gdp_first_industry = data[i]['gdp_first_industry'] if 'gdp_first_industry' in data[i].keys() else ''
+                gdp_second_industry = data[i]['gdp_second_industry'] if 'gdp_second_industry' in data[i].keys() else ''
+                gdp_third_industry = data[i]['gdp_third_industry'] if 'gdp_third_industry' in data[i].keys() else ''
+                year = data[i]['year'] if 'year' in data[i].keys() else ''
+                district_id = District.objects.get(name=district).id
+                model = Economy_Info_District.objects.create(year=year, gdp=gdp, gdp_first_industry=gdp_first_industry,
+                                                             gdp_second_industry=gdp_second_industry, gdp_third_industry=gdp_third_industry,
+                                                             district=District(id=district_id))
+                model.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据库不一致'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addEconomyDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    year = body.get('year')
+    district = body.get('district')
+    gdp = body.get('gdp')
+    gdp_first_industry = body.get('gdp_first_industry')
+    gdp_second_indsutry = body.get('gdp_second_industry')
+    gdp_third_industry = body.get('gdp_third_industry')
+    if District.objects.filter(name=district).count() == 0:
+        response['code'] = 50000
+        response['message'] = '数据库中不存在该行政区'
+    else:
+        district_id = District.objects.get(name=district).id
+        if Economy_Info_District.objects.filter(year=year, district=District(id=district_id)).count() != 0:
+            response['code'] = 50000
+            response['message'] = '该区该年份下数据已存在，请先删除'
+        else:
+            model = Economy_Info_District.objects.create(year=year, district=District(id=district_id),
+                                                         gdp=gdp, gdp_first_industry=gdp_first_industry,
+                                                         gdp_second_industry=gdp_second_indsutry,
+                                                         gdp_third_industry=gdp_third_industry)
+            model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendEconomyDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    district = body.get('district')
+    year = body.get('year')
+    gdp = body.get('gdp')
+    gdp_first_industry = body.get('gdp_first_industry')
+    gdp_second_industry = body.get('gdp_second_industry')
+    gdp_third_industry = body.get('gdp_third_industry')
+    if District.objects.filter(name=district).count() == 0:
+        response['code'] = 50000
+        response['message'] = '数据库中不存在该行政区'
+    else:
+        district_id = District.objects.get(name=district).id
+        model = Economy_Info_District.objects.get(id=id)
+        model.district = District(id=district_id)
+        model.year = year
+        model.gdp = gdp
+        model.gdp_first_industry = gdp_first_industry
+        model.gdp_second_industry = gdp_second_industry
+        model.gdp_third_industry = gdp_third_industry
+        model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def deleteEconomyDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    model = Economy_Info_District.objects.get(id=id)
+    model.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def filterEconomyDsitrict(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    body = json.loads(request.body)
+    district = body.get('district')
+    district_id = District.objects.get(name=district).id
+    data = Economy_Info_District.objects.filter(district=District(id=district_id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def filterPieDataEconomyDistrict(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    body = json.loads(request.body)
+    district = body.get('district')
+    district_id = District.objects.get(name=district).id
+    year = body.get('year')
+    data = Economy_Info_District.objects.get(district=District(id=district_id), year=year)
+    dict = {}
+    dict['year'] = data.year
+    dict['district'] = data.district.name
+    dict['gdp'] = data.gdp
+    dict['gdp_first_industry'] = data.gdp_first_industry
+    dict['gdp_second_industry'] = data.gdp_second_industry
+    dict['gdp_third_industry'] = data.gdp_third_industry
+    response['data'].append(dict)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def filterBarDataEconomyDistrict(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    year = request.GET.get('year')
+    data = Economy_Info_District.objects.filter(year=year)
+    for item in data:
+        dict = {}
+        dict['district'] = item.district.name
+        dict['gdp'] = item.gdp
+        dict['gdp_first_industry'] = item.gdp_first_industry
+        dict['gdp_second_industry'] = item.gdp_second_industry
+        dict['gdp_third_industry'] = item.gdp_third_industry
+        response['data'].append(dict)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getPopulationDistrict(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = Population_Info_District.objects.all()
+    for item in data:
+        dict = {}
+        dict['year'] = item.year
+        dict['district'] = item.district.name
+        dict['population'] = item.population
+        dict['population_density'] = item.population_density
+        dict['id'] = item.id
+        response['data'].append(dict)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def InputPopulationDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    column_list = ['year', 'population', 'population_density', 'district']
+    for i in range(len(data)):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+
+        if flag:
+            if District.objects.filter(name=data[i]['district']).count() == 0:
+                response['code'] = 20000
+                response['message'] = '数据库中找不到该行政区'
+            elif data[i]['district'] is None:
+                response['code'] = 50000
+                response['message'] = '导入数据中所属区域不能为空'
+            else:
+                district = data[i]['district']
+                population = data[i]['population'] if 'population' in data[i].keys() else ''
+                population_density = data[i]['population_density'] if 'population_density' in data[i].keys() else ''
+                year = data[i]['year'] if 'year' in data[i].keys() else ''
+                district_id = District.objects.get(name=district).id
+                model = Population_Info_District.objects.create(year=year, population=population,
+                                                                population_density=population_density,
+                                                                district=District(id=district_id))
+                model.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据库不一致'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addPopulationDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    year = body.get('year')
+    district = body.get('district')
+    population = body.get('population')
+    population_density = body.get('population_density')
+    if District.objects.filter(name=district).count() == 0:
+        response['code'] = 50000
+        response['message'] = '数据库中不存在该行政区'
+    else:
+        district_id = District.objects.get(name=district).id
+        if Population_Info_District.objects.filter(year=year, district=District(id=district_id)).count() != 0:
+            response['code'] = 50000
+            response['message'] = '该区该年份下数据已存在，请先删除'
+        else:
+            model = Population_Info_District.objects.create(year=year, district=District(id=district_id),
+                                                            population=population, population_density=population_density)
+            model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendPopulationDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    district = body.get('district')
+    year = body.get('year')
+    population = body.get('population')
+    population_density = body.get('population_density')
+    if District.objects.filter(name=district).count() == 0:
+        response['code'] = 50000
+        response['message'] = '数据库中不存在该行政区'
+    else:
+        district_id = District.objects.get(name=district).id
+        model = Population_Info_District.objects.get(id=id)
+        model.district = District(id=district_id)
+        model.year = year
+        model.population = population
+        model.population_density = population_density
+        model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def deletePopulationDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    model = Population_Info_District.objects.get(id=id)
+    model.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def filterLinepopulationDistrict(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    district = request.GET.get('district')
+    district_id = District.objects.get(name=district).id
+    data = Population_Info_District.objects.filter(district=District(id=district_id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def filterBarPopulationDistrict(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    year = request.GET.get('year')
+    data = Population_Info_District.objects.filter(year=year)
+    for item in data:
+        dict = {}
+        dict['district'] = item.district.name
+        dict['population'] = item.population
+        dict['population_density'] = item.population_density
+        dict['id'] = item.id
+        response['data'].append(dict)
+
+    return JsonResponse(response, safe=False)
+
+
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(crawl_water_pollution_data, 'cron', day_of_week='mon-sun', hour='11', minute='27', second='40')
+# scheduler.add_job(crawl_nation_air_pllution_data, 'cron', day_of_week='mon-sun', hour='10', minute='10', second='10')
+# scheduler.start()
 
 
 

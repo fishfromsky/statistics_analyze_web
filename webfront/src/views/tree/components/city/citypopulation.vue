@@ -6,22 +6,31 @@
                    <span>{{row.year}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="生活垃圾处理率" align="center">
+           <el-table-column label="全市人口" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.rate_of_treated}}</span>
+                   <span>{{row.population}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="生活垃圾清运量" align="center">
+           <el-table-column label="人口密度" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.collect_transport_garbage}}</span>
+                   <span>{{row.population_density}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="生活垃圾处理量" align="center">
+           <el-table-column label="人口增长率" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.volume_of_treated}}</span>
+                   <span>{{row.population_rate}}</span>
                </template>
            </el-table-column>
-
+           <el-table-column label="户数" align="center">
+               <template slot-scope="{row}">
+                   <span>{{row.households}}</span>
+               </template>
+           </el-table-column>
+            <el-table-column label="每户平均人数" align="center">
+               <template slot-scope="{row}">
+                   <span>{{row.average_person_per_household}}</span>
+               </template>
+           </el-table-column>
            <el-table-column label="数据操作" align="center">
                <template slot-scope="scope">
                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
@@ -31,14 +40,20 @@
        </el-table>
        <el-dialog :visible.sync="amend_dialog" title="修改数据" width="40%">
            <el-form :model="form">
-               <el-form-item label="生活垃圾处理率">
-                   <el-input v-model="form.rate_of_treated" auto-complete="off"></el-input>
+               <el-form-item label="全市人口">
+                   <el-input v-model="form.population" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="生活垃圾清运量">
-                   <el-input v-model="form.collect_transport_garbage" auto-complete="off"></el-input>
+               <el-form-item label="人口密度">
+                   <el-input v-model="form.population_density" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="生活垃圾处理量">
-                   <el-input v-model="form.volume_of_treated" auto-complete="off"></el-input>
+               <el-form-item label="人口增长率">
+                   <el-input v-model="form.population_rate" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="户数">
+                   <el-input v-model="form.households" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="每户平均人口">
+                   <el-input v-model="form.average_person_per_household" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -47,7 +62,7 @@
             </div>
        </el-dialog>
        <el-dialog :visible.sync="delete_dialog" title="删除数据" width="30%">
-           <span>确定删除改数据吗？删除后不可恢复</span>
+           <span>确定删除该数据吗？删除后不可恢复</span>
            <div slot="footer" class="dialog-footer">
                 <el-button @click="delete_dialog = false">取 消</el-button>
                 <el-button type="danger" @click="DeleteDataConfirm">确 定</el-button>
@@ -58,14 +73,20 @@
                <el-form-item label="年份">
                    <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="生活垃圾处理率">
-                   <el-input v-model="add_form.rate_of_treated" auto-complete="off"></el-input>
+               <el-form-item label="全市人口">
+                   <el-input v-model="add_form.population" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="生活垃圾清运量">
-                   <el-input v-model="add_form.collect_transport_garbage" auto-complete="off"></el-input>
+               <el-form-item label="人口密度">
+                   <el-input v-model="add_form.population_density" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="生活垃圾处理量">
-                   <el-input v-model="add_form.volume_of_treated" auto-complete="off"></el-input>
+               <el-form-item label="人口增长率">
+                   <el-input v-model="add_form.population_rate" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="户数">
+                   <el-input v-model="add_form.households" auto-complete="off"></el-input>
+               </el-form-item>
+               <el-form-item label="每户平均人口">
+                   <el-input v-model="add_form.average_person_per_household" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -87,7 +108,7 @@
 </template>
 
 <script>
-import { getcitygarbagedata, amendcitygarbagedata, deletecitygarbagedata, addsinglegarbage } from '@/api/model'
+import { getcitypopulationdata, amendcitypopulationdata, deletecitypopulationdata, addsinglepopulation } from '@/api/model'
 export default {
     data(){
         return{
@@ -106,13 +127,40 @@ export default {
             add_form: {},
             delete_form: {
                 id: ''
-            }
+            },
+            filename: 'city_population',
+            autoWidth: true,
+            bookType: 'xlsx',
         }
     },
     methods: {
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'timestamp') {
+                return parseTime(v[j])
+                } else {
+                return v[j]
+                }
+            }))
+        },
+        DownLoad:function(){
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['year', 'population', 'population_density', 'population_rate', 'households', 'average_person_per_household']
+                const filterVal = ['year', 'population', 'population_density', 'population_rate', 'households', 'average_person_per_household']
+                const list = this.tableData
+                const data = this.formatJson(filterVal, list)
+                excel.export_json_to_excel({
+                header: tHeader,
+                data,
+                filename: this.filename,
+                autoWidth: this.autoWidth,
+                bookType: this.bookType
+                })
+            })
+        },
         getData(){
             let that = this
-            getcitygarbagedata().then(res=>{
+            getcitypopulationdata().then(res=>{
                 if (res.code === 20000){
                     that.table_loading = false
                     that.tableData = res.data
@@ -135,7 +183,7 @@ export default {
         AmendDataConfirm(){
             let data = this.form
             let that = this
-            amendcitygarbagedata(data).then(res=>{
+            amendcitypopulationdata(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -153,9 +201,9 @@ export default {
         },
         DeleteDataConfirm(){
             let that = this
-            deletecitygarbagedata(this.delete_form).then(res=>{
+            deletecitypopulationdata(this.delete_form).then(res=>{
                 if (res.code === 20000){
-                    this.$message({
+                    that.$message({
                         type: 'success',
                         message: '删除成功'
                     })
@@ -171,7 +219,7 @@ export default {
         addDataConfirm(){
             let data = this.add_form
             let that = this
-            addsinglegarbage(data).then(res=>{
+            addsinglepopulation(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',

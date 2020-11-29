@@ -1143,3 +1143,146 @@ export function addgarbagecountry(data){
     data
   })
 }
+
+// 获取LSTM组合模型运算excel列表
+export function getlstmexcelresult(data){
+  return request({
+    url: '/getlstmexcelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取区级经济信息表
+export function geteconomydistrict(){
+  return request({
+    url: '/geteconomydistrict',
+    method: 'get',
+  })
+}
+
+// 批量导入区级经济信息表
+export function inputeconomydistrict(data){
+  return request({
+    url: '/inputeconomydistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 修改区级经济信息表
+export function amendeconomydistrict(data){
+  return request({
+    url: '/amendeconomydistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 删除区域经济信息表
+export function deleteeconomydistrict(data){
+  return request({
+    url: '/deleteeconomydistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 添加一条区域经济信息表
+export function addeconomydistrict(data){
+  return request({
+    url: '/addeconomydistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 筛选区域经济信息表
+export function filtereconomydistrict(data){
+  return request({
+    url: '/filtereconomydistrict',
+    method: 'post',
+    data
+  })
+}
+
+
+// 根据区域和年份筛选区域经济信息表
+export function filterpieeconomydistrict(data){
+  return request({
+    url: '/filterPieeconomydistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 根据年份筛选区域经济信息
+export function filterbareconomydistrict(data){
+  return request({
+    url: '/filterBareconomydistrict',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取区域人口信息
+export function getdistrictpopulation(){
+  return request({
+    url: '/getpopulationdistrict',
+    method: 'get'
+  })
+}
+
+// 修改人口区域信息表
+export function amenddistrictpopulation(data){
+  return request({
+    url: '/amendpopulationdistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 添加区域人口信息
+export function adddistrictpopulation(data){
+  return request({
+    url: '/addpopulationdistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 批量导入区域人口信息表
+export function inputdistrictpopulation(data){
+  return request({
+    url: '/inputpopulationdistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 删除人口区域信息表
+export function deletedistrictpopulation(data){
+  return request({
+    url: '/deletepopulationdistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 根据地区筛选人口数据
+export function filterlinepopulationdistrict(data){
+  return request({
+    url: '/filterlinepopulationdistrict',
+    method: 'get',
+    params: data
+  })
+}
+
+// 根据年份筛选人口数据
+export function filterbarpopulationdistrict(data){
+  return request({
+    url: '/filterbarpopulationdistrict',
+    method: 'get',
+    params: data
+  })
+}

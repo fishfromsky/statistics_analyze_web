@@ -27,7 +27,7 @@
 <script>
 import UploadExcelComponent from './components/UploadFile'
 import { getName } from '@/utils/auth'
-import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory, addcollectfactory, addelementgarbage, adddangerousgarbage, addgarbageclearperday, inputgarbagecountry } from '@/api/model'
+import { addcityeconomydata, addcitypopulationdata, addgarbagecity, addcitygarbagedeal, addcitygarbagecapacity, addcitygarbagevolume, addfacorylist, addtransferfactory, addcollectfactory, addelementgarbage, adddangerousgarbage, addgarbageclearperday, inputgarbagecountry, inputeconomydistrict, inputdistrictpopulation } from '@/api/model'
 export default {
   name: 'UploadExcel',
   components: { UploadExcelComponent },
@@ -198,6 +198,12 @@ export default {
         }
         else if (that.area === '3' && that.kind === '13'){
           this.DataInput(inputgarbagecountry)
+        }
+        else if (that.area === '2' && that.kind === '1'){
+          this.DataInput(inputeconomydistrict)
+        }
+        else if (that.area === '2' && that.kind === '2'){
+          this.DataInput(inputdistrictpopulation)
         }
       }
     }

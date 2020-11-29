@@ -127,10 +127,37 @@ export default {
             add_form: {},
             delete_form: {
                 id: ''
-            }
+            },
+            filename: 'garbage_clear_per_day',
+            autoWidth: true,
+            bookType: 'xlsx',
         }
     },
     methods: {
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'timestamp') {
+                return parseTime(v[j])
+                } else {
+                return v[j]
+                }
+            }))
+        },
+        DownLoad:function(){
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['year', 'wet', 'dry', 'recycle', 'harm', 'total']
+                const filterVal = ['year', 'wet', 'dry', 'recycle', 'harm', 'total']
+                const list = this.tableData
+                const data = this.formatJson(filterVal, list)
+                excel.export_json_to_excel({
+                header: tHeader,
+                data,
+                filename: this.filename,
+                autoWidth: this.autoWidth,
+                bookType: this.bookType
+                })
+            })
+        },
         getData(){
             let that = this
             getgarbageclearperday().then(res=>{

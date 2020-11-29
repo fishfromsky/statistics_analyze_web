@@ -447,3 +447,20 @@ class Garbage_Info_Country(models.Model):
     year = models.CharField(max_length=255, null=False)
     longitude = models.FloatField()
     latitude = models.FloatField()
+
+
+class Economy_Info_District(models.Model):
+    year = models.CharField(max_length=255, null=False)
+    gdp = models.CharField(max_length=255, default='')
+    gdp_first_industry = models.CharField(max_length=255, default='')
+    gdp_second_industry = models.CharField(max_length=255, default='')
+    gdp_third_industry = models.CharField(max_length=255, default='')
+    district = models.ForeignKey(to="District", on_delete=models.CASCADE)
+
+
+class Population_Info_District(models.Model):
+    year = models.CharField(max_length=255, null=False)
+    population = models.CharField(max_length=255, null=False)
+    population_density = models.CharField(max_length=255, null=False)
+    district = models.ForeignKey(to="District", on_delete=models.CASCADE)
+

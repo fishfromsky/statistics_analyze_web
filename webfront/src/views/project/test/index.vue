@@ -202,6 +202,7 @@ import {
   grouptestrelation,
   getrelationexcelresult,
   deleterelationexcelresult,
+  getlstmexcelresult
 } from "@/api/model";
 export default {
   data() {
@@ -251,7 +252,10 @@ export default {
           this.excelList = []
           this.result_dialog = true;
           if (index==16){
-              this.getExcelResult();
+            this.getExcelResult(getrelationexcelresult);
+          }
+          else if (index==13){
+            this.getExcelResult(getlstmexcelresult)
           }
       },
     getCookie: function (name) {
@@ -341,13 +345,13 @@ export default {
     handleSuccess: function () {
       this.getFileList();
     },
-    getExcelResult() {
+    getExcelResult(func) {
       let that = this;
       let username = this.getCookie("environment_name");
       let data = {};
       this.excelList = []
       data["user"] = username;
-      getrelationexcelresult(data).then((res) => {
+      func(data).then((res) => {
         if (res.code === 20000) {
           let result = res.data;
           for (let i = 0; i < result.length; i++) {

@@ -137,8 +137,8 @@ if __name__ == '__main__':
     importance, use_cols = zip(*sorted(zip(importance, use_cols), reverse=True))
     next_cols = list(use_cols[:int(relative_max)])
     drop_col, reference_index = get_column_index(file_path, reference_col, use_cols)
-    # df = pd.DataFrame(my_dict)
-    # df.to_excel(path+'/'+time+'.xlsx')
+    df = pd.DataFrame(my_dict)
+    df.to_excel(path+'/'+time+'.xlsx')
     json_data = {}
     json_data['user'] = user
     json_data['algorithm_id'] = algorithm_id

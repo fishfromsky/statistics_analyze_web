@@ -6,54 +6,35 @@
                    <span>{{row.year}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="垃圾总处理量" align="center">
+           <el-table-column label="人口" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.deal_volume_total}}</span>
+                   <span>{{row.population}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="填埋场垃圾处理量" align="center">
+           <el-table-column label="人口密度" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.landfill}}</span>
+                   <span>{{row.population_density}}</span>
                </template>
            </el-table-column>
-           <el-table-column label="焚烧厂垃圾处理量" align="center">
+           <el-table-column label="地区" align="center">
                <template slot-scope="{row}">
-                   <span>{{row.incineration}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="堆肥厂垃圾处理量" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.compost}}</span>
-               </template>
-           </el-table-column>
-           <el-table-column label="其他垃圾处理量" align="center">
-               <template slot-scope="{row}">
-                   <span>{{row.else_num}}</span>
+                   <span>{{row.district}}</span>
                </template>
            </el-table-column>
            <el-table-column label="数据操作" align="center">
                <template slot-scope="scope">
                    <el-button size="mini" type="primary" @click="AmendData(scope.$index)">修改</el-button>
-                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)" style="margin-left: 30px">删除</el-button>
+                   <el-button size="mini" type="danger" @click="DeleteData(scope.$index)">删除</el-button>
                </template>
            </el-table-column>
        </el-table>
        <el-dialog :visible.sync="amend_dialog" title="修改数据" width="40%">
            <el-form :model="form">
-               <el-form-item label="垃圾总处理量">
-                   <el-input v-model="form.deal_volume_total" auto-complete="off"></el-input>
+               <el-form-item label="人口">
+                   <el-input v-model="form.population" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="填埋场垃圾处理量">
-                   <el-input v-model="form.landfill" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="焚烧厂垃圾处理量">
-                   <el-input v-model="form.incineration" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="堆肥厂垃圾处理量">
-                   <el-input v-model="form.compost" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="其他垃圾处理量">
-                   <el-input v-model="form.else_num" auto-complete="off"></el-input>
+               <el-form-item label="人口密度">
+                   <el-input v-model="form.population_density" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -68,25 +49,21 @@
                 <el-button type="danger" @click="DeleteDataConfirm">确 定</el-button>
             </div>
        </el-dialog>
-       <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
+        <el-dialog :visible.sync="add_dialog" title="添加数据" width="40%">
            <el-form :model="add_form">
-               <el-form-item label="年份">
+                <el-form-item label="年份">
                    <el-input v-model="add_form.year" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="垃圾总处理量">
-                   <el-input v-model="add_form.deal_volume_total" auto-complete="off"></el-input>
+               <el-form-item label="行政区">
+                   <el-select v-model="add_form.district" placeholder="请选择行政区">
+                       <el-option v-for="item in district_options" :key="item.label" :value="item.value" :label="item.label"></el-option>
+                   </el-select>
                </el-form-item>
-               <el-form-item label="填埋场垃圾处理量">
-                   <el-input v-model="add_form.landfill" auto-complete="off"></el-input>
+               <el-form-item label="人口">
+                   <el-input v-model="add_form.population" auto-complete="off"></el-input>
                </el-form-item>
-               <el-form-item label="焚烧厂垃圾处理量">
-                   <el-input v-model="add_form.incineration" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="堆肥厂垃圾处理量">
-                   <el-input v-model="add_form.compost" auto-complete="off"></el-input>
-               </el-form-item>
-               <el-form-item label="其他垃圾处理量">
-                   <el-input v-model="add_form.else_num" auto-complete="off"></el-input>
+               <el-form-item label="人口密度">
+                   <el-input v-model="add_form.population_density" auto-complete="off"></el-input>
                </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -108,7 +85,7 @@
 </template>
 
 <script>
-import { getcitygarbagevolumdata, amendcitygarbagevolumedata, deletecitygarbagevolumedata, addsinglevolumegarbage } from '@/api/model'
+import { getdistrictpopulation, amenddistrictpopulation, deletedistrictpopulation, adddistrictpopulation } from '@/api/model'
 export default {
     data(){
         return{
@@ -127,13 +104,58 @@ export default {
             add_form: {},
             delete_form: {
                 id: ''
-            }
+            },
+            district_options: [
+                {label: '黄浦区', value: '黄浦区'},
+                {label: '普陀区', value: '普陀区'},
+                {label: '静安区', value: '静安区'},
+                {label: '长宁区', value: '长宁区'},
+                {label: '徐汇区', value: '徐汇区'},
+                {label: '虹口区', value: '虹口区'},
+                {label: '杨浦区', value: '杨浦区'},
+                {label: '宝山区', value: '宝山区'},
+                {label: '嘉定区', value: '嘉定区'},
+                {label: '闵行区', value: '闵行区'},
+                {label: '浦东新区', value: '浦东新区'},
+                {label: '金山区', value: '金山区'},
+                {label: '松江区', value: '松江区'},
+                {label: '青浦区', value: '青浦区'},
+                {label: '崇明区', value: '崇明区'},
+                {label: '奉贤区', value: '奉贤区'}
+            ],
+            filename: 'district_population',
+            autoWidth: true,
+            bookType: 'xlsx',
         }
     },
     methods: {
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'timestamp') {
+                return parseTime(v[j])
+                } else {
+                return v[j]
+                }
+            }))
+        },
+        DownLoad:function(){
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['year', 'population', 'population_density', 'district']
+                const filterVal = ['year', 'population', 'population_density', 'district']
+                const list = this.tableData
+                const data = this.formatJson(filterVal, list)
+                excel.export_json_to_excel({
+                header: tHeader,
+                data,
+                filename: this.filename,
+                autoWidth: this.autoWidth,
+                bookType: this.bookType
+                })
+            })
+        },
         getData(){
             let that = this
-           getcitygarbagevolumdata().then(res=>{
+            getdistrictpopulation().then(res=>{
                 if (res.code === 20000){
                     that.table_loading = false
                     that.tableData = res.data
@@ -156,7 +178,7 @@ export default {
         AmendDataConfirm(){
             let data = this.form
             let that = this
-            amendcitygarbagevolumedata(data).then(res=>{
+            amenddistrictpopulation(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -174,7 +196,7 @@ export default {
         },
         DeleteDataConfirm(){
             let that = this
-            deletecitygarbagevolumedata(this.delete_form).then(res=>{
+            deletedistrictpopulation(this.delete_form).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -187,12 +209,12 @@ export default {
             })
         },
         addData(){
-          this.add_dialog = true
+        this.add_dialog = true
         },
         addDataConfirm(){
             let data = this.add_form
             let that = this
-            addsinglevolumegarbage(data).then(res=>{
+            adddistrictpopulation(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
