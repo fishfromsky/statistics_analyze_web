@@ -24,6 +24,8 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 import threading
 
+BASE_ROOT = 'http://101.133.238.216:8000/'
+
 
 def to_dict(self, fields=None, exclude=None):
     data = {}
@@ -1370,7 +1372,7 @@ def get_water_pollution(request):
     date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     path = os.path.join("static/国内水体污染数据/" + date + '国内水体污染实时数据.xlsx')
     os.renames("static/国内水体污染数据/国内水体污染实时数据.xlsx", path)
-    response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    response['excel_url'] = BASE_ROOT + path
     table_type = '国内水体污染数据'
     dateTime = str(date)
     hour = dateTime[8:10]
@@ -1393,7 +1395,7 @@ def get_nation_pm(request):
     date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     path = os.path.join("static/国内空气污染数据/" + date + '国内空气污染实时数据.xlsx')
     os.renames("static/国内空气污染数据/国内空气污染实时数据.xlsx", path)
-    response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    response['excel_url'] = BASE_ROOT + path
     table_type = '国内空气污染数据'
     dateTime = str(date)
     hour = dateTime[8:10]
@@ -1423,7 +1425,7 @@ def get_nation_solid_pollution(request):
     os.system('python backend/start_crawl.py ' + 'nation_solid_pollution ' + count + " " + key_word + " " + district + " " + str(startYear) + " " + str(endYear))
     path = os.path.join("static/国内固体废物数据/" + date + '国内固体废物实时数据.xlsx')
     os.renames("static/国内固体废物数据/国内固体废物实时数据.xlsx", path)
-    response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    response['excel_url'] = BASE_ROOT + path
     table_type = '国内固体废物数据'
     dateTime = str(date)
     hour = dateTime[8:10]
@@ -1448,7 +1450,7 @@ def get_world_pm(request):
     os.system('python backend/start_crawl.py ' + 'world_pm')
     path = os.path.join("static/世界空气污染数据/" + date + '世界空气污染实时数据.xlsx')
     os.renames("static/世界空气污染实时数据.xlsx", path)
-    response['excel_url'] = 'http://127.0.0.1:8000/' + path
+    response['excel_url'] = BASE_ROOT + path
     table_type = '世界空气污染数据'
     dateTime = str(date)
 
@@ -1490,7 +1492,7 @@ def get_crawl_record(request):
         dic['table_type'] = to_dict(item)['table_type']
         dic['key_words'] = to_dict(item)['key_words']
         dic['city'] = to_dict(item)['city']
-        dic['file_location'] = 'http://127.0.0.1:8000/' + to_dict(item)['file_location']
+        dic['file_location'] = BASE_ROOT + to_dict(item)['file_location']
         response['data'].append(dic)
     year_list = [str(i.date)[0:4] for i in data]
     unique_year_list = list(set(year_list))
@@ -1544,7 +1546,7 @@ def get_crawl_record_select(request):
         dic['table_type'] = to_dict(item)['table_type']
         dic['key_words'] = to_dict(item)['key_words']
         dic['city'] = to_dict(item)['city']
-        dic['file_location'] = 'http://127.0.0.1:8000/' + to_dict(item)['file_location']
+        dic['file_location'] = BASE_ROOT + to_dict(item)['file_location']
         response['data'].append(dic)
     return JsonResponse(response, safe=False)
 
@@ -2786,7 +2788,7 @@ def upload_img(request):
     response = {'code': 20000, 'message': 'success'}
     img = Img(img_url=request.FILES['file'])
     img.save()
-    response['url'] = 'http://127.0.0.1:8000/media/'+str(img.img_url)
+    response['url'] = BASE_ROOT+'media/'+str(img.img_url)
     return JsonResponse(response, safe=False)
 
 
@@ -2796,7 +2798,7 @@ def upload_file(request):
     response = {'code': 20000, 'message': 'success'}
     file = File(file_url=request.FILES['file'])
     file.save()
-    response['url'] = 'http://127.0.0.1:8000/media/'+str(file.file_url)
+    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
     return JsonResponse(response, safe=False)
 
 
@@ -3112,7 +3114,7 @@ def getRegressionExcelResult(request):
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append('http://127.0.0.1:8000/'+root+'/'+file)
+            file_list.append(BASE_ROOT+root+'/'+file)
 
     response['data'] = file_list
 
@@ -3128,7 +3130,7 @@ def getLSTMExcelResultList(request):
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append('http://127.0.0.1:8000/'+root+'/'+file)
+            file_list.append(BASE_ROOT+root+'/'+file)
 
     response['data'] = file_list
     return JsonResponse(response, safe=False)
@@ -3143,7 +3145,7 @@ def getRelaionExcelResultList(request):
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append('http://127.0.0.1:8000/'+root+'/'+file)
+            file_list.append(BASE_ROOT+root+'/'+file)
 
     response['data'] = file_list
     return JsonResponse(response, safe=False)
@@ -3231,7 +3233,7 @@ def getKMeansExcelResult(request):
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append('http://127.0.0.1:8000/' + root + '/' + file)
+            file_list.append(BASE_ROOT + root + '/' + file)
 
     response['data'] = file_list
     return JsonResponse(response, safe=False)
