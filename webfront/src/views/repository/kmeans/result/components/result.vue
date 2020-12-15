@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { getkmeansresult } from '@/api/model'
+import { getkmeansresult, getkmenastestreport } from '@/api/model'
 import chartresult from './components/resultchart'
 export default {
     components:{
@@ -83,7 +83,9 @@ export default {
                 xaxis: [],
                 yaxis: [],
                 label: [],
-                district: []
+                district: [],
+                xlabel: '',
+                ylabel: ''
             }
         }
     },
@@ -98,6 +100,7 @@ export default {
     },
     methods:{
         showChart:function(id){
+            let that = this
             this.graph_data.xaxis = []
             this.graph_data.yaxis = []
             this.graph_data.label = []
@@ -113,6 +116,17 @@ export default {
                 }
             }
             this.graph_data.labelnum = this.sort_list.length
+            let dict = {}
+            dict['project_id'] = this.projectId
+            dict['sort'] = id
+            getkmenastestreport(dict).then(res=>{
+                if (res.code === 20000){
+                    let result = res.data[0]
+                    let choose_col = result.choose_col
+                    that.graph_data.xlabel = choose_col.split(',')[0]
+                    that.graph_data.ylabel = choose_col.split(',')[1]
+                }
+            })
         },
         timeStamptoTime:function(time){
             var date = new Date(time);
@@ -205,5 +219,20 @@ export default {
 </script>
 
 <style scoped>
-
+.report{
+    width: 100%;
+    min-height: 10vh;
+    padding: 20px;
+}
+.report-item{
+    margin-top: 10px;
+    width: 100%;
+    min-height: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.report-title{
+    font-size: 15px;
+}
 </style>

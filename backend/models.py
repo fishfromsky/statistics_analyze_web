@@ -541,12 +541,12 @@ class TestReport(models.Model):
     algorithm = models.CharField(max_length=255, default='', null=False)
     project_id = models.CharField(max_length=200, default='', null=False)
     sort = models.IntegerField(default=1, null=False)
-    formula = models.CharField(max_length=255, default='')
+    formula = models.TextField(default='')
     r_square = models.CharField(max_length=255, default='')
     mse = models.CharField(max_length=255, default='')
     rmse = models.CharField(max_length=255, default='')
     mae = models.CharField(max_length=255, default='')
-    choose_col = models.CharField(max_length=255, default='')
+    choose_col = models.TextField(default='')
 
 
 class Garbage_District(models.Model):

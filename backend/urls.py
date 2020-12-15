@@ -174,6 +174,7 @@ urlpatterns = [
     url('get_id_kmeans', views.get_idlist_kmeans),  # 获取kmeans所有项目编号
     url('input_parameter_kmeans', views.input_parameter_kmeans),  # 输入kmeans实验数据
     url('get_parameter_kmeans', views.get_parameter_kmeans),  # 获取kmeans实验参数
+    url('get_kmeans_testreport', views.getKMeansTestReport),  # 获取kmeans报告
 
     url('add_relation_project', views.add_relation_project),  # 添加关联分析项目
     url('get_relation_project', views.get_relation_project),  # 获得关联分析项目

@@ -34,7 +34,9 @@
         data(){
             return {
                 chart: null,
-                districtlist: []
+                districtlist: [],
+                xlabel: '',
+                ylabel: ''
             }
         },
         computed:{
@@ -46,10 +48,12 @@
                         left: 'center'
                     },
                     xAxis: {
-                        type: 'value'
+                        type: 'value',
+                        name: that.xlabel
                     },
                     yAxis: {
-                        type: 'value'
+                        type: 'value',
+                        name: that.ylabel
                     },
                     tooltip: {
                         axisPointer: {
@@ -116,6 +120,8 @@
                 this.setOptions(this.chartData)
             },
             setOptions(val){
+                this.xlabel = val.xlabel
+                this.ylabel = val.ylabel
                 this.districtlist = []
                 let label_num = this.judgesortnum(val.label)
                 let dataset = []

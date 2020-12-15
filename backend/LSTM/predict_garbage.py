@@ -24,6 +24,12 @@ id = sys.argv[1]
 test_type = sys.argv[2]
 select_list = sys.argv[3]
 
+if select_list == '-1':
+    column_list = []
+else:
+    column_list = select_list.split(',')
+    column_list = list(map(int, column_list))
+
 
 class MyEncoder(json.JSONEncoder):
 
@@ -278,8 +284,6 @@ def Train(list):
 
 if __name__ == '__main__':
     # Predict(10)
-    column_list = select_list.split(',')
-    column_list = list(map(int, column_list))
     if test_type == '1':
         Train(column_list)
         dict = {}

@@ -1716,6 +1716,8 @@ def experiment_lstm_start(request):
     id = body.get('project_id')
     test_type = body.get('type')
     select_list = body.get('select_list')
+    if select_list == '':
+        select_list = '-1'
     if lstm_parameter.objects.filter(project_id=lstm_project(project_id=id)).count() == 0:
         response['code'] = 50000
         response['message'] = '该项目缺少数据，无法实验'
@@ -2083,6 +2085,25 @@ def save_result_kmeans(request):
                                              xaxis=xaxis, district=district, yaxis=yaxis, label=label, sort=sort)
         model.save()
 
+    formula = body.get('formula') if body.get('formula') is not None else ''
+    r_square = body.get('r_square') if body.get('r_square') is not None else ''
+    mse = body.get('mse') if body.get('mse') is not None else ''
+    rmse = body.get('rmse') if body.get('rmse') is not None else ''
+    mae = body.get('mae') if body.get('mae') is not None else ''
+    choose_col = body.get('choose_col') if body.get('choose_col') is not None else ''
+    if TestReport.objects.filter(project_id=id, sort=sort, algorithm='聚类分析').count() != 0:
+        model = TestReport.objects.get(project_id=id, sort=sort, algorithm='聚类分析')
+        model.formula = formula
+        model.r_square = r_square
+        model.mse = mse
+        model.rmse = rmse
+        model.mae = mae
+        model.choose_col = choose_col
+    else:
+        model = TestReport.objects.create(project_id=id, sort=sort, formula=formula, r_square=r_square,
+                                          mse=mse, rmse=rmse, mae=mae, choose_col=choose_col, algorithm='聚类分析')
+        model.save()
+
     return JsonResponse(response, safe=False)
 
 
@@ -2110,6 +2131,7 @@ def start_kmeans(request):
         model.save()
         task = threading.Thread(target=thread_kmeans, args=(id, index_list))
         task.start()
+
     return JsonResponse(response, safe=False)
 
 
@@ -4173,6 +4195,17 @@ def filterGarbageDistrictByYear(request):
         dict['id'] = item.id
         response['data'].append(dict)
 
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getKMeansTestReport(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    project_id = request.GET.get('project_id')
+    sort = request.GET.get('sort')
+    data = TestReport.objects.get(project_id=project_id, sort=sort, algorithm='聚类分析')
+    response['data'].append(to_dict(data))
     return JsonResponse(response, safe=False)
 
 # scheduler = BackgroundScheduler()

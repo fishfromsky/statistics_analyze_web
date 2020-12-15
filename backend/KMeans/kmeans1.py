@@ -253,6 +253,15 @@ if __name__ == '__main__':
     district_list = df[['district']]
     districts = district_list.values[:, 0]
 
+    label_list = labels.values
+
+    choose_col = ''
+    for i in range(len(label_list)):
+        if i != len(label_list)-1:
+            choose_col = choose_col + label_list[i]+','
+        else:
+            choose_col = choose_col + label_list[i]
+
     json_data = {}
     json_data['project_id'] = id
     result_list = []
@@ -264,6 +273,7 @@ if __name__ == '__main__':
         dict_data['district'] = districts[i]
         result_list.append(dict_data)
     json_data['data'] = result_list
+    json_data['choose_col'] = choose_col
     json_data = json.dumps(json_data, cls=NpEncoder)
     requests.post('http://127.0.0.1:8000/api/save_result_kmeans', data=json_data)
 

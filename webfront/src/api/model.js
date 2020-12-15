@@ -1492,3 +1492,12 @@ export function filtergarbagedistrictbyyear(data){
     params: data
   })
 }
+
+// 获取kmeans聚类报告
+export function getkmenastestreport(data){
+  return request({
+    url: '/get_kmeans_testreport',
+    method: 'get',
+    params: data
+  })
+}
