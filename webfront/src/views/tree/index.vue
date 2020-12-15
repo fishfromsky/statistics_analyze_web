@@ -28,6 +28,7 @@
       <countrygarbage v-if="level=='3' && kind=='12'" ref="countrygarbage"></countrygarbage>
       <economydistrict v-if="level=='2' && kind=='1'" ref="districteconomy"></economydistrict>
       <populationdistrict v-if="level=='2' && kind=='2'" ref="districtpopulation"></populationdistrict>
+      <garbagedistrict v-if="level=='2' && kind=='3'" ref="garbagedistrict"></garbagedistrict>
     </div>
   </div>
 </template>
@@ -47,6 +48,7 @@ import garbageclearperday from './components/garbageclearperday'
 import countrygarbage from './components/countrygarbage'
 import economydistrict from './components/district/districteconomy'
 import populationdistrict from './components/district/districtpopulation'
+import garbagedistrict from './components/district/districtgarbage'
 export default {
   components: {
     cityeconomy,
@@ -62,7 +64,8 @@ export default {
     garbageclearperday,
     countrygarbage,
     economydistrict,
-    populationdistrict
+    populationdistrict,
+    garbagedistrict
   },
   data() {
     return {
@@ -94,7 +97,7 @@ export default {
         },
         {
           value: '3',
-          label: '生活垃圾处理'
+          label: '固废产量信息'
         },
         {
           value: '4',
@@ -189,6 +192,9 @@ export default {
         else if (this.level === '2' && this.kind === '2'){
           this.$refs.districtpopulation.DownLoad()
         }
+        else if (this.level === '2' && this.kind === '3'){
+          this.$refs.garbagedistrict.DownLoad()
+        }
       }
     },
     addData() {
@@ -226,6 +232,8 @@ export default {
           this.$refs.districteconomy.addData()
         }else if (that.level === '2' && that.kind === '2'){
           this.$refs.districtpopulation.addData()
+        }else if (that.level === '2' && that.kind === '3'){
+          this.$refs.garbagedistrict.addData()
         }
       }
     }

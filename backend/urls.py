@@ -124,6 +124,13 @@ urlpatterns = [
     url('filterlinepopulationdistrict', views.filterLinepopulationDistrict),   # 根据地区筛选人口数据
     url('filterbarpopulationdistrict', views.filterBarPopulationDistrict),  # 根据年份筛选人口数据
 
+    url('startgrouptestregression', views.grouptest_regression),  # 开始多元回归算法
+    url('finishgrouptestregression', views.grouptest_finish_regression),  # 结束多元回归算法
+    url('getregressionexcelresult', views.getRegressionExcelResult),  # 获取多元回归算法excel文件
+
+    url('startgrouptestkmeans', views.grouptest_kmeans),  # 开始模型实验kmeans算法
+    url('getkmeansexcelresult', views.getKMeansExcelResult),  # 获取模型实验kmeans算法
+
     url('getlstmproject', views.get_lstm_project, name='getlstmproject'),  # 获取lstm项目
     url('addlstmproject', views.add_lstm_project, name='addlstmproject'),  # 添加lstm项目
     url('amendlstmproject', views.amend_lstm_project, name='amendlstmproject'),  # 修改lstm项目
@@ -134,6 +141,17 @@ urlpatterns = [
     url('experiment_lstm_finish', views.experiment_lstm_finish, name='experiment_lstm_finish'),  # 结束实验
     url('save_lstm_result', views.save_lstm_result, name='save_lstm_result'),  # 保存lstm实验结果
     url('get_lstm_result', views.get_lstm_result, name='get_lstm_resut'),  # 获取lstm实验结果
+
+    url('addlinearregressionproject', views.addLinearRegressionProject),  # 添加多元线性回归
+    url('getlinearregressionproject', views.getLinearRegressionProject),  # 获取多元线性回归
+    url('amendlinearregressionproject', views.amendLinearRegressionProject),  # 修改多元线性回归
+    url('addlinearregressionparameter', views.addLinearRegressionParameter),  # 添加多元线性回归参数
+    url('getlinearregressionidlist', views.getLinearRegressionidlist),  # 获取项目ID
+    url('getlinearregressionparameter', views.getParameterLinearRegression),  # 获取多元线性回归参数
+    url('startlinearregressionexperiment', views.startLinearRegressionExperiment),  # 开始多元线性回归实验
+    url('savelinearregressionresult', views.saveLinearRegressionResult),  # 保存多元线性回归实验结果
+    url('finishlinearregression', views.finishLinearRegression),  # 结束线性回归实验
+    url('getlinearregressionresult', views.getLinearRegressionResult),  # 获取多元线性回归结果
 
     url('get_regression', views.get_regression_programe),  # 获取多元回归项目
     url('add_regression', views.add_regression_programe),  # 添加多元回归项目
@@ -168,7 +186,22 @@ urlpatterns = [
     url('stop_relation', views.stop_relation),  # 结束运行关联分析模型
     url('get_relation_hot_matrix_result', views.get_relation_hot_matrix_result),  # 获取关联分析混淆矩阵结果
     url('save_relation_RF_result', views.save_relation_RF_result),  # 保存关联分析随机森林结果
+    url('save_grey_relation_result', views.save_Grey_Relation_Result),  # 保存关联分析灰色模型结果
+    url('get_grey_relation_result', views.get_grey_relation_result),  # 获取关联分析灰色模型结果
     url('get_relation_rf_result', views.get_relation_RF_result),  # 获得关联分析随机分析结果
+    url('save_pearson_result', views.save_pearson_result),  # 保存皮尔逊系数结果
+    url('get_pearson_result', views.get_pearson_relation_result),  # 获取皮尔逊系数结果
+
+    url('add_garbage_district', views.inputGarbageDistrict),  # 批量导入区域固废信息表
+    url('get_garbage_district', views.getGarbageDistrict),  # 获取区域固废信息表
+    url('addbyrowgarbagedistrict', views.addbyrowGarbageDistrict),  # 添加区域固废信息
+    url('amendgarbagedistrict', views.amendGarbageDistrict),  # 修改区域固废信息
+    url('deletegarbagedistrict', views.deleteGarbageDistrict),  # 删除区域固废信息
+    url('filtergarbagedistrictbyyear', views.filterGarbageDistrictByYear),  # 根据年份筛选区域固废信息
+
+    url('getlinearregressiontestreport', views.getLinearRegressionTestReport),  # 获取模型运行相关指标报告
+    url('getregressionreport', views.getRegressionReport),  # 获取多元非线性回归模型运行指标报告
+    url('getlstmreport', views.getLSTMReport),  # 获取lstm报告
 
     url('get_algorithm_list', views.get_algorithm_list),  # 获取算法模型列表
     url('add_algorithm_list', views.add_algorithm_list),  # 添加算法模型列表

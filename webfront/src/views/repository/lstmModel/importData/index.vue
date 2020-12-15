@@ -1,7 +1,7 @@
 <template>
   <div>
-    <column @child-event="handle_dialog" @id-event="handle_id"></column>
-    <datatable :parentmsg="table_transfer_id"></datatable>
+    <column @child-event="handle_dialog" @id-event="handle_id" @download-event="handle_download"></column>
+    <datatable :parentmsg="table_transfer_id" ref="datatable"></datatable>
     <el-dialog title="上传数据" :visible.sync="upload_dialog" width="80%">
       <div class="btn-column">
         <el-button @click="cancelInput">取消</el-button>
@@ -44,6 +44,9 @@ export default {
     }
   },
   methods: {
+    handle_download:function(data){
+      this.$refs.datatable.download()
+    },
     get_project_id:function(){
       var that = this
       lstmprojectid().then(res=>{

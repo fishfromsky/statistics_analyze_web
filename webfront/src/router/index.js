@@ -378,7 +378,7 @@ export const constantRoutes = [
             path: 'test',
             name: 'echartstest',
             component: () => import('@/views/repository/p_median/test/test.vue'),
-            meta: { title: '飞线展示' }
+            meta: { title: '结果展示' }
           }
         ]
       },
@@ -406,12 +406,33 @@ export const constantRoutes = [
             name: 'result',
             component: () => import('@/views/repository/lstmModel/result/index'),
             meta: { title: '结果查询'}
+          }
+        ]
+      },
+      {
+        path: 'linearregression',
+        name: 'linearregression',
+        redirect: '/repository/linearregression',
+        meta: { title: '多元线性回归' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'linearregressionmanage',
+            component: () => import('@/views/repository/linearregression/manage/index'),
+            meta: { title: '管理项目' }
           },
           {
-            path: 'map',
-            name: 'map',
-            component: () => import('@/views/repository/lstmModel/map/index'),
-            meta: { title: '地图展示' }
+            path: 'data',
+            name: 'linearregressiondata',
+            component: () => import('@/views/repository/linearregression/data/index'),
+            meta: { title: '数据导入' }
+          },
+          {
+            path: 'result',
+            name: 'linearregressionresult',
+            component: () => import('@/views/repository/linearregression/result/index'),
+            meta: { title: '结果查询' }
           }
         ]
       },
@@ -419,7 +440,7 @@ export const constantRoutes = [
         path: 'multiregression',
         name: 'multiregression',
         redirect: '/repository/regression',
-        meta: { title: '多元线性回归' },
+        meta: { title: '多元非线性回归' },
         component: () => import('@/views/repository/index'),
         children: [
           {
@@ -511,6 +532,18 @@ export const constantRoutes = [
                 name: 'rf',
                 component: () => import('@/views/repository/relation/result/RF/index'),
                 meta: { title: '随机森林' }
+              },
+              {
+                path: 'grey',
+                name: 'grey',
+                component: () => import('@/views/repository/relation/result/greyrelation/index'),
+                meta: { title: '灰色关联度' }
+              },
+              {
+                path: 'pearson',
+                name: 'pearson',
+                component: () => import('@/views/repository/relation/result/pearson/index'),
+                meta: { title: '皮尔逊系数' }
               }
             ]
           }

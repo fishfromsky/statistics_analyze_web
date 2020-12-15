@@ -133,7 +133,10 @@ export default {
       page_data: [],
       total_size: 0,
       currentPage: 1,
-      page_size: 10
+      page_size: 10,
+      filename: 'relation_data',
+      autoWidth: true,
+      bookType: 'xlsx',
     }
   },
   watch: {
@@ -147,6 +150,32 @@ export default {
     }
   },
   methods: {
+    formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => {
+            if (j === 'timestamp') {
+            return parseTime(v[j])
+            } else {
+            return v[j]
+            }
+        }))
+    },
+    download:function(){
+      import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['project_id', 'year', 'garbage_clear', 'population', 'ratio_city_rural', 'household', 'people_per_capita', 'ratio_sex', 'age_0_14', 'age_15_64', 'age_65', 'disposable_income', 'consume_cost',
+          'public_cost', 'gdp', 'gdp_first_industry', 'gdp_second_industry', 'gdp_third_industry', 'gnp', 'education']
+          const filterVal = ['project_id', 'year', 'garbage_clear', 'population', 'ratio_city_rural', 'household', 'people_per_capita', 'ratio_sex', 'age_0_14', 'age_15_64', 'age_65', 'disposable_income', 'consume_cost',
+          'public_cost', 'gdp', 'gdp_first_industry', 'gdp_second_industry', 'gdp_third_industry', 'gnp', 'education']
+          const list = this.tableData
+          const data = this.formatJson(filterVal, list)
+          excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename,
+          autoWidth: this.autoWidth,
+          bookType: this.bookType
+          })
+      })
+    },
     getData:function(){
       let data = {}
       let that = this

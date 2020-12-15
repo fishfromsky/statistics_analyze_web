@@ -63,7 +63,7 @@
             setOptions(val){
                 this.chart.setOption({
                     title: {
-                        text: '多元回归模型运行结果'
+                        text: 'LSTM模型运行结果'
                     },
                     legend: {
                         data: ['实际值', '预测值']

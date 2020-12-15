@@ -7,6 +7,8 @@
           <el-button type="primary" @click="get_data" icon="el-icon-search" class="search-btn">搜索数据</el-button>
           <div class="divider"></div>
           <el-button type="primary" @click="input_data" icon="el-icon-upload2" class="input-btn">上传数据</el-button>
+          <div class="divider"></div>
+          <el-button type="primary" @click="download_data" icon="el-icon-download" style="margin-left: 20px">下载数据</el-button>
       </div>
   </div>
 </template>
@@ -36,6 +38,9 @@ export default {
         },
         input_data(){
             this.$emit('child-event', 'true')
+        },
+        download_data(){
+            this.$emit('download-event', 'true')
         }
     },
     mounted(){

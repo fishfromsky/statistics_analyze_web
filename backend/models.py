@@ -464,3 +464,93 @@ class Population_Info_District(models.Model):
     population_density = models.CharField(max_length=255, null=False)
     district = models.ForeignKey(to="District", on_delete=models.CASCADE)
 
+
+class LinearRegression(models.Model):
+    project_id = models.CharField(max_length=200, primary_key=True)
+    name = models.CharField(max_length=200)
+    table_size = models.IntegerField(default=0)
+    status = models.CharField(max_length=255, default='未运行')
+
+
+class LinearRegressionParameter(models.Model):
+    resident_population = models.FloatField(null=False, default=None)
+    population_of_density = models.FloatField(null=False, default=None)
+    number_of_households = models.FloatField(null=False, default=None)
+    average_population_per_household = models.FloatField(null=False, default=None)
+    urban_residents_per_capita_disposable_income = models.FloatField(null=False, default=None)
+    consumer_expenditure = models.FloatField(null=False, default=None)
+    general_public_expenditure = models.FloatField(null=False, default=None)
+    investment_in_urban_infrastructure = models.FloatField(null=False, default=None)
+    urban_population_density = models.FloatField(null=False, default=None)
+    greening_coverage = models.FloatField(null=False, default=None)
+    gross_local_product = models.FloatField(null=False, default=None)
+    gross_domestic_product_per_capita = models.FloatField(null=False, default=None)
+    gross_domestic_product_of_the_first_industry = models.FloatField(null=False, default=None)
+    gross_value_of_secondary_industry = models.FloatField(null=False, default=None)
+    gross_value_of_the_tertiary_industry = models.FloatField(null=False, default=None)
+    investment_in_environmental_protection = models.FloatField(null=False, default=None)
+    number_of_college_students = models.FloatField(null=False, default=None)
+    level_of_education = models.FloatField(null=False, default=None)
+    municial_household_garbage = models.FloatField(null=False, default=None)
+    project_id = models.ForeignKey(to="LinearRegression", on_delete=models.CASCADE)
+
+
+class LinearRegressionResult(models.Model):
+    project_id = models.ForeignKey(to="LinearRegression", on_delete=models.CASCADE)
+    pred = models.FloatField(null=False)
+    real = models.FloatField(null=False)
+    time = models.DateTimeField(auto_now_add=True)
+    sort = models.IntegerField(default=1)
+
+
+class Grey_Relation_Result(models.Model):
+    project_id = models.ForeignKey(to="relation_project", on_delete=models.CASCADE)
+    label = models.CharField(max_length=255, null=False)
+    garbage_clear = models.FloatField()
+    population = models.FloatField()
+    ratio_city_rural = models.FloatField()
+    household = models.FloatField()
+    people_per_capita = models.FloatField()
+    ratio_sex = models.FloatField()
+    age_0_14 = models.FloatField()
+    age_15_64 = models.FloatField()
+    age_65 = models.FloatField()
+    disposable_income = models.FloatField()
+    consume_cost = models.FloatField()
+    public_cost = models.FloatField()
+    gdp = models.FloatField()
+    gdp_first_industry = models.FloatField()
+    gdp_second_industry = models.FloatField()
+    gdp_third_industry = models.FloatField()
+    gnp = models.FloatField()
+    education = models.FloatField()
+    sort = models.IntegerField(default=1)
+    time = models.DateTimeField(auto_now_add=True)
+
+
+class PearsonResult(models.Model):
+    project_id = models.ForeignKey(to="relation_project", on_delete=models.CASCADE)
+    label = models.CharField(max_length=255, null=False)
+    relate = models.FloatField()
+    pvalue = models.FloatField()
+    sort = models.IntegerField(default=1)
+    time = models.DateTimeField(auto_now_add=True)
+
+
+class TestReport(models.Model):
+    algorithm = models.CharField(max_length=255, default='', null=False)
+    project_id = models.CharField(max_length=200, default='', null=False)
+    sort = models.IntegerField(default=1, null=False)
+    formula = models.CharField(max_length=255, default='')
+    r_square = models.CharField(max_length=255, default='')
+    mse = models.CharField(max_length=255, default='')
+    rmse = models.CharField(max_length=255, default='')
+    mae = models.CharField(max_length=255, default='')
+    choose_col = models.CharField(max_length=255, default='')
+
+
+class Garbage_District(models.Model):
+    year = models.CharField(max_length=200)
+    garbage = models.CharField(max_length=255, default='', null=False)
+    district = models.ForeignKey(to="District", on_delete=models.CASCADE)
+

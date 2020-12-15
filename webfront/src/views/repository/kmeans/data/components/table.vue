@@ -6,99 +6,114 @@
             <span>{{row.project_id}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人口(10,000)" align="center">
+        <el-table-column label="地区" align="center">
           <template slot-scope="{row}">
-            <span>{{row.resident_population}}</span>
+            <span>{{row.district}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人口密度(p/sq km)" align="center">
+        <el-table-column label="地区英文" align="center">
           <template slot-scope="{row}">
-            <span>{{row.population_of_density}}</span>
+            <span>{{row.en_name}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="住户数(10,000)" align="center">
+        <el-table-column label="级别" align="center">
           <template slot-scope="{row}">
-            <span>{{row.number_of_households}}</span>
+            <span>{{row.range}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="平均每户人口(p)" align="center">
+        <el-table-column label="年份" align="center">
           <template slot-scope="{row}">
-            <span>{{row.average_population_per_household}}</span>
+            <span>{{row.year}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人均可支配收入(元)" align="center">
+        <el-table-column label="MSW" align="center">
           <template slot-scope="{row}">
-            <span>{{row.urban_residents_per_capita_disposable_income}}</span>
+            <span>{{row.msw}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人均消费支出(元)" align="center">
+        <el-table-column label="POP" align="center">
           <template slot-scope="{row}">
-            <span>{{row.consumer_expenditure}}</span>
+            <span>{{row.pop}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="公共支出(十亿)" align="center">
+        <el-table-column label="PUP" align="center">
           <template slot-scope="{row}">
-            <span>{{row.general_public_expenditure}}</span>
+            <span>{{row.pup}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="基础设施投资(十亿)" align="center">
+        <el-table-column label="HOU" align="center">
           <template slot-scope="{row}">
-            <span>{{row.investment_in_urban_infrastructure}}</span>
+            <span>{{row.hou}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="城市人口密度(p/sq km)" align="center">
+        <el-table-column label="APH" align="center">
           <template slot-scope="{row}">
-            <span>{{row.urban_population_density}}</span>
+            <span>{{row.aph}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="绿植覆盖率(%)" align="center">
+        <el-table-column label="GEN" align="center">
           <template slot-scope="{row}">
-            <span>{{row.greening_coverage}}</span>
+            <span>{{row.gen}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="本地生产总值(十亿)" align="center">
+        <el-table-column label="AGE1" align="center">
           <template slot-scope="{row}">
-            <span>{{row.gross_local_product}}</span>
+            <span>{{row.age1}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="人均GDP(元)" align="center">
+        <el-table-column label="AGE2" align="center">
           <template slot-scope="{row}">
-            <span>{{row.gross_domestic_product_per_capita}}</span>
+            <span>{{row.age2}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="第一产业产值(十亿)" align="center">
+        <el-table-column label="AGE3" align="center">
           <template slot-scope="{row}">
-            <span>{{row.gross_domestic_product_of_the_first_industry}}</span>
+            <span>{{row.age3}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="第二产业产值(十亿)" align="center">
+        <el-table-column label="INC" align="center">
           <template slot-scope="{row}">
-            <span>{{row.gross_value_of_secondary_industry}}</span>
+            <span>{{row.inc}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="第三产业产值(十亿)" align="center">
+        <el-table-column label="EXP" align="center">
           <template slot-scope="{row}">
-            <span>{{row.investment_in_environmental_protection}}</span>
+            <span>{{row.exp}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="环保投资(百万)" align="center">
+        <el-table-column label="BUD" align="center">
           <template slot-scope="{row}">
-            <span>{{row.investment_in_environmental_protection}}</span>
+            <span>{{row.bud}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="大学生数(10,000)" align="center">
+        <el-table-column label="GDP" align="center">
           <template slot-scope="{row}">
-            <span>{{row.number_of_college_students}}</span>
+            <span>{{row.gdp}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="员工受教育程度(%)" align="center">
+        <el-table-column label="GDP1" align="center">
           <template slot-scope="{row}">
-            <span>{{row.level_of_education}}</span>
+            <span>{{row.gdp1}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="垃圾产量(10,000吨)" align="center">
+        <el-table-column label="GDP2" align="center">
           <template slot-scope="{row}">
-            <span>{{row.municial_household_garbage}}</span>
+            <span>{{row.gdp2}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="GDP3" align="center">
+          <template slot-scope="{row}">
+            <span>{{row.gdp3}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="pGDP" align="center">
+          <template slot-scope="{row}">
+            <span>{{row.pgdp}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="EDU" align="center">
+          <template slot-scope="{row}">
+            <span>{{row.edu}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -117,6 +132,7 @@
 
 <script>
 import { getparameterkmeans } from '@/api/model'
+import resize from '@/views/element/components/mixins/resize'
 export default {
   props: {
     parentmsg: {
@@ -133,7 +149,10 @@ export default {
       page_data: [],
       total_size: 0,
       currentPage: 1,
-      page_size: 10
+      page_size: 10,
+      filename: 'kmeans_data',
+      autoWidth: true,
+      bookType: 'xlsx',
     }
   },
   watch: {
@@ -147,12 +166,39 @@ export default {
     }
   },
   methods: {
+    formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => {
+            if (j === 'timestamp') {
+            return parseTime(v[j])
+            } else {
+            return v[j]
+            }
+        }))
+    },
+    download:function(){
+      import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['project_id', 'district', 'en_name', 'range', 'year', 'msw', 'pop', 'pup', 'hou', 'aph', 'gen', 'age1', 'age2', 
+          'age3', 'inc', 'exp', 'bud', 'gdp', 'gdp1', 'gdp2', 'gdp3', 'pgdp', 'edu']
+          const filterVal = ['project_id', 'district', 'en_name', 'range', 'year', 'msw', 'pop', 'pup', 'hou', 'aph', 'gen', 'age1', 'age2', 
+          'age3', 'inc', 'exp', 'bud', 'gdp', 'gdp1', 'gdp2', 'gdp3', 'pgdp', 'edu']
+          const list = this.tableData
+          const data = this.formatJson(filterVal, list)
+          excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename,
+          autoWidth: this.autoWidth,
+          bookType: this.bookType
+          })
+      })
+    },
     getData:function(){
       let data = {}
       let that = this
       data['project_id'] = this.project_id
       getparameterkmeans(data).then(res => {
         if (res.code === 20000){
+          console.log(res)
           that.table_loading = false
           that.tableData = res.data
           let size = that.page_size

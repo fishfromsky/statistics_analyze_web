@@ -5,7 +5,8 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
     relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
     selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
-    Garbage_Info_Country, Economy_Info_District, Population_Info_District
+    Garbage_Info_Country, Economy_Info_District, Population_Info_District, LinearRegression, LinearRegressionParameter, \
+    LinearRegressionResult, Grey_Relation_Result, PearsonResult, TestReport, Garbage_District
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -1758,6 +1759,36 @@ def save_lstm_result(request):
         model = lstm_result.objects.create(project_id=lstm_project(project_id=id), year=year, real=real, pred=pred, sort=sort)
         model.save()
 
+    formula = body.get('formula') if body.get('formula') is not None else ''
+    r_square = body.get('r_square') if body.get('r_square') is not None else ''
+    mse = body.get('mse') if body.get('mse') is not None else ''
+    rmse = body.get('rmse') if body.get('rmse') is not None else ''
+    mae = body.get('mae') if body.get('mae') is not None else ''
+    choose_col = body.get('choose_col') if body.get('choose_col') is not None else ''
+    if TestReport.objects.filter(project_id=id, sort=sort, algorithm='LSTM预测').count() != 0:
+        model = TestReport.objects.get(project_id=id, sort=sort, algorithm='LSTM预测')
+        model.formula = formula
+        model.r_square = r_square
+        model.mse = mse
+        model.rmse = rmse
+        model.mae = mae
+        model.choose_col = choose_col
+    else:
+        model = TestReport.objects.create(project_id=id, sort=sort, formula=formula, r_square=r_square,
+                                          mse=mse, rmse=rmse, mae=mae, choose_col=choose_col, algorithm='LSTM预测')
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getLSTMReport(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    project_id = request.GET.get('project_id')
+    sort = request.GET.get('sort')
+    data = TestReport.objects.get(project_id=project_id, sort=sort, algorithm='LSTM预测')
+    response['data'].append(to_dict(data))
     return JsonResponse(response, safe=False)
 
 
@@ -1828,7 +1859,7 @@ def add_regression_parameter(request):
         for i in range(len(data)):
             if data[i].__contains__('resident_population') and data[i].__contains__('population_of_density') and \
                 data[i].__contains__('number_of_households') and data[i].__contains__('average_population_per_household') \
-                and data[i].__contains__('urban_residents_per_capita_disposable_income') and data[i].__conains__('consumer_expenditure') \
+                and data[i].__contains__('urban_residents_per_capita_disposable_income') and data[i].__contains__('consumer_expenditure') \
                 and data[i].__contains__('general_public_expenditure') and data[i].__contains__('investment_in_urban_infrastructure') \
                 and data[i].__contains__('urban_population_density') and data[i].__contains__('greening_coverage') and \
                 data[i].__contains__('gross_local_product') and data[i].__contains__('gross_domestic_product_per_capita') \
@@ -1904,6 +1935,36 @@ def save_regression_result(request):
                                                        real=real, pred=pred, sort=sort)
         model.save()
 
+    formula = body.get('formula') if body.get('formula') is not None else ''
+    r_square = body.get('r_square') if body.get('r_square') is not None else ''
+    mse = body.get('mse') if body.get('mse') is not None else ''
+    rmse = body.get('rmse') if body.get('rmse') is not None else ''
+    mae = body.get('mae') if body.get('mae') is not None else ''
+    choose_col = body.get('choose_col') if body.get('choose_col') is not None else ''
+    if TestReport.objects.filter(project_id=id, sort=sort, algorithm='多元非线性回归').count() != 0:
+        model = TestReport.objects.get(project_id=id, sort=sort, algorithm='多元非线性回归')
+        model.formula = formula
+        model.r_square = r_square
+        model.mse = mse
+        model.rmse = rmse
+        model.mae = mae
+        model.choose_col = choose_col
+    else:
+        model = TestReport.objects.create(project_id=id, sort=sort, formula=formula, r_square=r_square,
+                                          mse=mse, rmse=rmse, mae=mae, choose_col=choose_col, algorithm='多元非线性回归')
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getRegressionReport(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    project_id = request.GET.get('project_id')
+    sort = request.GET.get('sort')
+    data = TestReport.objects.get(project_id=project_id, sort=sort, algorithm='多元非线性回归')
+    response['data'].append(to_dict(data))
     return JsonResponse(response, safe=False)
 
 
@@ -1922,6 +1983,8 @@ def start_regression_experiment(request):
     body = json.loads(request.body)
     id = body.get('project_id')
     list = body.get('index_list')
+    if list == '':
+        list = '-1'
     if multi_regression_parameter.objects.filter(project_id=multi_regression_project(project_id=id)).count() == 0:
         response['code'] = 50000
         response['message'] = '该项目缺少数据，无法实验'
@@ -2890,6 +2953,61 @@ def grouptest_relation(request):
     return JsonResponse(response, safe=False)
 
 
+def groupthread_regression(selected_id, file_path, drop_col, special, user, algorithm_id, model_id):
+    ret = os.system('python backend/experiment/regression/regression.py %s %s %s %s %s %s' % (file_path, drop_col,
+                                                                                              special, user,
+                                                                                              algorithm_id, model_id))
+    if ret != 0:
+        model = selected_algorithm_table.objects.get(id=selected_id)
+        model.status = '运行出错'
+        model.save()
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def grouptest_regression(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    file_path = body.get('path')
+    special = body.get('special')
+    drop_col = body.get('drop_col')
+    name = body.get('name')
+    algorithm_id = body.get('algorithm_id')
+    model_id = body.get('model_id')
+    user_id = UserProfile.objects.get(username=name).id
+    model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
+                                                 algorithm=algorithm_project(project_id=algorithm_id))
+    selected_id = model.id
+    drop_index = ''
+    for i in range(len(drop_col)):
+        if i != len(drop_col)-1:
+            drop_index = drop_index+str(drop_col[i])+','
+        else:
+            drop_index = drop_index+str(drop_col[i])
+    task = threading.Thread(target=groupthread_regression, args=(selected_id, file_path, drop_index, special, name,
+                                                                 algorithm_id, model_id))
+    task.start()
+    model.status = '正在运行'
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def grouptest_finish_regression(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    model_id = body.get('model_id')
+    user = body.get('user')
+    user_id = UserProfile.objects.get(username=user).id
+    algorithm_id = body.get('algorithm_id')
+    model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
+                                                 algorithm=algorithm_project(project_id=algorithm_id))
+    model.status = '未运行'
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
 @csrf_exempt
 @require_http_methods(['POST'])
 def grouptest_finish_relation(request):
@@ -2965,6 +3083,22 @@ def grouptest_finish_lstm(request):
 
 @csrf_exempt
 @require_http_methods(['GET'])
+def getRegressionExcelResult(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    path = 'media/static/result/'+user+'/regression'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append('http://127.0.0.1:8000/'+root+'/'+file)
+
+    response['data'] = file_list
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
 def getLSTMExcelResultList(request):
     response = {'code': 20000, 'message': 'success'}
     user = request.GET.get('user')
@@ -3019,6 +3153,65 @@ def save_grouptest_result(request):
     user_id = UserProfile.objects.get(username=user).id
     model = Experiment_Result_Excel.objects.create(user=UserProfile(id=user_id), url=url)
     model.save()
+    return JsonResponse(response, safe=False)
+
+
+def groupthread_kmeans(selected_id, user, file_path, select_list, algorithm_id, model_id,
+                       test_type, next_list):
+    ret = os.system('python backend/experiment/kmeans/kmeans.py %s %s %s %s %s %s %s' % (user, file_path,
+                                                                                         select_list,
+                                                                                         algorithm_id,
+                                                                                         model_id, test_type,
+                                                                                         next_list))
+    if ret != 0:
+        model = selected_algorithm_table.objects.get(id=selected_id)
+        model.status = '运行出错'
+        model.save()
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def grouptest_kmeans(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    file_path = body.get('path')
+    select_list = body.get('select_list')
+    user = body.get('name')
+    algorithm_id = body.get('algorithm_id')
+    model_id = body.get('model_id')
+    test_type = body.get('test_type')
+    next_list = body.get('next_list')
+    user_id = UserProfile.objects.get(username=user).id
+
+    if next_list is '':
+        next_list = '-1'
+
+    model = selected_algorithm_table.objects.get(user=UserProfile(id=user_id), model=model_table(id=model_id),
+                                                 algorithm=algorithm_project(project_id=algorithm_id))
+    selected_id = model.id
+
+    task = threading.Thread(target=groupthread_kmeans, args=(selected_id, user, file_path, select_list, algorithm_id,
+                                                             model_id, test_type, next_list))
+    task.start()
+
+    model.status = '正在运行'
+    model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getKMeansExcelResult(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    user = request.GET.get('user')
+    path = 'media/static/result/' + user + '/kmeans'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append('http://127.0.0.1:8000/' + root + '/' + file)
+
+    response['data'] = file_list
     return JsonResponse(response, safe=False)
 
 
@@ -3523,6 +3716,464 @@ def filterBarPopulationDistrict(request):
 
     return JsonResponse(response, safe=False)
 
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addLinearRegressionProject(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    name = body.get('name')
+    if LinearRegression.objects.filter(project_id=project_id).count() != 0:
+        response['code'] = 50000
+        response['message'] = '已存在该编号的项目'
+    else:
+        model = LinearRegression.objects.create(project_id=project_id, name=name)
+        model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getLinearRegressionProject(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = LinearRegression.objects.all()
+    for item in data:
+        response['data'].append(to_dict(item))
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendLinearRegressionProject(request):
+    response = {'message': 'success', 'code': 20000}
+    body = json.loads(request.body)
+    project_id = body.get('project_id')
+    name = body.get('name')
+    model = LinearRegression.objects.get(project_id=project_id)
+    model.name = name
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addLinearRegressionParameter(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if LinearRegressionParameter.objects.filter(project_id=LinearRegression(project_id=id)).count() != 0:
+        response['code'] = 50000
+        response['message'] = '数据库中存在该项目参数，请先删除'
+    else:
+        for i in range(len(data)):
+            if data[i].__contains__('resident_population') and data[i].__contains__('population_of_density') and \
+                    data[i].__contains__('number_of_households') and data[i].__contains__(
+                'average_population_per_household') \
+                    and data[i].__contains__('urban_residents_per_capita_disposable_income') and data[i].__contains__(
+                'consumer_expenditure') \
+                    and data[i].__contains__('general_public_expenditure') and data[i].__contains__(
+                'investment_in_urban_infrastructure') \
+                    and data[i].__contains__('urban_population_density') and data[i].__contains__(
+                'greening_coverage') and \
+                    data[i].__contains__('gross_local_product') and data[i].__contains__(
+                'gross_domestic_product_per_capita') \
+                    and data[i].__contains__('gross_domestic_product_of_the_first_industry') and data[i].__contains__(
+                'gross_value_of_secondary_industry') \
+                    and data[i].__contains__('gross_value_of_the_tertiary_industry') and data[i].__contains__(
+                'investment_in_environmental_protection') \
+                    and data[i].__contains__('number_of_college_students') and data[i].__contains__(
+                'level_of_education') and \
+                    data[i].__contains__('municial_household_garbage'):
+                model = LinearRegressionParameter.objects.create(project_id=LinearRegression(project_id=id),
+                                                                  resident_population=data[i]['resident_population'],
+                                                                  population_of_density=data[i][
+                                                                      'population_of_density'],
+                                                                  number_of_households=data[i]['number_of_households'],
+                                                                  average_population_per_household=data[i][
+                                                                      'average_population_per_household'],
+                                                                  urban_residents_per_capita_disposable_income=data[i][
+                                                                      'urban_residents_per_capita_disposable_income'],
+                                                                  consumer_expenditure=data[i]['consumer_expenditure'],
+                                                                  general_public_expenditure=data[i][
+                                                                      'general_public_expenditure'],
+                                                                  investment_in_urban_infrastructure=data[i][
+                                                                      'investment_in_urban_infrastructure'],
+                                                                  urban_population_density=data[i][
+                                                                      'urban_population_density'],
+                                                                  greening_coverage=data[i]['greening_coverage'],
+                                                                  gross_local_product=data[i]['gross_local_product'],
+                                                                  gross_domestic_product_per_capita=data[i][
+                                                                      'gross_domestic_product_per_capita'],
+                                                                  gross_domestic_product_of_the_first_industry=data[i][
+                                                                      'gross_domestic_product_of_the_first_industry'],
+                                                                  gross_value_of_secondary_industry=data[i][
+                                                                      'gross_value_of_secondary_industry'],
+                                                                  gross_value_of_the_tertiary_industry=data[i][
+                                                                      'gross_value_of_the_tertiary_industry'],
+                                                                  investment_in_environmental_protection=data[i][
+                                                                      'investment_in_environmental_protection'],
+                                                                  number_of_college_students=data[i][
+                                                                      'number_of_college_students'],
+                                                                  level_of_education=data[i]['level_of_education'],
+                                                                  municial_household_garbage=data[i][
+                                                                      'municial_household_garbage'])
+                model.save()
+            else:
+                response['code'] = 50000
+                response['message'] = '表头与数据不一致或者缺少数据'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getLinearRegressionidlist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = LinearRegression.objects.values('project_id').all()
+    for item in data:
+        response['data'].append(item)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getParameterLinearRegression(request):
+    id = request.GET.get('project_id')
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = LinearRegressionParameter.objects.filter(project_id=LinearRegression(project_id=id))
+    for item in data:
+        response['data'].append(to_dict(item))
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def saveLinearRegressionResult(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if LinearRegressionResult.objects.filter(project_id=LinearRegression(project_id=id)).count() != 0:
+        last_sort = LinearRegressionResult.objects.filter(project_id=LinearRegression(project_id=id)).order_by(
+            '-id')[:1]
+        sort = last_sort.get().sort + 1
+    else:
+        sort = 1
+    for i in range(len(data)):
+        pred = data[i]['pred']
+        real = data[i]['real']
+        model = LinearRegressionResult.objects.create(project_id=LinearRegression(project_id=id),
+                                                      real=real, pred=pred, sort=sort)
+        model.save()
+
+    formula = body.get('formula') if body.get('formula') is not None else ''
+    r_square = body.get('r_square') if body.get('r_square') is not None else ''
+    mse = body.get('mse') if body.get('mse') is not None else ''
+    rmse = body.get('rmse') if body.get('rmse') is not None else ''
+    mae = body.get('mae') if body.get('mae') is not None else ''
+    choose_col = body.get('choose_col') if body.get('choose_col') is not None else ''
+    if TestReport.objects.filter(project_id=id, sort=sort, algorithm='多元线性回归').count() != 0:
+        model = TestReport.objects.get(project_id=id, sort=sort, algorithm='多元线性回归')
+        model.formula = formula
+        model.r_square = r_square
+        model.mse = mse
+        model.rmse = rmse
+        model.mae = mae
+        model.choose_col = choose_col
+    else:
+        model = TestReport.objects.create(project_id=id, sort=sort, formula=formula, r_square=r_square,
+                                          mse=mse, rmse=rmse, mae=mae, choose_col=choose_col, algorithm='多元线性回归')
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+def thread_linearregression(id, list):
+    ret = os.system('python backend/linearregression/main.py %s %s' % (id, list))
+    if ret != 0:
+        model = LinearRegression.objects.get(project_id=id)
+        model.status = '运行出错'
+        model.save()
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def startLinearRegressionExperiment(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    list = body.get('index_list')
+    if list == '':
+        list = '-1'
+    if LinearRegressionParameter.objects.filter(project_id=LinearRegression(project_id=id)).count() == 0:
+        response['code'] = 50000
+        response['message'] = '该项目缺少数据，无法实验'
+    else:
+        model = LinearRegression.objects.get(project_id=id)
+        model.status = '正在运行'
+        model.save()
+        task = threading.Thread(target=thread_linearregression, args=(id, list))
+        task.start()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def finishLinearRegression(request):
+    response = {'message': 'success', 'code': 20000}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    model = LinearRegression.objects.get(project_id=id)
+    model.status = '未运行'
+    model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getLinearRegressionResult(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    id = request.GET.get('project_id')
+    data = LinearRegressionResult.objects.filter(project_id=LinearRegression(project_id=id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def save_Grey_Relation_Result(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if Grey_Relation_Result.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
+        last_sort = Grey_Relation_Result.objects.filter(project_id=relation_project(project_id=id)).order_by(
+            '-id')[:1]
+        sort = last_sort.get().sort + 1
+    else:
+        sort = 1
+    for i in range(len(data)):
+        label = data[i]['label']
+        garbage_clear = data[i]['garbage_clear']
+        population = data[i]['population']
+        city_rural_ratio = data[i]['city_rural_ratio']
+        household = data[i]['household']
+        people_per_capita = data[i]['people_per_capita']
+        sex_ratio = data[i]['sex_ratio']
+        age_0_14 = data[i]['age_0_14']
+        age_15_64 = data[i]['age_15_64']
+        age_65 = data[i]['age_65']
+        disposable_income = data[i]['disposable_income']
+        consume_cost = data[i]['consume_cost']
+        public_cost = data[i]['public_cost']
+        gdp = data[i]['gdp']
+        gdp_first_industry = data[i]['gdp_first_industry']
+        gdp_second_industry = data[i]['gdp_second_industry']
+        gdp_third_industry = data[i]['gdp_third_industry']
+        gnp = data[i]['gnp']
+        education = data[i]['education']
+        model = Grey_Relation_Result.objects.create(project_id=relation_project(project_id=id),
+                                                    label=label, garbage_clear=garbage_clear,
+                                                    population=population,
+                                                    ratio_city_rural=city_rural_ratio, household=household,
+                                                    people_per_capita=people_per_capita, ratio_sex=sex_ratio,
+                                                    age_0_14=age_0_14, age_15_64=age_15_64, age_65=age_65,
+                                                    disposable_income=disposable_income,
+                                                    consume_cost=consume_cost,
+                                                    public_cost=public_cost, gdp=gdp,
+                                                    gdp_first_industry=gdp_first_industry,
+                                                    gdp_second_industry=gdp_second_industry,
+                                                    gdp_third_industry=gdp_third_industry, gnp=gnp,
+                                                    education=education, sort=sort)
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_grey_relation_result(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    id = request.GET.get('project_id')
+    data = Grey_Relation_Result.objects.filter(project_id=relation_project(project_id=id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def save_pearson_result(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('project_id')
+    data = body.get('data')
+    if PearsonResult.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
+        last_sort = PearsonResult.objects.filter(project_id=relation_project(project_id=id)).order_by(
+            '-id')[:1]
+        sort = last_sort.get().sort + 1
+    else:
+        sort = 1
+
+    for i in range(len(data)):
+        label = data[i]['label']
+        p_value = data[i]['p_value']
+        relate = data[i]['relate']
+        model = PearsonResult.objects.create(project_id=relation_project(project_id=id), label=label,
+                                             pvalue=p_value, relate=relate, sort=sort)
+        model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_pearson_relation_result(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    id = request.GET.get('project_id')
+    data = PearsonResult.objects.filter(project_id=relation_project(project_id=id))
+    for item in data:
+        response['data'].append(to_dict(item))
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getLinearRegressionTestReport(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    project_id = request.GET.get('project_id')
+    sort = request.GET.get('sort')
+    data = TestReport.objects.get(project_id=project_id, sort=sort, algorithm='多元线性回归')
+    response['data'].append(to_dict(data))
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def inputGarbageDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    data = body.get('data')
+    column_list = ['year', 'garbage', 'district']
+    for i in range(len(data)):
+        flag = True
+        for key in data[i].keys():
+            if key not in column_list:
+                flag = False
+
+        if flag:
+            if District.objects.filter(name=data[i]['district']).count() == 0:
+                response['code'] = 20000
+                response['message'] = '数据库中找不到该行政区'
+            elif data[i]['district'] is None:
+                response['code'] = 50000
+                response['message'] = '导入数据中所属区域不能为空'
+            else:
+                district = data[i]['district']
+                garbage = data[i]['garbage'] if 'garbage' in data[i].keys() else ''
+                year = data[i]['year'] if 'year' in data[i].keys() else ''
+                district_id = District.objects.get(name=district).id
+                model = Garbage_District.objects.create(year=year, garbage=garbage, district=District(id=district_id))
+                model.save()
+        else:
+            response['code'] = 50000
+            response['message'] = '表头与数据库不一致'
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getGarbageDistrict(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    data = Garbage_District.objects.all()
+    for item in data:
+        dict = {}
+        dict['year'] = item.year
+        dict['district'] = item.district.name
+        dict['garbage'] = item.garbage
+        dict['id'] = item.id
+        response['data'].append(dict)
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def amendGarbageDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    district = body.get('district')
+    year = body.get('year')
+    garbage = body.get('garbage')
+    if District.objects.filter(name=district).count() == 0:
+        response['code'] = 50000
+        response['message'] = '数据库中不存在该行政区'
+    else:
+        district_id = District.objects.get(name=district).id
+        model = Garbage_District.objects.get(id=id)
+        model.district = District(id=district_id)
+        model.year = year
+        model.garbage = garbage
+        model.save()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def addbyrowGarbageDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    year = body.get('year')
+    district = body.get('district')
+    garbage = body.get('garbage')
+    if District.objects.filter(name=district).count() == 0:
+        response['code'] = 50000
+        response['message'] = '数据库中不存在该行政区'
+    else:
+        district_id = District.objects.get(name=district).id
+        if Garbage_District.objects.filter(year=year, district=District(id=district_id)).count() != 0:
+            response['code'] = 50000
+            response['message'] = '该区该年份下数据已存在，请先删除'
+        else:
+            model = Garbage_District.objects.create(year=year, district=District(id=district_id), garbage=garbage)
+            model.save()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def deleteGarbageDistrict(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    id = body.get('id')
+    data = Garbage_District.objects.get(id=id)
+    data.delete()
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def filterGarbageDistrictByYear(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    year = request.GET.get('year')
+    data = Garbage_District.objects.filter(year=year)
+    for item in data:
+        dict = {}
+        dict['district'] = item.district.name
+        dict['garbage'] = item.garbage
+        dict['id'] = item.id
+        response['data'].append(dict)
+
+    return JsonResponse(response, safe=False)
 
 # scheduler = BackgroundScheduler()
 # scheduler.add_job(crawl_water_pollution_data, 'cron', day_of_week='mon-sun', hour='11', minute='27', second='40')

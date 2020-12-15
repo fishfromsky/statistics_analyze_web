@@ -97,7 +97,9 @@ export default {
             choose_value: null,
             choose_item: [
                 { value: '1', label: '相关矩阵'},
-                { value: '2', label: '随机森林'}
+                { value: '2', label: '随机森林'},
+                { value: '3', label: '灰度分析'},
+                { value: '4', label: '皮尔逊系数'}
             ],
             choose_id: null,
             LocationImage: false,

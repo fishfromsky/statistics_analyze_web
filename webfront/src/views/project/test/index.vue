@@ -86,12 +86,6 @@
           <div class="box-title" style="margin-top: 10px">
             <span class="box-title-span">数据上传历史</span>
           </div>
-          <el-date-picker
-            v-model="filedate"
-            type="date"
-            placeholder="选择筛选日期"
-          >
-          </el-date-picker>
           <el-table
             :data="tableData"
             v-loading="table_loading"
@@ -133,6 +127,19 @@
       <div slot="footer">
         <el-button type="primary" @click="handleClose">确定</el-button>
       </div>
+    </el-dialog>
+    <el-dialog title="参数选择" :visible.sync="kmeans_dialog">
+      <div class="col_dialog">
+        <span>选择聚类指标</span>
+        <el-checkbox-group v-model="checkList" style="margin-top: 20px; margin-bottom: 20px">
+          <el-checkbox v-for="item in select_cols" :label="item" :key="item">
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+      <template slot="footer">
+        <el-button @click="kmeans_dialog = false">取消</el-button>
+        <el-button type="primary" @click="ColSelectKmeansConfirm">确定</el-button>
+      </template>
     </el-dialog>
     <el-dialog
       title="参数选择"
@@ -202,11 +209,16 @@ import {
   grouptestrelation,
   getrelationexcelresult,
   deleterelationexcelresult,
-  getlstmexcelresult
+  getlstmexcelresult,
+  getregressionexcelresult,
+  deleteregressionexcelresult,
+  grouptestkmeans,
+  getkmeansexcelresult
 } from "@/api/model";
 export default {
   data() {
     return {
+      kmeans_dialog: false,
       result_dialog: false,
       selectdata: null,
       note_dialog: false,
@@ -249,6 +261,7 @@ export default {
           this.getWholeInfo()
       },
       seeResult:function(index){
+        console.log(index)
           this.excelList = []
           this.result_dialog = true;
           if (index==16){
@@ -256,6 +269,12 @@ export default {
           }
           else if (index==13){
             this.getExcelResult(getlstmexcelresult)
+          }
+          else if (index == 14){
+            this.getExcelResult(getregressionexcelresult)
+          }
+          else if (index === 15){
+            this.getExcelResult(getkmeansexcelresult)
           }
       },
     getCookie: function (name) {
@@ -276,7 +295,42 @@ export default {
         }
       }
     },
+    ColSelectKmeansConfirm:function(){
+      let that = this
+      let index_list = []
+      for (let i=0; i<this.checkList.length; i++){
+        index_list.push(this.getIndex(this.select_cols, this.checkList[i]))
+      }
+      if (index_list.length != 2){
+        this.$message.error('当前聚类仅支持两个维度')
+      }
+      else{
+        let Idlist = []
+        for (let i=0; i<this.modellist.length; i++){
+          Idlist.push(this.modellist[i].id)
+        }
+        Idlist.shift()
+        let data = {}
+        data["name"] = this.getCookie("environment_name");
+        data["algorithm_id"] = this.algorithm_Id;
+        data["model_id"] = this.modellist[0].id;
+        data["path"] = this.selectfilePath;
+        data["select_list"] = index_list.toString();
+        data['next_list'] = Idlist.toString();
+        data["test_type"] = this.rule[1]
+        grouptestkmeans(data).then(res=>{
+          if (res.code === 20000){
+            that.kmeans_dialog = false
+            this.$message({
+              type: 'success',
+              message: '实验成功'
+            })
+          }
+        })
+      }
+    },
     ColSelectConfirm: function () {
+      let that = this
       if (
         this.checkList.length === 0 ||
         this.reference_col === null ||
@@ -315,6 +369,7 @@ export default {
           data["test_type"] = this.rule[1]
           grouptestrelation(data).then((res) => {
             if (res.code === 20000) {
+              that.col_dialog = false
               this.$message({
                 type: "success",
                 message: "运行成功",
@@ -325,16 +380,26 @@ export default {
       }
     },
     ColSelect: function () {
-      this.col_dialog = true;
+      if (this.rule[0] === "1" && this.rule[1] === "1"){
+        this.col_dialog = true
+      }
+      else if (this.rule[0] === "1" && this.rule[1] === "2"){
+        this.col_dialog = true
+      }
+      else if (this.rule[0] === "2" && this.rule[1] === "1"){
+        this.kmeans_dialog = true
+      }
     },
     handleDownload: function (index) {},
     handleDelete: function (index) {},
     DownloadRelationExcel: function (index) {},
     DeleteRelationExcel: function (index) {
+      let that = this
       let data = {};
       data["url"] = index;
       deleterelationexcelresult(data).then((res) => {
         if (res.code === 20000) {
+          that.result_dialog = false
           this.$message({
             type: "success",
             message: "删除成功",

@@ -722,10 +722,11 @@ export function parameterkmeans(data){
   })
 }
 
-export function getparameterkmeans(){
+export function getparameterkmeans(data){
   return request({
     url: '/get_parameter_kmeans',
-    method: 'get'
+    method: 'get',
+    params: data
   })
 }
 
@@ -1282,6 +1283,211 @@ export function filterlinepopulationdistrict(data){
 export function filterbarpopulationdistrict(data){
   return request({
     url: '/filterbarpopulationdistrict',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取多元回归excel结果文件
+export function getregressionexcelresult(data){
+  return request({
+    url: '/getregressionexcelresult',
+    method:'get',
+    params: data
+  })
+}
+
+// 删除多元回归excel结果文件
+export function deleteregressionexcelresult(data){
+  return request({
+    url: '/deleteregressionexcelresult',
+    method: 'post',
+    data
+  })
+}
+
+// 开始kmeans算法
+export function grouptestkmeans(data){
+  return request({
+    url: '/startgrouptestkmeans',
+    method: 'post',
+    data
+  })
+}
+
+// 获取kmeansexcel结果
+export function getkmeansexcelresult(data){
+  return request({
+    url: '/getkmeansexcelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取多元线性回归项目
+export function getlinearregressionproject(){
+  return request({
+    url: '/getlinearregressionproject',
+    method: 'get',
+  })
+}
+
+// 添加多元线性回归项目
+export function addlinearregressionproject(data){
+  return request({
+    url: '/addlinearregressionproject',
+    method: 'post',
+    data
+  })
+}
+
+// 修改多元线性回归
+export function amendlinearregressionproject(data){
+  return request({
+    url: '/amendlinearregressionproject',
+    method: 'post',
+    data
+  })
+}
+
+// 获取多元线性回归Id
+export function getlinearregressionidlist(){
+  return request({
+    url: '/getlinearregressionidlist',
+    method: 'get'
+  })
+}
+
+// 添加多元线性回归参数
+export function addlinearregressionparameter(data){
+  return request({
+    url: '/addlinearregressionparameter',
+    method: 'post',
+    data
+  })
+}
+
+// 获取多元线性回归参数
+export function getlinearregressionparameter(data){
+  return request({
+    url: '/getlinearregressionparameter',
+    method: 'get',
+    params: data
+  })
+}
+
+// 开始多元线性回归实验
+export function startlinearregressionexperiment(data){
+  return request({
+    url: '/startlinearregressionexperiment',
+    method: 'post',
+    data
+  })
+}
+
+// 获取多元线性回归结果
+export function getlinearregressionresult(data){
+  return request({
+    url: '/getlinearregressionresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取关联分析灰色关联度结果
+export function getgreyrelationresult(data){
+  return request({
+    url: '/get_grey_relation_result',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取皮尔逊系数结果
+export function getpearsonrelationresult(data){
+  return request({
+    url: '/get_pearson_result',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取相关指标
+export function getlinearregressiontestreport(data){
+  return request({
+    url: '/getlinearregressiontestreport',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取多元非线性模型指标
+export function getregressionreport(data){
+  return request({
+    url: '/getregressionreport',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取sltm模型实验报告
+export function getlstmreport(data){
+  return request({
+    url: '/getlstmreport',
+    method: 'get',
+    params: data
+  })
+}
+
+// 批量导入区域固废信息表
+export function inputgarbagedistrict(data){
+  return request({
+    url: '/add_garbage_district',
+    method: 'post',
+    data
+  })
+}
+
+// 获取区域固废信息表
+export function getgarbagedistrict(data){
+  return request({
+    url: '/get_garbage_district',
+    method: 'get',
+    params: data
+  })
+}
+
+// 修改区域固废信息表
+export function amendgarbagedistrict(data){
+  return request({
+    url: '/amendgarbagedistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 添加单行区域固废信息
+export function addbyrowgarbagedistrict(data){
+  return request({
+    url: '/addbyrowgarbagedistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 删除区域固废信息
+export function deletegarbagedistrict(data){
+  return request({
+    url: '/deletegarbagedistrict',
+    method: 'post',
+    data
+  })
+}
+
+// 根据年份筛选区域固废信息
+export function filtergarbagedistrictbyyear(data){
+  return request({
+    url: '/filtergarbagedistrictbyyear',
     method: 'get',
     params: data
   })

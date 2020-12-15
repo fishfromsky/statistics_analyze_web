@@ -133,7 +133,10 @@ export default {
       page_data: [],
       total_size: 0,
       currentPage: 1,
-      page_size: 10
+      page_size: 10,
+      filename: 'regression_data',
+      autoWidth: true,
+      bookType: 'xlsx',
     }
   },
   watch: {
@@ -147,6 +150,36 @@ export default {
     }
   },
   methods: {
+    formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => {
+            if (j === 'timestamp') {
+            return parseTime(v[j])
+            } else {
+            return v[j]
+            }
+        }))
+    },
+    download:function(){
+      import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['project_id', 'resident_population', 'population_of_density', 'number_of_households', 'average_population_per_household', 'urban_residents_per_capita_disposable_income',
+          'consumer_expenditure', 'general_public_expenditure', 'investment_in_urban_infrastructure', 'urban_population_density', 'greening_coverage', 'gross_local_product', 'gross_domestic_product_per_capita',
+          'gross_domestic_product_of_the_first_industry', 'gross_value_of_secondary_industry', 'gross_value_of_the_tertiary_industry', 'investment_in_environmental_protection', 'number_of_college_students',
+          'level_of_education', 'municial_household_garbage']
+          const filterVal = ['project_id', 'resident_population', 'population_of_density', 'number_of_households', 'average_population_per_household', 'urban_residents_per_capita_disposable_income',
+          'consumer_expenditure', 'general_public_expenditure', 'investment_in_urban_infrastructure', 'urban_population_density', 'greening_coverage', 'gross_local_product', 'gross_domestic_product_per_capita',
+          'gross_domestic_product_of_the_first_industry', 'gross_value_of_secondary_industry', 'gross_value_of_the_tertiary_industry', 'investment_in_environmental_protection', 'number_of_college_students',
+          'level_of_education', 'municial_household_garbage']
+          const list = this.tableData
+          const data = this.formatJson(filterVal, list)
+          excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename,
+          autoWidth: this.autoWidth,
+          bookType: this.bookType
+          })
+      })
+    },
     getData:function(){
       this.table_loading = true
       let data = {}

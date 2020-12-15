@@ -93,7 +93,10 @@ export default {
       page_data: [],
       total_size: 0,
       currentPage: 1,
-      page_size: 10
+      page_size: 10,
+      filename: 'lstm_input_data',
+      autoWidth: true,
+      bookType: 'xlsx',
     }
   },
   watch: {
@@ -107,6 +110,32 @@ export default {
     }
   },
   methods: {
+    download:function(){
+      import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['project_id', 'year', 'population', 'population_density', 'natural_growth_rate', 'total_household', 'average_person_per_household',
+          'unemployment_rate', 'gdp', 'per_capita_gdp', 'gdp_growth_rate', 'residential_garbage']
+          const filterVal = ['project_id', 'year', 'population', 'population_density', 'natural_growth_rate', 'total_household', 'average_person_per_household',
+          'unemployment_rate', 'gdp', 'per_capita_gdp', 'gdp_growth_rate', 'residential_garbage']
+          const list = this.tableData
+          const data = this.formatJson(filterVal, list)
+          excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename,
+          autoWidth: this.autoWidth,
+          bookType: this.bookType
+          })
+      })
+  },
+  formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => {
+            if (j === 'timestamp') {
+            return parseTime(v[j])
+            } else {
+            return v[j]
+            }
+        }))
+    },
     getData:function(){
       let data = {}
       let that = this

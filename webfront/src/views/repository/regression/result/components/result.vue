@@ -24,7 +24,33 @@
             </el-table-column>
         </el-table>
         <el-dialog :visible.sync="chart_dialog">
-            <chartresult :chart-data="graph_data"></chartresult>
+            <chartresult :chart-data="graph_data" style="height: 35vh"></chartresult>
+            <div class="report">
+                <div class="report-item">
+                    <div class="report-title">所选指标:</div>
+                    <div class="report-title" style="margin-left: 10px">{{report.choose_col}}</div> 
+                </div>
+                <div class="report-item">
+                    <div class="report-title">回归公式:</div>
+                    <div class="report-title" style="margin-left: 10px">{{report.formula}}</div> 
+                </div>
+                <div class="report-item">
+                    <div class="report-title">R方指数:</div>
+                    <div class="report-title" style="margin-left: 10px">{{report.r_square}}</div> 
+                </div>
+                <div class="report-item">
+                    <div class="report-title">MSE指数:</div>
+                    <div class="report-title" style="margin-left: 10px">{{report.mse}}</div> 
+                </div>
+                <div class="report-item">
+                    <div class="report-title">RMSE指数:</div>
+                    <div class="report-title" style="margin-left: 10px">{{report.rmse}}</div> 
+                </div>
+                <div class="report-item">
+                    <div class="report-title">MAE指数:</div>
+                    <div class="report-title" style="margin-left: 10px">{{report.mae}}</div> 
+                </div>
+            </div>
         </el-dialog>
         <el-pagination
             @size-change="handleSizeChange"
@@ -40,7 +66,7 @@
 </template>
 
 <script>
-import { getregressionresult } from '@/api/model'
+import { getregressionresult, getregressionreport } from '@/api/model'
 import chartresult from './components/resultchart'
 export default {
     components:{
@@ -70,6 +96,14 @@ export default {
             graph_data:{
                 real: [],
                 pred: [],
+            },
+            report: {
+                formula: '',
+                mse: '',
+                mae: '',
+                rmse: '',
+                r_square: '',
+                choose_col: ''
             }
         }
     },
@@ -84,6 +118,7 @@ export default {
     },
     methods:{
         showChart:function(id){
+            let that = this
             this.graph_data.real = []
             this.graph_data.pred = []
             this.graph_data.year = []
@@ -95,6 +130,20 @@ export default {
                     this.graph_data.pred.push(chart_data[i].pred)
                 }
             }
+            let data = {}
+            data['project_id'] = this.projectId
+            data['sort'] = id
+            getregressionreport(data).then(res=>{
+                if (res.code === 20000){
+                    let result = res.data[0]
+                    that.report.formula = result.formula
+                    that.report.mse = result.mse
+                    that.report.mae = result.mae
+                    that.report.rmse = result.rmse
+                    that.report.r_square = result.r_square
+                    that.report.choose_col = result.choose_col
+                }
+            })
         },
         timeStamptoTime:function(time){
             var date = new Date(time);
@@ -188,5 +237,20 @@ export default {
 </script>
 
 <style scoped>
-
+.report{
+    width: 100%;
+    min-height: 10vh;
+    padding: 20px;
+}
+.report-item{
+    margin-top: 10px;
+    width: 100%;
+    min-height: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.report-title{
+    font-size: 15px;
+}
 </style>

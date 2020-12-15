@@ -1,12 +1,13 @@
 import numpy as np
 import os
 import pandas as pd
+from scipy.stats import pearsonr
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.preprocessing import MinMaxScaler, scale
 from scipy.interpolate import lagrange
 import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
-plt.rcParams['axes.unicode_minus']=False #用来正常显示负号
+plt.rcParams['font.sans-serif']=['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus']=False  # 用来正常显示负号
 import seaborn as sns
 from numpy import *
 import sys
@@ -14,8 +15,7 @@ import json
 import requests
 import os
 from pandas import json_normalize
-from sklearn import preprocessing
-from scipy import stats
+
 
 np.set_printoptions(suppress=True)
 
@@ -56,8 +56,8 @@ def ployinterp_column(s, n, k=2):
 
 def plotinterplate_columns(s, n, k=5):
     y = s.iloc[list(range(n-k,n)) + list(range(n+1, n+1+k))]
-    y = y[y.notnull()]#剔除空值
-    return lagrange(y.index, list(y))(n)#向位置n出插值并返回该插值结果  y.index返回的是费缺失值在原来列表中的位置
+    y = y[y.notnull()]  # 剔除空值
+    return lagrange(y.index, list(y))(n)  # 向位置n出插值并返回该插值结果  y.index返回的是费缺失值在原来列表中的位置
 
 # #拉格朗日插值法进行插值
 # def deal_csv():
@@ -103,7 +103,8 @@ def deal2_csv(temppath):
 
     return name
 
-#直接丢掉有空格的数据项
+
+# 直接丢掉有空格的数据项
 def deal1_csv(temppath):
     dataset = pd.read_csv(temppath,low_memory=False)
     dataset = dataset.dropna(axis=0, how='any')
@@ -211,12 +212,13 @@ def hot_matrix(dataset):
 
 
 def RF(dataset):
-    labels = dataset.columns
     scaler = MinMaxScaler()
+    dataset = dataset.drop(dataset.columns[[0]], axis=1)
+    labels = dataset.columns.values
     dataset = scaler.fit_transform(dataset)
-    labels = labels[:-1]
-    x = dataset[:, :-1]
-    y = dataset[:, -1]
+    labels = labels[1:]
+    x = dataset[:, 1:]
+    y = dataset[:, 0]
     forest = RandomForestClassifier(n_estimators=500, max_depth=6, random_state=0)
     forest.fit(x, y.astype('int'))
     showbar(labels, forest, 'RF')
@@ -295,10 +297,42 @@ def gray_relate(dataset):
     dataframe = dataframe.drop(dataframe.columns[[0]], axis=1)
     cols = dataframe.columns.values
     data_gray = GRA(dataframe)
+    # ShowGRAHeatMap(data_gray, cols)
 
-    ShowGRAHeatMap(data_gray, cols)
+    dataframe = data_gray.values
 
-#归一化
+    json_data = {}
+    json_data['project_id'] = project_id
+    result_list = []
+    labels = cols
+    for i in range(len(labels)):
+        dict = {}
+        dict['label'] = labels[i]
+        dict['garbage_clear'] = dataframe[:, 0][i]
+        dict['population'] = dataframe[:, 1][i]
+        dict['city_rural_ratio'] = dataframe[:, 2][i]
+        dict['household'] = dataframe[:, 3][i]
+        dict['people_per_capita'] = dataframe[:, 4][i]
+        dict['sex_ratio'] = dataframe[:, 5][i]
+        dict['age_0_14'] = dataframe[:, 6][i]
+        dict['age_15_64'] = dataframe[:, 7][i]
+        dict['age_65'] = dataframe[:, 8][i]
+        dict['disposable_income'] = dataframe[:, 9][i]
+        dict['consume_cost'] = dataframe[:, 10][i]
+        dict['public_cost'] = dataframe[:, 11][i]
+        dict['gdp'] = dataframe[:, 12][i]
+        dict['gdp_first_industry'] = dataframe[:, 13][i]
+        dict['gdp_second_industry'] = dataframe[:, 14][i]
+        dict['gdp_third_industry'] = dataframe[:, 15][i]
+        dict['gnp'] = dataframe[:, 16][i]
+        dict['education'] = dataframe[:, 17][i]
+        result_list.append(dict)
+    json_data['data'] = result_list
+    json_data = json.dumps(json_data, cls=NpEncoder)
+    requests.post('http://127.0.0.1:8000/api/save_grey_relation_result', data=json_data)
+
+
+# 归一化
 def guiyihua():
 
     params = {'project_id': project_id}
@@ -315,14 +349,14 @@ def guiyihua():
     dataset = dataset.values
     for i in range(dataset.shape[0]):
         for j in range(dataset.shape[1]):
-            if(isinstance(dataset[i][j], str)):
-                if (dataset[i][j].isspace()):
+            if isinstance(dataset[i][j], str):
+                if dataset[i][j].isspace():
                     dataset[i][j].strip()
     k=[]
     for i in range(dataset.shape[1]):
-        p = normalization(dataset[:,i])
+        p = normalization(dataset[:, i])
 
-        if (i == 0): k = p
+        if i == 0: k = p
         else:
             k=np.c_[k, p]
     df = pd.DataFrame(k, columns=labels)
@@ -334,27 +368,46 @@ def normalization(data):
     return (data - np.min(data)) / _range
 
 
-def p(dataset):
-    matrix = dataset.values
-    p=[]
-    for i in range(matrix.shape[1]-1):
-        x=matrix[:,i]
-        y=matrix[:,-1]
-        p.append((((x - x.mean()) / (x.std(ddof=0))) * ((y - y.mean()) / (y.std(ddof=0)))).mean())
+def get_pearsonr(dataset):
+    dataset = dataset.drop(dataset.columns[[0]], axis=1)
+    cols = list(dataset.columns.values)
+    cols.pop(0)
+    dataset = dataset.values
+    scaler = MinMaxScaler()
+    dataset = scaler.fit_transform(dataset)
+    corr_list = list()
+    n = dataset.shape[1]
+    for i in range(1, n):
+        p = pearsonr(dataset[:, i], dataset[:, 0])
+        corr_list.append(p)
 
-    return p
+    json_data = {}
+    json_data['project_id'] = project_id
+    result_list = []
+    labels = cols
+    for i in range(len(labels)):
+        dict = {}
+        dict['label'] = labels[i]
+        dict['relate'] = corr_list[i][0]
+        dict['p_value'] = corr_list[i][1]
+        result_list.append(dict)
+    json_data['data'] = result_list
+    json_data = json.dumps(json_data, cls=NpEncoder)
+    requests.post('http://127.0.0.1:8000/api/save_pearson_result', data=json_data)
+    return corr_list
 
 
 if __name__ == '__main__':
 
-    dataset,datasety = guiyihua()#归一化
+    dataset, datasety = guiyihua() # 归一化
     if algorithm == '1':
-        hot_matrix(dataset)#相关系数热力图
+        hot_matrix(dataset) # 相关系数热力图
     if algorithm == '2':
-    # deal_data(dataset)#gbdt
         RF(dataset)
-    # gray_relate(dataset)#灰度关联
-    # p(datasety)
+    if algorithm == '3':
+        gray_relate(dataset)
+    if algorithm == '4':
+        get_pearsonr(dataset)
 
     dict = {}
     dict['project_id'] = project_id

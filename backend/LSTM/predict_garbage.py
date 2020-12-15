@@ -13,6 +13,7 @@ import sys
 import requests
 import json
 from pandas.io.json import json_normalize
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
 
 np.set_printoptions(suppress=True)
@@ -80,6 +81,7 @@ def series_to_supervision(data, n_in=1, n_out=1, dropnan=True):
 def load_data_to_supervision(list):
     data, year = get_data(list)
     values = data.values
+    choose_col = data.columns.values
     scaler = MinMaxScaler(feature_range=(0, 1))
     values = values.astype('float32')
 
@@ -87,7 +89,7 @@ def load_data_to_supervision(list):
 
     reframed = series_to_supervision(scaled, 3, 1)
 
-    return reframed, scaler, scaled, year
+    return reframed, scaler, scaled, year, choose_col
 
 
 def get_data(list):
@@ -134,7 +136,6 @@ def train_model(trainX, trainY, testX, testY):
 
     history = model.fit(trainX, trainY, validation_data=(testX, testY), epochs=500, batch_size=5, verbose=2)
 
-
     model.save(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
 
     # save_process_result(history)
@@ -171,9 +172,9 @@ def Transfer_to_realdata(result, scaler):
 
 
 def Predict(days):
-    data, year = get_data()
+    data, year = get_data(column_list)
     data = data.values
-    reframed, scaler, _, _ = load_data_to_supervision()
+    reframed, scaler, _, _, _ = load_data_to_supervision(column_list)
     plt.figure()
     xaxis = [x for x in range(1, data.shape[0]+1)]
     plt.xticks(xaxis)
@@ -218,8 +219,9 @@ def Predict(days):
 
 
 def predict_all(list):
-    reframed, scaler, data, year = load_data_to_supervision(list)
-    trainX, trainY, _, _ = train_data(reframed, 1)
+    reframed, scaler, data, year, choose_cols = load_data_to_supervision(list)
+    split = reframed.values.shape[0]
+    trainX, trainY, _, _ = train_data(reframed, split)
     model = LSTMmodel(trainX)
     model.load_weights(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
     result = model.predict(trainX)
@@ -236,8 +238,17 @@ def predict_all(list):
     df = json_normalize(json_data)
     real = df.values[:, -1]
 
+    mse = mean_squared_error(real, preds)
     rmse = sqrt(mean_squared_error(preds, real))
-    print('Test RMSE: %.3f' % rmse)
+    mae = mean_absolute_error(real, preds)
+    r_square = r2_score(real, preds)
+    select_list = ''
+    for i in range(len(choose_cols)):
+        if i != len(choose_cols)-1:
+            select_list = select_list+choose_cols[i]+', '
+        else:
+            select_list = select_list+choose_cols[i]
+
 
     json_data = {}
     json_data['project_id'] = id
@@ -249,12 +260,17 @@ def predict_all(list):
         dict['pred'] = preds[i]
         result_list.append(dict)
     json_data['data'] = result_list
+    json_data['r_square'] = r_square
+    json_data['mse'] = mse
+    json_data['rmse'] = rmse
+    json_data['mae'] = mae
+    json_data['choose_col'] = select_list
     json_data = json.dumps(json_data, cls=NpEncoder)
     requests.post('http://127.0.0.1:8000/api/save_lstm_result', data=json_data)
 
 
 def Train(list):
-    reframed, scaler, _, _ = load_data_to_supervision(list)
+    reframed, scaler, _, _, _ = load_data_to_supervision(list)
     split = int((3 / 4)*reframed.values.shape[0])
     trainX, trainY, testX, testY = train_data(reframed, split)
     train_model(trainX, trainY, testX, testY)

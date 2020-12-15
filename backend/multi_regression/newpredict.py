@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split,cross_val_score
-from sklearn.metrics import mean_squared_error as MSE, r2_score
+from sklearn.metrics import mean_squared_error as MSE, r2_score, mean_absolute_error as MAE
 import math
 import pylab as mpl
 from sklearn.linear_model import LassoCV,LinearRegression as LR,Lasso,Ridge,RidgeCV
@@ -23,8 +23,11 @@ mpl.rcParams['axes.unicode_minus'] = False
 id = sys.argv[1]
 index_list = sys.argv[2]
 
-column_list = index_list.split(',')
-column_list = list(map(int, column_list))
+if index_list == '-1':
+    column_list = []
+else:
+    column_list = index_list.split(',')
+    column_list = list(map(int, column_list))
 
 
 class NpEncoder(json.JSONEncoder):
@@ -81,11 +84,25 @@ def train1(x_train,y_train,x_test,y_test,labels):#多元线性回归
     return y_predict
 
 
-def draw(ypredict,Y_test,gongshi):
+def draw(ypredict, Y_test, gongshi, choose_col):
     # rmse = math.sqrt(MSE(Y_test, ypredict))
     # print('回归 RMSE %7f' % rmse)
-    r2 = r2_score(Y_test, ypredict)
-    print('回归 r2 %7f' % r2)
+
+    select_col = ''
+    for i in range(len(choose_col)):
+        if i != len(choose_col)-1:
+            select_col = select_col+choose_col[i]+', '
+        else:
+            select_col = select_col+choose_col[i]
+
+    r_square = r2_score(y_test, ypredict)
+    mse = MSE(y_test, ypredict)
+    rmse = mse ** 0.5
+    mae = MAE(y_test, ypredict)
+
+    formula = 'y='
+    for i in range(len(gongshi)):
+        formula = formula+gongshi[i]
 
     json_data = {}
     json_data['project_id'] = id
@@ -96,6 +113,12 @@ def draw(ypredict,Y_test,gongshi):
         dict['pred'] = ypredict[i]
         result_list.append(dict)
     json_data['data'] = result_list
+    json_data['r_square'] = r_square
+    json_data['mse'] = mse
+    json_data['rmse'] = rmse
+    json_data['mae'] = mae
+    json_data['formula'] = formula
+    json_data['choose_col'] = select_col
     json_data = json.dumps(json_data, cls=NpEncoder)
     requests.post('http://127.0.0.1:8000/api/save_regression_result', data=json_data)
 
@@ -128,8 +151,9 @@ def test(x_test,Y_test):
     plt.savefig('los_Predict.png')
     plt.show()
 
+
 def yuchuli(iterations):
-    alphaslist = [0.0001,0.001,0.01,0.1, 1.0, 10.0,100,1000,10000]#alphas列表
+    alphaslist = [0.0001,0.001,0.01,0.1, 1.0, 10.0,100,1000,10000]   #alphas列表
     params = {'project_id': id}
 
     res = requests.get('http://127.0.0.1:8000/api/get_parameter_regression', params=params)
@@ -138,6 +162,8 @@ def yuchuli(iterations):
     df = json_normalize(json_data)
     df = df.drop(df.columns[[0, df.shape[1] - 1]], axis=1)
     dataset = df.drop(df.columns[column_list], axis=1)
+
+    choose_col = dataset.columns.values
     # h = 13  # 第几个城市
     # dataset = dataset[20 * h - 20:20 * h]
     dataset = dataset.fillna(0.1)
@@ -175,7 +201,7 @@ def yuchuli(iterations):
             gongshi.append('+')
         gongshi.append('%.5f'%index[i]+labels[i])
 
-    return ypre,Y_test,gongshi
+    return ypre, Y_test, gongshi, choose_col
 
 #多元线性回归
 train = 3
@@ -189,8 +215,8 @@ elif(train == 0):
 #多元非线性回归
 elif(train == 3):
     #判定系数（r2）：说明列入模型的所有解释变量对因变量的联合的影响程度，不说明模型中单个解释变量的影响程度。
-    ypre,y_test,gongshi = yuchuli(1000)
-    draw(ypre, y_test, gongshi)
+    ypre, y_test, gongshi, choose_col = yuchuli(1000)
+    draw(ypre, y_test, gongshi, choose_col)
     dict = {}
     dict['project_id'] = id
     data = json.dumps(dict)

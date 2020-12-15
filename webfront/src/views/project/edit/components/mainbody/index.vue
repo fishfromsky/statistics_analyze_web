@@ -105,10 +105,16 @@ export default {
                         {
                             value: '2',
                             label: '关联分析+LSTM'
-                        },
+                        }
+                    ]
+                },
+                {
+                    value: '2',
+                    label: '组合模板2',
+                    children: [
                         {
-                            value: '3',
-                            label: '关联分析+聚类'
+                            value: '1',
+                            label: '聚类分析'
                         }
                     ]
                 }
@@ -194,6 +200,21 @@ export default {
                 }
                 else{
                     this.$message.error('不符合模板规则')
+                }
+            }
+            else if (this.rule[0] === '2' && this.rule[1] === '1'){
+                if (template_list[0]===2){
+                    this.$router.push({
+                        path: '/project/test',
+                        query: {
+                            username: this.getCookie('environment_name'),
+                            algorithm_Id: this.selectId,
+                            rule: this.rule
+                        }
+                    })
+                }
+                else{
+                    this.$message.error('不符合模板规定')
                 }
             }
         },
