@@ -51,7 +51,7 @@
                 <span class="model_pic_span">上传模型图片</span>
                 <el-upload
                     class="upload-demo"
-                    action="http://127.0.0.1:8000/api/upload_img"
+                    action="http://101.133.238.216:8000/api/upload_img"
                     :on-remove="handleRemove"
                     :on-success="uploadSuccess"
                     :on-exceed="exceedFile"

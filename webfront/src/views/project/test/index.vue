@@ -73,7 +73,7 @@
           </div>
           <el-upload
             class="upload-demo"
-            action="http://127.0.0.1:8000/api/uploadfile"
+            action="http://101.133.238.216:8000/api/uploadfile"
             :file-list="fileList"
             :on-error="handleError"
             :on-success="handleSuccess"
