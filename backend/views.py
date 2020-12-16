@@ -2807,7 +2807,7 @@ def upload_file(request):
 def getdatafilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     filelist = []
-    for root, dirs, files in os.walk('media/static/file'):
+    for root, dirs, files in os.walk('media\\static\\file'):
         if len(files) != 0:
             for file in files:
                 file_dict = {}
