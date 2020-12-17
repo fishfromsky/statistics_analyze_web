@@ -442,7 +442,7 @@ export default {
             dict["index"] = i;
             dict["name"] = data[i].name;
             dict["path"] = data[i].url;
-            let splttime = data[i].url.split("\\");
+            let splttime = data[i].url.split("/");
             dict["time"] =
               splttime[splttime.length - 4] +
               "年" +
