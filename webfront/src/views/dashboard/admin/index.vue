@@ -2,11 +2,11 @@
   <div class="inner index_tabs">
     <!--header-->
     <div class="header">
-      <!-- <div class="school-badge"></div>
-      <div class="college-badge"></div> -->
+      <div class="school-badge"></div>
+      <div class="college-badge"></div>
       <div class="bg_header">
-        <img class="school-badge" src="../../image/badge.png" />
-        <img class="college-badge" src="../../image/college.png" />
+        <!-- <img class="school-badge" src="../../image/badge.png" />
+        <img class="college-badge" src="../../image/college.png" /> -->
         <div class="fl t_title">
           <div class="header-title-text">上海市固废智慧管理与仿真决策平台</div>
         </div>
