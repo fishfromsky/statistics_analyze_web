@@ -135,11 +135,8 @@ urlpatterns = [
     url('addlstmproject', views.add_lstm_project, name='addlstmproject'),  # 添加lstm项目
     url('amendlstmproject', views.amend_lstm_project, name='amendlstmproject'),  # 修改lstm项目
     url('lstm_project_id', views.lstm_project_id, name='lstm_project_id'),  # 获得全部LSTM项目编号
-    url('get_parameter_lstm', views.get_parameter_lstm),   # 获得指定项目的参数
-    url('input_parameter_lstm', views.input_lstm_parameter, name='input_lstm_parameter'),  # 批量导入lstm参数表
     url('experiment_lstm_start', views.experiment_lstm_start, name='experiment_lstm'),  # 开始试验
     url('experiment_lstm_finish', views.experiment_lstm_finish, name='experiment_lstm_finish'),  # 结束实验
-    url('save_lstm_result', views.save_lstm_result, name='save_lstm_result'),  # 保存lstm实验结果
     url('get_lstm_result', views.get_lstm_result, name='get_lstm_resut'),  # 获取lstm实验结果
 
     url('addlinearregressionproject', views.addLinearRegressionProject),  # 添加多元线性回归
@@ -216,6 +213,12 @@ urlpatterns = [
     url('startgrouptestlstm', views.grouptest_lstm),  # 开始lstm模型实验
     url('getlstmexcelresult', views.getLSTMExcelResultList),  # 获取lstm算法实验结果
     url('grouptestfinishlstm', views.grouptest_finish_lstm),  # 完成LSTM算法实验
+
+    url('uploadlstmmodelfile', views.uploadLSTMModelFile),  # 上传LSTM模型数据文件
+    url('getlstmmodelfile', views.getmodellstmfilelist),  # 获取LSTM模型数据文件
+    url('getlstmmodelresult', views.getlstmmodelresult),  # 获取lstm模型结果
+    url('deletemodelfile', views.deleteModelFile),  # 删除模型数据文件
+    url('getdatasetfromresult', views.getdatasetfromresult),  # 从结果文件中获取数据文件
 
     url('getallmodels', views.getallmodels),  # 获取所有模型列表
     url('upload_img', views.upload_img),  # 上传图片文件

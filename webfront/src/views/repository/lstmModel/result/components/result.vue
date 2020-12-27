@@ -1,256 +1,289 @@
 <template>
-    <div>
-        <el-table v-loading="table_loading" :key="tablekey" :data="page_data" border fit highlight-current-row style="width: 100%; margin-top: 20px">
-            <el-table-column label="年份" align="center">
-                <template slot-scope="{row}">
-                    <span>{{row.year}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="实际值" align="center">
-                <template slot-scope="{row}">
-                    <span>{{row.real}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="预测值" align="center">
-                <template slot-scope="{row}">
-                    <span>{{row.pred}}</span>
-                </template>               
-            </el-table-column>
-            <el-table-column label="实验时间" align="center">
-                <template slot-scope="{row}">
-                    <i class="el-icon-time"></i>
-                    <span>{{row.time}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="实验编号" align="center">
-                <template slot-scope="{row}">
-                    <span>{{row.sort}}</span>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-dialog :visible.sync="chart_dialog">
-            <chartresult :chart-data="graph_data" style="height: 35vh"></chartresult>
-            <div class="report">
-                <div class="report-item">
-                    <div class="report-title">所选指标:</div>
-                    <div class="report-title" style="margin-left: 10px">{{report.choose_col}}</div> 
-                </div>
-                <div class="report-item">
-                    <div class="report-title">R方指数:</div>
-                    <div class="report-title" style="margin-left: 10px">{{report.r_square}}</div> 
-                </div>
-                <div class="report-item">
-                    <div class="report-title">MSE指数:</div>
-                    <div class="report-title" style="margin-left: 10px">{{report.mse}}</div> 
-                </div>
-                <div class="report-item">
-                    <div class="report-title">RMSE指数:</div>
-                    <div class="report-title" style="margin-left: 10px">{{report.rmse}}</div> 
-                </div>
-                <div class="report-item">
-                    <div class="report-title">MAE指数:</div>
-                    <div class="report-title" style="margin-left: 10px">{{report.mae}}</div> 
-                </div>
-            </div>
-        </el-dialog>
-        <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage"
-            :page-sizes="[10, 20, 30, 40, 50]"
-            :page-size="page_size"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total_size"
-            style="margin-top: 20px">
-        </el-pagination>
-    </div>
+  <div>
+    <el-table
+      v-loading="table_loading"
+      :key="tablekey"
+      :data="page_data"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%; margin-top: 20px"
+    >
+      <el-table-column label="结果文件">
+        <template slot-scope="{ row }">
+          <span>{{ row.file_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="数据操作">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="primary"
+            @click="Visualization(scope.$index)"
+            >可视化</el-button
+          >
+          <el-button size="mini" type="primary" @click="Download(scope.$index)"
+            >下载</el-button
+          >
+          <el-button
+            size="mini"
+            type="danger"
+            @click="DeleteExcel(scope.$index)"
+            >删除</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-dialog :visible.sync="chart_dialog">
+      <chartresult :chart-data="graph_data" style="height: 35vh"></chartresult>
+      <div class="report">
+        <div class="report-item">
+          <div class="report-title">预测指标:</div>
+          <div class="report-title" style="margin-left: 10px">
+            {{ report.choose_data }}
+          </div>
+        </div>
+        <div class="report-item">
+          <div class="report-title">参考指标:</div>
+          <div class="report-title" style="margin-left: 10px">
+            {{ report.choose_col }}
+          </div>
+        </div>
+        <div class="report-item">
+          <div class="report-title">R方指数:</div>
+          <div class="report-title" style="margin-left: 10px">
+            {{ report.r_square }}
+          </div>
+        </div>
+        <div class="report-item">
+          <div class="report-title">MSE指数:</div>
+          <div class="report-title" style="margin-left: 10px">
+            {{ report.mse }}
+          </div>
+        </div>
+        <div class="report-item">
+          <div class="report-title">RMSE指数:</div>
+          <div class="report-title" style="margin-left: 10px">
+            {{ report.rmse }}
+          </div>
+        </div>
+        <div class="report-item">
+          <div class="report-title">MAE指数:</div>
+          <div class="report-title" style="margin-left: 10px">
+            {{ report.mae }}
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[10, 20, 30, 40, 50]"
+      :page-size="page_size"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total_size"
+      style="margin-top: 20px"
+    >
+    </el-pagination>
+  </div>
 </template>
 
 <script>
-import { getlstmresult, getlstmreport } from '@/api/model'
-import chartresult from './components/resultchart'
+import {
+  getlstmmodelresult,
+  getlstmresult,
+  getlstmreport,
+  deleterelationexcelresult,
+  LstmProjectStart,
+  getdatapathfromresult,
+  getexcelinfo
+} from "@/api/model";
+import chartresult from "./components/resultchart";
 export default {
-    components:{
-        chartresult
+  components: {
+    chartresult,
+  },
+  props: {
+    projectId: {
+      type: String,
+      required: true,
     },
-    props:{
-        projectId:{
-            type: String,
-            required: true
-        }
+  },
+  data() {
+    return {
+      chart_dialog: false,
+      table_loading: false,
+      tablekey: 0,
+      tableData: [],
+      weightData: [],
+      page_data: [],
+      total_size: 0,
+      currentPage: 1,
+      page_size: 10,
+      project_id: "",
+      filename: "lstm_result",
+      autoWidth: true,
+      bookType: "xlsx",
+      sort_list: [],
+      graph_data: {
+        real: [],
+        pred: [],
+      },
+      report: {
+        choose_col: "",
+        choose_data: "",
+        r_square: "",
+        mse: "",
+        rmse: "",
+        mae: "",
+      },
+    };
+  },
+  watch: {
+    projectId: function (a, _) {
+      this.project_id = a;
+      this.page_data = [];
+      this.tableData = [];
+      this.sort_list = [];
+      this.weightData = [];
+      this.initTable(a);
     },
-    data(){
-        return{
-            chart_dialog: false,
-            table_loading: false,
-            tablekey: 0,
-            tableData: [],
-            page_data: [],
-            total_size: 0,
-            currentPage: 1,
-            page_size: 10,
-            project_id: '',
-            filename: 'lstm_result',
-            autoWidth: true,
-            bookType: 'xlsx',
-            sort_list: [],
-            graph_data:{
-                real: [],
-                pred: [],
-                year: []
-            },
-             report:{
-                choose_col: '',
-                r_quare: '',
-                mse: '',
-                rmse: '',
-                mae: '' 
-             }
-        }
-    },
-    watch:{
-        projectId:function(a, _){
-            this.project_id = a
-            this.initTable(a)
-            this.page_data = []
-            this.tableData = []
-            this.sort_list = []
-        }
-    },
-    methods:{
-        showChart:function(id){
-            let that = this
-            this.graph_data.real = []
-            this.graph_data.pred = []
-            this.graph_data.year = []
-            this.chart_dialog = true
-            let chart_data = this.tableData
-            for (let i=0; i<chart_data.length; i++){
-                if (chart_data[i].sort === id){
-                    this.graph_data.real.push(chart_data[i].real)
-                    this.graph_data.pred.push(chart_data[i].pred)
-                    this.graph_data.year.push(chart_data[i].year)
-                }
+  },
+  methods: {
+    DeleteExcel: function (val) {
+      let that = this;
+      let data = {};
+      data["url"] = this.tableData[val].url;
+      deleterelationexcelresult(data).then((res) => {
+        if (res.code === 20000) {
+          let weight_data = {};
+          weight_data["url"] = this.weightData[val];
+          deleterelationexcelresult(weight_data).then((res) => {
+            if (res.code === 20000) {
+              this.$message({
+                type: "success",
+                message: "删除成功",
+              });
+              that.table_loading = true;
+              that.tableData = [];
+              that.page_data = [];
+              that.weightData = [];
+              that.initTable(that.project_id);
             }
-            let data = {}
-            data['project_id'] = this.projectId
-            data['sort'] = id
-            getlstmreport(data).then(res=>{
-                if (res.code===20000){
-                    let result = res.data[0]
-                    that.report.mse = result.mse
-                    that.report.mae = result.mae
-                    that.report.rmse = result.rmse
-                    that.report.r_square = result.r_square
-                    that.report.choose_col = result.choose_col
-                }
-            })
-        },
-        timeStamptoTime:function(time){
-            var date = new Date(time);
-            let Y = date.getFullYear() + '-';
-            let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
-            let D = date.getDate() + ' ';
-            let h = date.getHours() + ':';
-            let m = date.getMinutes() + ':';
-            let s = date.getSeconds();
-            return Y+M+D+h+m+s;
-        },
-        handleSizeChange:function(val){
-            this.table_loading = true
-            this.page_size = val
-            this.currentPage = 1
-            this.page_data = []
-            this.initTable(this.project_id)
-        },
-        handleCurrentChange:function(val){
-            this.currentPage = val
-            this.page_data = []
-            this.initTable(this.project_id)
-        },
-        initTable:function(id){
-            let that = this
-            let dict = {}
-            dict['project_id'] = id
-            getlstmresult(dict).then(res=>{
-                that.table_loading = false
-                that.tableData = res.data
-                for (let i=0; i<res.data.length; i++){
-                    let time = res.data[i].time
-                    time = new Date(time.replace(/-/g,'/')).getTime()+3600*1000*8
-                    res.data[i].time = that.timeStamptoTime(time)
-                }
-                let size = that.page_size
-                let index = that.currentPage-1
-                for (let i=index*size; i<(index+1)*size; i++){
-                    if (i==res.data.length){
-                        break
-                    }
-                    that.page_data.push(res.data[i])
-                }
-                that.total_size = res.data.length
-                for (let i=0; i<that.tableData.length; i++){
-                    if (!that.isInArray(that.sort_list, that.tableData[i].sort)){
-                        that.sort_list.push(that.tableData[i].sort)
-                    }
-                }
-                that.$emit('child-event', that.sort_list)
-            })
-        },
-        isInArray:function(arr,value){
-            for(var i = 0; i < arr.length; i++){
-                if(value === arr[i]){
-                    return true;
-                }
-            }
-            return false;
-        },
-        formatJson(filterVal, jsonData) {
-            return jsonData.map(v => filterVal.map(j => {
-                if (j === 'timestamp') {
-                return parseTime(v[j])
-                } else {
-                return v[j]
-                }
-            }))
-        },
-        download:function(){
-            import('@/vendor/Export2Excel').then(excel => {
-                const tHeader = ['Year', 'Real', 'Prediction', 'DateTime']
-                const filterVal = ['year', 'real', 'pred', 'time']
-                const list = this.tableData
-                const data = this.formatJson(filterVal, list)
-                excel.export_json_to_excel({
-                header: tHeader,
-                data,
-                filename: this.filename,
-                autoWidth: this.autoWidth,
-                bookType: this.bookType
-                })
-            })
+          });
         }
+      });
     },
-    mounted(){
-
-    }
-}
+    getCookie: function (name) {
+      var strcookie = document.cookie;
+      var arrcookie = strcookie.split("; ");
+      for (var i = 0; i < arrcookie.length; i++) {
+        var arr = arrcookie[i].split("=");
+        if (arr[0] == name) {
+          return arr[1];
+        }
+      }
+      return "";
+    },
+    initTable: function (project_id) {
+      let that = this;
+      let data = {};
+      data["project_id"] = project_id;
+      data["user"] = this.getCookie("environment_name");
+      getlstmmodelresult(data).then((res) => {
+        if (res.code === 20000) {
+          that.table_loading = false;
+          let result = res.data;
+          let result_data = [];
+          for (let i = 0; i < result.length; i++) {
+            let dict = {};
+            let pre_split = result[i].split(".");
+            let split_list = result[i].split("/");
+            let path = "";
+            for (let j = 3; j < split_list.length; j++) {
+              if (j != split_list.length - 1) {
+                path = path + split_list[j] + "/";
+              } else {
+                path = path + split_list[j];
+              }
+            }
+            if (pre_split[pre_split.length - 1] === "xlsx") {
+              dict["url"] = result[i];
+              dict["file_name"] = split_list[split_list.length - 1];
+              dict["path"] = path;
+              result_data.push(dict);
+            } else {
+              that.weightData.push(path);
+            }
+          }
+          that.tableData = result_data;
+          let size = that.page_size;
+          let index = that.currentPage - 1;
+          for (let i = index * size; i < (index + 1) * size; i++) {
+            if (i == result_data.length) {
+              break;
+            }
+            that.page_data.push(result_data[i]);
+          }
+          that.total_size = result_data.length;
+        }
+      });
+    },
+    Visualization(val) {
+      let that = this;
+      let data = {};
+      data["path"] = this.page_data[val].path;
+      getlstmresult(data).then((res) => {
+        if (res.code === 20000) {
+          that.graph_data.pred = res.pred;
+          that.graph_data.real = res.fact;
+          that.report.choose_col = res.choose_col;
+          that.report.choose_data = res.choose_data;
+          that.report.mse = res.mse;
+          that.report.rmse = res.rmse;
+          that.report.r_square = res.r_square;
+          that.report.mae = res.mae;
+          that.chart_dialog = true;
+        }
+      });
+    },
+    Download: function (val) {
+      let file_path = this.page_data[val].url;
+      window.open(file_path);
+    },
+    handleSizeChange: function (val) {
+      this.table_loading = true;
+      this.page_size = val;
+      this.currentPage = 1;
+      this.page_data = [];
+      this.initTable(this.project_id);
+    },
+    handleCurrentChange: function (val) {
+      this.currentPage = val;
+      this.page_data = [];
+      this.initTable(this.project_id);
+    },
+  },
+  mounted() {},
+};
 </script>
 
 <style scoped>
-.report{
-    width: 100%;
-    min-height: 10vh;
-    padding: 20px;
+.report {
+  width: 100%;
+  min-height: 10vh;
+  padding: 20px;
 }
-.report-item{
-    margin-top: 10px;
-    width: 100%;
-    min-height: 20px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+.report-item {
+  margin-top: 10px;
+  width: 100%;
+  min-height: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
-.report-title{
-    font-size: 15px;
+.report-title {
+  font-size: 15px;
 }
 </style>

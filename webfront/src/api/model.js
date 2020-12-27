@@ -1501,3 +1501,38 @@ export function getkmenastestreport(data){
     params: data
   })
 }
+
+// 获取lstm数据文件
+export function getlstmmodelfile(){
+  return request({
+    url: '/getlstmmodelfile',
+    method: 'get'
+  })
+}
+
+// 获取lstm模型数据文件
+export function getlstmmodelresult(data){
+  return request({
+    url: '/getlstmmodelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 删除模型数据文件
+export function deletemodelfile(data){
+  return request({
+    url: '/deletemodelfile',
+    method: 'get',
+    params: data
+  })
+}
+
+// 从结果文件中获取数据文件路径
+export function getdatapathfromresult(data){
+  return request({
+    url: '/getdatasetfromresult',
+    method: 'get',
+    params: data
+  })
+}

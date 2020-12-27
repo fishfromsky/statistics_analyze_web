@@ -1,18 +1,15 @@
-import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
-from keras.layers import LSTM, Dense, Dropout
-from sklearn.metrics import mean_squared_error
+from keras.layers import LSTM, Dense
 from keras.models import Sequential
-import matplotlib.pyplot as plt
+from scipy.interpolate import lagrange
 import os
 import datetime
+import pandas as pd
 import numpy as np
 import pylab as mpl
-from math import *
 import sys
 import requests
 import json
-from pandas.io.json import json_normalize
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
 
@@ -20,15 +17,19 @@ np.set_printoptions(suppress=True)
 mpl.rcParams['font.sans-serif'] = ['simHei']
 mpl.rcParams['axes.unicode_minus'] = False
 
-id = sys.argv[1]
-test_type = sys.argv[2]
-select_list = sys.argv[3]
+project_id = sys.argv[1]
+select_list = sys.argv[2]
+special = sys.argv[3]
+user = sys.argv[4]
+file_path = sys.argv[5]
+
+special = int(special)
 
 if select_list == '-1':
-    column_list = []
+    drop_list = []
 else:
-    column_list = select_list.split(',')
-    column_list = list(map(int, column_list))
+    drop_list = select_list.split(',')
+    drop_list = list(map(int, drop_list))
 
 
 class MyEncoder(json.JSONEncoder):
@@ -54,6 +55,32 @@ class NpEncoder(json.JSONEncoder):
             return obj.tolist()
         else:
             return super(NpEncoder, self).default(obj)
+
+
+def read_csv(path, drop_index):
+    drop_index.remove(special)
+    dataframe = pd.read_excel(path)
+    head_list = dataframe.columns.values
+    special_head = head_list[special]
+    df = dataframe.drop(dataframe.columns[drop_index], axis=1)
+    new_head_list = df.columns.values
+    new_special = list(new_head_list).index(special_head)
+    return df, new_special, special_head, new_head_list
+
+
+def ploy(s, n, k=3):   # 拉格朗日插值函数
+    y = s.reindex(list(range(n-k, n))+list(range(n+1, n+1+k)))  # 取数
+    y = y[y.notnull()]
+    return lagrange(y.index, list(y))(n)
+
+
+def deal_nan(data):
+    for i in data.columns:
+        for j in range(len(data)):
+            if (data[i].isnull())[j]:
+                data[i][j] = ploy(data[i], j)
+
+    return data
 
 
 def series_to_supervision(data, n_in=1, n_out=1, dropnan=True):
@@ -84,10 +111,12 @@ def series_to_supervision(data, n_in=1, n_out=1, dropnan=True):
     return agg
 
 
-def load_data_to_supervision(list):
-    data, year = get_data(list)
+def load_data_to_supervision(path, drop_col):
+    global special
+    data, head_special, head_special_name, new_head_list = read_csv(path, drop_col)
+    special = head_special
+    data = deal_nan(data)
     values = data.values
-    choose_col = data.columns.values
     scaler = MinMaxScaler(feature_range=(0, 1))
     values = values.astype('float32')
 
@@ -95,31 +124,16 @@ def load_data_to_supervision(list):
 
     reframed = series_to_supervision(scaled, 3, 1)
 
-    return reframed, scaler, scaled, year, choose_col
+    return reframed, scaler, scaled, head_special_name, new_head_list, data
 
 
-def get_data(list):
-    params = {'project_id': id}
-
-    res = requests.get('http://127.0.0.1:8000/api/get_parameter_lstm', params=params)
-    json_data = json.loads(res.text).get('data')
-
-    df = json_normalize(json_data)
-    year = df.values[:, 2]
-    dataset = df.drop(df.columns[[0, 1, 2]], axis=1)
-    dataset = dataset.drop(dataset.columns[list], axis=1)
-
-    return dataset, year
-
-
-# 初始化训练集和测试集
-def train_data(reframed, split):
+def train_data(reframed, split, special):
     values = reframed.values
     train = values[:split]
     test = values[split:]
 
-    train_X, train_Y = train[:, :-1], train[:, -1]
-    test_X, test_Y = test[:, :-1], test[:, -1]
+    train_X, train_Y = np.concatenate((train[:, :special], train[:, special+1:]), axis=1), train[:, special]
+    test_X, test_Y = np.concatenate((test[:, :special], test[:, special+1:]), axis=1), test[:, special]
 
     train_X = train_X.reshape((train_X.shape[0], 1, train_X.shape[1]))
     test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
@@ -140,159 +154,66 @@ def train_model(trainX, trainY, testX, testY):
 
     model = LSTMmodel(trainX)
 
-    history = model.fit(trainX, trainY, validation_data=(testX, testY), epochs=500, batch_size=5, verbose=2)
+    history = model.fit(trainX, trainY, validation_data=(testX, testY), epochs=200, batch_size=5, verbose=2)
 
-    model.save(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
+    path = 'media/static/modelresult/' + user + '/lstm' + '/' + project_id + '/weight'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
-    # save_process_result(history)
+    model.save(path+'/'+time+'.h5')
 
-    # plt.figure()
-    # plt.plot(history.history['loss'], label='train')
-    # plt.plot(history.history['val_loss'], label='test')
-    # plt.legend()
-    # plt.savefig('loss')
-    # plt.show()
-
-
-# def save_process_result(history):
-#     if not os.path.exists('result.pkl'):
-#         os.makedirs('result.pkl')
-#
-#     file = open('result.pkl', 'wb')
-#     pickle.dump(history.history, file)
-#     file.close()
-
-
-def Update_time_list(data, result):
-    data = data.reshape((data.shape[0], data.shape[2]))
-    result = np.concatenate((data, result), axis=1)
-    result = np.delete(result, 0, axis=1)
-
-    result = result.reshape((result.shape[0], 1, result.shape[1]))
-
-    return result
-
-
-def Transfer_to_realdata(result, scaler):
-   return scaler.inverse_transform(result)
-
-
-def Predict(days):
-    data, year = get_data(column_list)
-    data = data.values
-    reframed, scaler, _, _, _ = load_data_to_supervision(column_list)
-    plt.figure()
-    xaxis = [x for x in range(1, data.shape[0]+1)]
-    plt.xticks(xaxis)
-    plt.plot(data[:, 0], label='fact')
-    split = int((3 / 4) * reframed.values.shape[0])
-    _, _, testX, testY = train_data(reframed, split)
-    model = LSTMmodel(testX)
-    model.load_weights(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
-    result = model.predict(testX)
-
-    # testX_count = Update_time_list(testX, result)
-    #
-    # result_count = model.predict(testX_count)
-    # result_count = int(Transfer_to_realdata(result_count, scaler)[-1][0])
-
-    result_old = result
-    index_old = data.shape[0] - 1
-
-    xlabel = list()
-    ylabel = list()
-
-    for i in range(days):
-        testX = Update_time_list(testX, result_old)
-        result = model.predict(testX)
-        index = index_old + 1
-        xlabel.extend([index_old, index])
-        ylabel.extend([Transfer_to_realdata(result_old, scaler)[-1][0], Transfer_to_realdata(result, scaler)[-1][0]])
-        if i != days-1:
-            plt.plot(xlabel, ylabel, color='red')
-        else:
-            plt.plot(xlabel, ylabel, color='red', label='predict')
-        index_old = index
-        result_old = result
-        xlabel = list()
-        ylabel = list()
-
-    plt.legend()
-    plt.title('生活垃圾生产量趋势图')
-    plt.show()
-    #
-    # return result_count
-
-
-def predict_all(list):
-    reframed, scaler, data, year, choose_cols = load_data_to_supervision(list)
-    split = reframed.values.shape[0]
-    trainX, trainY, _, _ = train_data(reframed, split)
-    model = LSTMmodel(trainX)
-    model.load_weights(os.path.dirname(__file__)+'/weight/Garbage_weight.h5')
-    result = model.predict(trainX)
-
-    data[3:, -1] = result[:, 0]
-    data = scaler.inverse_transform(data)
-
-    preds = data[:, -1]
-    params = {'project_id': id}
-
-    res = requests.get('http://127.0.0.1:8000/api/get_parameter_lstm', params=params)
-    json_data = json.loads(res.text).get('data')
-
-    df = json_normalize(json_data)
-    real = df.values[:, -1]
-
-    mse = mean_squared_error(real, preds)
-    rmse = sqrt(mean_squared_error(preds, real))
-    mae = mean_absolute_error(real, preds)
-    r_square = r2_score(real, preds)
-    select_list = ''
-    for i in range(len(choose_cols)):
-        if i != len(choose_cols)-1:
-            select_list = select_list+choose_cols[i]+', '
-        else:
-            select_list = select_list+choose_cols[i]
-
-
-    json_data = {}
-    json_data['project_id'] = id
-    result_list = []
-    for i in range(len(year)):
-        dict = {}
-        dict['year'] = year[i]
-        dict['real'] = real[i]
-        dict['pred'] = preds[i]
-        result_list.append(dict)
-    json_data['data'] = result_list
-    json_data['r_square'] = r_square
-    json_data['mse'] = mse
-    json_data['rmse'] = rmse
-    json_data['mae'] = mae
-    json_data['choose_col'] = select_list
-    json_data = json.dumps(json_data, cls=NpEncoder)
-    requests.post('http://127.0.0.1:8000/api/save_lstm_result', data=json_data)
-
-
-def Train(list):
-    reframed, scaler, _, _, _ = load_data_to_supervision(list)
-    split = int((3 / 4)*reframed.values.shape[0])
-    trainX, trainY, testX, testY = train_data(reframed, split)
-    train_model(trainX, trainY, testX, testY)
+    return model
 
 
 if __name__ == '__main__':
-    # Predict(10)
-    if test_type == '1':
-        Train(column_list)
-        dict = {}
-        dict['project_id'] = id
-        data = json.dumps(dict)
-        requests.post('http://127.0.0.1:8000/api/experiment_lstm_finish', data=data)
-    if test_type == '0':
-        dict = {}
-        dict['project_id'] = id
-        data = json.dumps(dict)
-        predict_all(column_list)
-        requests.post('http://127.0.0.1:8000/api/experiment_lstm_finish', data=data)
+    # 训练模型
+    reframed, scaler, scaled, new_special_head, new_head_list, origin_data = load_data_to_supervision(file_path, drop_list)
+    split = int((3 / 4) * reframed.values.shape[0])
+    trainX, trainY, testX, testY = train_data(reframed, split, special)
+    model = train_model(trainX, trainY, testX, testY)
+
+    path = 'media/static/modelresult/' + user + '/lstm' + '/' + project_id + '/weight'
+    time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+
+    # 预测模型
+    model_result_train = model.predict(trainX)
+    model_result_test = model.predict(testX)
+
+    result = np.append(model_result_train[:, 0], model_result_test[:, 0])
+    result = result.reshape((result.shape[0], 1))
+    scaled_pred = scaled
+    scaled_pred[3:, special] = result[:, 0]
+
+    pred = scaler.inverse_transform(scaled_pred)[:, special]
+
+    fact = origin_data.values[:, special]
+
+    new_head_list = list(new_head_list)
+    new_head_list.remove(new_special_head)
+    select_col = ''
+    for i in range(len(new_head_list)):
+        if i != len(new_head_list) - 1:
+            select_col = select_col + new_head_list[i] + ', '
+        else:
+            select_col = select_col + new_head_list[i]
+
+    path = 'media/static/modelresult/' + user + '/lstm' + '/' + project_id
+    if not os.path.exists(path):
+        os.makedirs(path)
+    time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+    my_dict = {
+        'fact': fact,
+        'pred': pred,
+        'head': new_special_head,
+        'head_list': select_col,
+        'path': file_path
+    }
+    df = pd.DataFrame(my_dict)
+    df.to_excel(path + '/' + time + '.xlsx')
+
+    dict = {}
+    dict['project_id'] = project_id
+    data = json.dumps(dict)
+    requests.post('http://127.0.0.1:8000/api/experiment_lstm_finish', data=data)
+

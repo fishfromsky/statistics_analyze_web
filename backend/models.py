@@ -198,21 +198,6 @@ class rrc(models.Model):
     district_no = models.IntegerField()
 
 
-class lstm_parameter(models.Model):
-    project_id = models.ForeignKey(to="lstm_project", on_delete=models.CASCADE)
-    year = models.CharField(max_length=255, null=False)
-    population = models.FloatField(max_length=255, null=False)
-    population_density = models.FloatField(max_length=255, null=False)
-    natural_growth_rate = models.FloatField(max_length=255, null=False, default=0)
-    total_households = models.FloatField(max_length=255, null=False)
-    average_person_per_household = models.FloatField(max_length=255, null=False)
-    unemployment_rate = models.FloatField(max_length=255, null=False, default=0)
-    gdp = models.FloatField(max_length=255, null=False)
-    per_capita_gdp = models.FloatField(max_length=255, null=False)
-    gdp_growth_rate = models.FloatField(max_length=255, null=False, default=0)
-    residential_garbage = models.FloatField(max_length=255, null=False, default=0.0)
-
-
 class lstm_result(models.Model):
     project_id = models.ForeignKey(to='lstm_project', on_delete=models.CASCADE)
     year = models.CharField(max_length=255, null=False)
@@ -429,6 +414,10 @@ class File(models.Model):
     file_url = models.FileField("文件", upload_to="static/file/%Y/%m/%d")
 
 
+class ModelLSTMFile(models.Model):
+    file_url = models.FileField("文件", upload_to="static/modelfile/lstm/%Y/%m/%d")
+
+
 class Experiment_Result_Excel(models.Model):
     user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
     url = models.CharField(max_length=255, default='')
@@ -553,4 +542,5 @@ class Garbage_District(models.Model):
     year = models.CharField(max_length=200)
     garbage = models.CharField(max_length=255, default='', null=False)
     district = models.ForeignKey(to="District", on_delete=models.CASCADE)
+
 

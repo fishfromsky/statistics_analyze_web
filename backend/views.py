@@ -1,12 +1,12 @@
 from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City,\
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
-    lstm_project, lstm_parameter, lstm_result, multi_regression_project, multi_regression_parameter, \
+    lstm_project, lstm_result, multi_regression_project, multi_regression_parameter, \
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
     relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
     selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
     Garbage_Info_Country, Economy_Info_District, Population_Info_District, LinearRegression, LinearRegressionParameter, \
-    LinearRegressionResult, Grey_Relation_Result, PearsonResult, TestReport, Garbage_District
+    LinearRegressionResult, Grey_Relation_Result, PearsonResult, TestReport, Garbage_District, ModelLSTMFile
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -20,6 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 import os
 import datetime
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
 import threading
@@ -1639,57 +1640,6 @@ def lstm_project_id(request):
 
 
 @csrf_exempt
-@require_http_methods(['GET'])
-def get_parameter_lstm(request):
-    id = request.GET.get('project_id')
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    data = lstm_parameter.objects.filter(project_id=lstm_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['POST'])
-def input_lstm_parameter(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    data = body.get('data')
-    id = body.get('project_id')
-    if lstm_parameter.objects.filter(project_id=lstm_project(project_id=id)).count() != 0:
-        response['code'] = 50000
-        response['message'] = '数据库中存在该项目的参数，请先删除'
-    else:
-        for i in range(len(data)):
-            if data[i].__contains__('year') and data[i].__contains__('population') and data[i].__contains__('population_density')  and data[i].__contains__('total_households') \
-                    and data[i].__contains__('average_person_per_household') and data[i].__contains__('gdp') \
-                    and data[i].__contains__('per_capita_gdp') and data[i].__contains__('residential_garbage') and \
-                    data[i].__contains__('gdp_growth_rate') and data[i].__contains__('natural_growth_rate') \
-                    and data[i].__contains__('unemployment_rate'):
-                if lstm_parameter.objects.filter(year=data[i]['year'], project_id=lstm_project(project_id=id)).count() != 0:
-                    response['code'] = 50000
-                    response['message'] = '存在重复年份数据，请先删除该数据'
-                else:
-                    parameter = lstm_parameter.objects.create(project_id=lstm_project(project_id=id), year=data[i]['year'],
-                                                              population=data[i]['population'],
-                                                              population_density=data[i]['population_density'],
-                                                              total_households=data[i]['total_households'],
-                                                              average_person_per_household=data[i][
-                                                                  'average_person_per_household'], gdp=data[i]['gdp'],
-                                                              per_capita_gdp=data[i]['per_capita_gdp'],
-                                                              residential_garbage=data[i]['residential_garbage'],
-                                                              gdp_growth_rate=data[i]['gdp_growth_rate'],
-                                                              natural_growth_rate=data[i]['natural_growth_rate'],
-                                                              unemployment_rate=data[i]['unemployment_rate'])
-                    parameter.save()
-            else:
-                response['code'] = 50000
-                response['message'] = '表头与数据不一致或者缺少数据'
-
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
 @require_http_methods(['POST'])
 def amend_lstm_project(request):
     response = {'message': 'success', 'code': 20000}
@@ -1702,10 +1652,11 @@ def amend_lstm_project(request):
     return JsonResponse(response, safe=False)
 
 
-def lstm_thread(id, test_type, select_list):
-    ret = os.system('python backend/LSTM/predict_garbage.py %s %s %s' % (id, test_type, select_list))
+def lstm_thread(project_id, drop_index, special, user, file_path):
+    ret = os.system('python backend/LSTM/predict_garbage.py %s %s %s %s %s' % (project_id, drop_index, special, user,
+                                                                               file_path))
     if ret != 0:
-        model = lstm_project.objects.get(project_id=id)
+        model = lstm_project.objects.get(project_id=project_id)
         model.status = '运行出错'
         model.save()
 
@@ -1713,22 +1664,29 @@ def lstm_thread(id, test_type, select_list):
 @csrf_exempt
 @require_http_methods(['POST'])
 def experiment_lstm_start(request):
-    response = {'message': 'success', 'code': 20000}
+    response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
-    id = body.get('project_id')
-    test_type = body.get('type')
-    select_list = body.get('select_list')
-    if select_list == '':
-        select_list = '-1'
-    if lstm_parameter.objects.filter(project_id=lstm_project(project_id=id)).count() == 0:
-        response['code'] = 50000
-        response['message'] = '该项目缺少数据，无法实验'
+    file_path = body.get('path')
+    user = body.get('name')
+    project_id = body.get('project_id')
+    special = body.get('special')
+    drop_col = body.get('drop_col')
+    drop_index = ''
+    if len(drop_col) == 0:
+        drop_index = '-1'
     else:
-        model = lstm_project.objects.get(project_id=id)
+        for i in range(len(drop_col)):
+            if i != len(drop_col) - 1:
+                drop_index = drop_index + str(drop_col[i]) + ','
+            else:
+                drop_index = drop_index + str(drop_col[i])
+
+        model = lstm_project.objects.get(project_id=project_id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=lstm_thread, args=(id, test_type, select_list))
+        task = threading.Thread(target=lstm_thread, args=(project_id, drop_index, special, user, file_path))
         task.start()
+
     return JsonResponse(response, safe=False)
 
 
@@ -1745,43 +1703,28 @@ def experiment_lstm_finish(request):
 
 
 @csrf_exempt
-@require_http_methods(['POST'])
-def save_lstm_result(request):
+@require_http_methods(['GET'])
+def getlstmmodelresult(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/lstm/'+project_id
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getdatasetfromresult(request):
     response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if lstm_result.objects.filter(project_id=lstm_project(project_id=id)).count() != 0:
-        last_sort = lstm_result.objects.filter(project_id=lstm_project(project_id=id)).order_by('-id')[:1]
-        sort = last_sort.get().sort + 1
-    else:
-        sort = 1
-    for i in range(len(data)):
-        year = data[i]['year']
-        pred = data[i]['pred']
-        real = data[i]['real']
-        model = lstm_result.objects.create(project_id=lstm_project(project_id=id), year=year, real=real, pred=pred, sort=sort)
-        model.save()
-
-    formula = body.get('formula') if body.get('formula') is not None else ''
-    r_square = body.get('r_square') if body.get('r_square') is not None else ''
-    mse = body.get('mse') if body.get('mse') is not None else ''
-    rmse = body.get('rmse') if body.get('rmse') is not None else ''
-    mae = body.get('mae') if body.get('mae') is not None else ''
-    choose_col = body.get('choose_col') if body.get('choose_col') is not None else ''
-    if TestReport.objects.filter(project_id=id, sort=sort, algorithm='LSTM预测').count() != 0:
-        model = TestReport.objects.get(project_id=id, sort=sort, algorithm='LSTM预测')
-        model.formula = formula
-        model.r_square = r_square
-        model.mse = mse
-        model.rmse = rmse
-        model.mae = mae
-        model.choose_col = choose_col
-    else:
-        model = TestReport.objects.create(project_id=id, sort=sort, formula=formula, r_square=r_square,
-                                          mse=mse, rmse=rmse, mae=mae, choose_col=choose_col, algorithm='LSTM预测')
-        model.save()
-
+    file_path = request.GET.get('file_path')
+    data_path = pd.read_excel(file_path).values[0, 5]
+    response['path'] = data_path
     return JsonResponse(response, safe=False)
 
 
@@ -1799,12 +1742,26 @@ def getLSTMReport(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_lstm_result(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = lstm_result.objects.filter(project_id=lstm_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
-
+    response = {'code': 20000, 'message': 'success'}
+    path = request.GET.get('path')
+    data = pd.read_excel(path)
+    dataset = data.values
+    fact = dataset[:, 1]
+    pred = dataset[:, 2]
+    choose_data = dataset[0, 3]
+    choose_col = dataset[0, 4]
+    r_square = r2_score(fact, pred)
+    mse = mean_squared_error(fact, pred)
+    mae = mean_absolute_error(fact, pred)
+    rmse = mse**0.5
+    response['r_square'] = r_square
+    response['mse'] = mse
+    response['mae'] = mae
+    response['rmse'] = rmse
+    response['fact'] = fact.tolist()
+    response['pred'] = pred.tolist()
+    response['choose_data'] = choose_data
+    response['choose_col'] = choose_col
     return JsonResponse(response, safe=False)
 
 
@@ -2803,6 +2760,16 @@ def upload_file(request):
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
+def uploadLSTMModelFile(request):
+    response = {'code': 20000, 'message': 'success'}
+    file = ModelLSTMFile(file_url=request.FILES['file'])
+    file.save()
+    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
 @require_http_methods(['GET'])
 def getdatafilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
@@ -2816,6 +2783,33 @@ def getdatafilelist(request):
                 filelist.append(file_dict)
 
     response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getmodellstmfilelist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    filelist = []
+    for root, dirs, files in os.walk('media/static/modelfile/lstm'):
+        if len(files) != 0:
+            for file in files:
+                file_dict = {}
+                file_dict['name'] = file
+                file_dict['url'] = os.path.join(root, file)
+                filelist.append(file_dict)
+
+    response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def deleteModelFile(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    path = body.get('url')
+    os.remove(path)
     return JsonResponse(response, safe=False)
 
 

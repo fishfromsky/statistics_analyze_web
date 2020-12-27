@@ -396,12 +396,6 @@ export const constantRoutes = [
             meta: { title: '管理项目'}
           },
           {
-            path: 'import',
-            name: 'import',
-            component: () => import('@/views/repository/lstmModel/importData/index'),
-            meta: { title: '数据导入'}
-          },
-          {
             path: 'result',
             name: 'result',
             component: () => import('@/views/repository/lstmModel/result/index'),
