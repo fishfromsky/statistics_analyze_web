@@ -219,29 +219,6 @@ class multi_regression_project(models.Model):
     status = models.CharField(max_length=255, default='未运行')
 
 
-class multi_regression_parameter(models.Model):
-    resident_population = models.FloatField(null=False, default=None)
-    population_of_density = models.FloatField(null=False, default=None)
-    number_of_households = models.FloatField(null=False, default=None)
-    average_population_per_household = models.FloatField(null=False, default=None)
-    urban_residents_per_capita_disposable_income = models.FloatField(null=False, default=None)
-    consumer_expenditure = models.FloatField(null=False, default=None)
-    general_public_expenditure = models.FloatField(null=False, default=None)
-    investment_in_urban_infrastructure = models.FloatField(null=False, default=None)
-    urban_population_density = models.FloatField(null=False, default=None)
-    greening_coverage = models.FloatField(null=False, default=None)
-    gross_local_product = models.FloatField(null=False, default=None)
-    gross_domestic_product_per_capita = models.FloatField(null=False, default=None)
-    gross_domestic_product_of_the_first_industry = models.FloatField(null=False, default=None)
-    gross_value_of_secondary_industry = models.FloatField(null=False, default=None)
-    gross_value_of_the_tertiary_industry = models.FloatField(null=False, default=None)
-    investment_in_environmental_protection = models.FloatField(null=False, default=None)
-    number_of_college_students = models.FloatField(null=False, default=None)
-    level_of_education = models.FloatField(null=False, default=None)
-    municial_household_garbage = models.FloatField(null=False, default=None)
-    project_id = models.ForeignKey(to="multi_regression_project", on_delete=models.CASCADE)
-
-
 class multi_regression_result(models.Model):
     project_id = models.ForeignKey(to="multi_regression_project", on_delete=models.CASCADE)
     pred = models.FloatField(null=False)
@@ -418,6 +395,14 @@ class ModelLSTMFile(models.Model):
     file_url = models.FileField("文件", upload_to="static/modelfile/lstm/%Y/%m/%d")
 
 
+class ModelLinearRegressionFile(models.Model):
+    file_url = models.FileField("文件", upload_to="static/modelfile/linearregression/%Y/%m/%d")
+
+
+class ModelRegressionFile(models.Model):
+    file_url = models.FileField("文件", upload_to="static/modelfile/regression/%Y/%m/%d")
+
+
 class Experiment_Result_Excel(models.Model):
     user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
     url = models.CharField(max_length=255, default='')
@@ -459,29 +444,6 @@ class LinearRegression(models.Model):
     name = models.CharField(max_length=200)
     table_size = models.IntegerField(default=0)
     status = models.CharField(max_length=255, default='未运行')
-
-
-class LinearRegressionParameter(models.Model):
-    resident_population = models.FloatField(null=False, default=None)
-    population_of_density = models.FloatField(null=False, default=None)
-    number_of_households = models.FloatField(null=False, default=None)
-    average_population_per_household = models.FloatField(null=False, default=None)
-    urban_residents_per_capita_disposable_income = models.FloatField(null=False, default=None)
-    consumer_expenditure = models.FloatField(null=False, default=None)
-    general_public_expenditure = models.FloatField(null=False, default=None)
-    investment_in_urban_infrastructure = models.FloatField(null=False, default=None)
-    urban_population_density = models.FloatField(null=False, default=None)
-    greening_coverage = models.FloatField(null=False, default=None)
-    gross_local_product = models.FloatField(null=False, default=None)
-    gross_domestic_product_per_capita = models.FloatField(null=False, default=None)
-    gross_domestic_product_of_the_first_industry = models.FloatField(null=False, default=None)
-    gross_value_of_secondary_industry = models.FloatField(null=False, default=None)
-    gross_value_of_the_tertiary_industry = models.FloatField(null=False, default=None)
-    investment_in_environmental_protection = models.FloatField(null=False, default=None)
-    number_of_college_students = models.FloatField(null=False, default=None)
-    level_of_education = models.FloatField(null=False, default=None)
-    municial_household_garbage = models.FloatField(null=False, default=None)
-    project_id = models.ForeignKey(to="LinearRegression", on_delete=models.CASCADE)
 
 
 class LinearRegressionResult(models.Model):

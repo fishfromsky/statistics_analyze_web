@@ -417,12 +417,6 @@ export const constantRoutes = [
             meta: { title: '管理项目' }
           },
           {
-            path: 'data',
-            name: 'linearregressiondata',
-            component: () => import('@/views/repository/linearregression/data/index'),
-            meta: { title: '数据导入' }
-          },
-          {
             path: 'result',
             name: 'linearregressionresult',
             component: () => import('@/views/repository/linearregression/result/index'),
@@ -442,12 +436,6 @@ export const constantRoutes = [
             name: 'manage',
             component: () => import('@/views/repository/regression/programe/index'),
             meta: { title: '管理项目' }
-          },
-          {
-            path: 'data',
-            name: 'data',
-            component: () => import('@/views/repository/regression/data/index'),
-            meta: { title: '数据导入' }
           },
           {
             path: 'experiment',

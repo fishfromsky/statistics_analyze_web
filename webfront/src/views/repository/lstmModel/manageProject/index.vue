@@ -72,7 +72,7 @@
 <script>
 import tabledata from './components/tabledata'
 
-import { getlstmmodelfile, deleterelationexcelresult } from '@/api/model'
+import { getlstmmodelfile, deletemodelfile } from '@/api/model'
 
 export default {
   components: {
@@ -115,13 +115,13 @@ export default {
       this.$message.error('上传文件失败')
     },
     handleDownload(val){
-      window.open(this.tableData[val].path)
+      window.open('http://101.133.238.216:8000/'+this.tableData[val].path)
     },
     handleDelete(val){
       let that = this
       let data = {}
       data['url'] = this.tableData[val].path
-      deleterelationexcelresult(data).then(res=>{
+      deletemodelfile(data).then(res=>{
         if (res.code === 20000){
           this.$message({
             type: 'success',

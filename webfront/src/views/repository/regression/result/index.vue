@@ -5,13 +5,6 @@
       <el-select placeholder="项目编号" v-model="project_id" class="project_id" style="width: 120px">
         <el-option v-for="item in id_list" :key="item.project_id" :label="item.project_id" :value="item.project_id"></el-option>
       </el-select>
-      <div class="divider"></div>
-      <el-button type="primary" icon="el-icon-download"  @click="handleDownload" style="margin-left:20px">下载数据</el-button>
-      <div class="divider"></div>
-      <el-select placeholder="选择实验编号" v-model="sort_id" style="margin-left: 20px">
-        <el-option v-for="item in sort_list" :key="item.label" :label="item.label" :value="item.value"></el-option>
-      </el-select>
-      <el-button type="primary" icon="el-icon-data-line" style="margin-left: 20px" @click="showGraph">数据可视化</el-button>     
     </div>
     <div class="table-container">
       <result :projectId="project_id" ref="result" @child-event="handleChildEvent"></result>
@@ -44,9 +37,6 @@ export default {
         }
       })
     },
-    handleDownload:function(){
-      this.$refs.result.download()
-    },
     handleChildEvent:function(val){
       this.sort_list = []
       for (let i=0; i<val.length; i++){
@@ -56,14 +46,6 @@ export default {
         this.sort_list.push(dict)
       }
     },
-    showGraph:function(){
-      if (this.sort_id === null){
-        this.$message.error('请选择实验编号')
-      }
-      else{
-        this.$refs.result.showChart(this.sort_id)
-      }
-    }
   },
   mounted(){
     this.init_projectId()

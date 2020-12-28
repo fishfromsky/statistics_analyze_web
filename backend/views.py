@@ -1,12 +1,13 @@
 from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City,\
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
-    lstm_project, lstm_result, multi_regression_project, multi_regression_parameter, \
+    lstm_project, lstm_result, multi_regression_project, \
     multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
     relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
     selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
-    Garbage_Info_Country, Economy_Info_District, Population_Info_District, LinearRegression, LinearRegressionParameter, \
-    LinearRegressionResult, Grey_Relation_Result, PearsonResult, TestReport, Garbage_District, ModelLSTMFile
+    Garbage_Info_Country, Economy_Info_District, Population_Info_District, LinearRegression, LinearRegressionResult, \
+    Grey_Relation_Result, PearsonResult, TestReport, Garbage_District, ModelLSTMFile, ModelLinearRegressionFile, \
+    ModelRegressionFile
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -1720,6 +1721,38 @@ def getlstmmodelresult(request):
 
 @csrf_exempt
 @require_http_methods(['GET'])
+def getLinearRegressionModelResult(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/linearregression/' + project_id
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getRegressionModelResult(request):
+    response = {'code':20000, 'message': 'success'}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/regression/' + project_id
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
 def getdatasetfromresult(request):
     response = {'code': 20000, 'message': 'success'}
     file_path = request.GET.get('file_path')
@@ -1807,114 +1840,12 @@ def amend_regression_programe(request):
 
 
 @csrf_exempt
-@require_http_methods(['POST'])
-def add_regression_parameter(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if multi_regression_parameter.objects.filter(project_id=multi_regression_project(project_id=id)).count() != 0:
-        response['code'] = 50000
-        response['message'] = '数据库中存在该项目参数，请先删除'
-    else:
-        for i in range(len(data)):
-            if data[i].__contains__('resident_population') and data[i].__contains__('population_of_density') and \
-                data[i].__contains__('number_of_households') and data[i].__contains__('average_population_per_household') \
-                and data[i].__contains__('urban_residents_per_capita_disposable_income') and data[i].__contains__('consumer_expenditure') \
-                and data[i].__contains__('general_public_expenditure') and data[i].__contains__('investment_in_urban_infrastructure') \
-                and data[i].__contains__('urban_population_density') and data[i].__contains__('greening_coverage') and \
-                data[i].__contains__('gross_local_product') and data[i].__contains__('gross_domestic_product_per_capita') \
-                and data[i].__contains__('gross_domestic_product_of_the_first_industry') and data[i].__contains__('gross_value_of_secondary_industry') \
-                and data[i].__contains__('gross_value_of_the_tertiary_industry') and data[i].__contains__('investment_in_environmental_protection') \
-                and data[i].__contains__('number_of_college_students') and data[i].__contains__('level_of_education') and \
-                data[i].__contains__('municial_household_garbage'):
-                model = multi_regression_parameter.objects.create(project_id=multi_regression_project(project_id=id),
-                                                                  resident_population=data[i]['resident_population'],
-                                                                  population_of_density=data[i]['population_of_density'],
-                                                                  number_of_households=data[i]['number_of_households'],
-                                                                  average_population_per_household=data[i]['average_population_per_household'],
-                                                                  urban_residents_per_capita_disposable_income=data[i]['urban_residents_per_capita_disposable_income'],
-                                                                  consumer_expenditure=data[i]['consumer_expenditure'],
-                                                                  general_public_expenditure=data[i]['general_public_expenditure'],
-                                                                  investment_in_urban_infrastructure=data[i]['investment_in_urban_infrastructure'],
-                                                                  urban_population_density=data[i]['urban_population_density'],
-                                                                  greening_coverage=data[i]['greening_coverage'],
-                                                                  gross_local_product=data[i]['gross_local_product'],
-                                                                  gross_domestic_product_per_capita=data[i]['gross_domestic_product_per_capita'],
-                                                                  gross_domestic_product_of_the_first_industry=data[i]['gross_domestic_product_of_the_first_industry'],
-                                                                  gross_value_of_secondary_industry=data[i]['gross_value_of_secondary_industry'],
-                                                                  gross_value_of_the_tertiary_industry=data[i]['gross_value_of_the_tertiary_industry'],
-                                                                  investment_in_environmental_protection=data[i]['investment_in_environmental_protection'],
-                                                                  number_of_college_students=data[i]['number_of_college_students'],
-                                                                  level_of_education=data[i]['level_of_education'],
-                                                                  municial_household_garbage=data[i]['municial_household_garbage'])
-                model.save()
-            else:
-                response['code'] = 50000
-                response['message'] = '表头与数据不一致或者缺少数据'
-
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
 @require_http_methods(['GET'])
 def regression_idlist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     data = multi_regression_project.objects.values('project_id').all()
     for item in data:
         response['data'].append(item)
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['GET'])
-def parameter_regression(request):
-    id = request.GET.get('project_id')
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    data = multi_regression_parameter.objects.filter(project_id=multi_regression_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['POST'])
-def save_regression_result(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if multi_regression_result.objects.filter(project_id=multi_regression_project(project_id=id)).count() != 0:
-        last_sort = multi_regression_result.objects.filter(project_id=multi_regression_project(project_id=id)).order_by('-id')[:1]
-        sort = last_sort.get().sort + 1
-    else:
-        sort = 1
-    for i in range(len(data)):
-        pred = data[i]['pred']
-        real = data[i]['real']
-        model = multi_regression_result.objects.create(project_id=multi_regression_project(project_id=id),
-                                                       real=real, pred=pred, sort=sort)
-        model.save()
-
-    formula = body.get('formula') if body.get('formula') is not None else ''
-    r_square = body.get('r_square') if body.get('r_square') is not None else ''
-    mse = body.get('mse') if body.get('mse') is not None else ''
-    rmse = body.get('rmse') if body.get('rmse') is not None else ''
-    mae = body.get('mae') if body.get('mae') is not None else ''
-    choose_col = body.get('choose_col') if body.get('choose_col') is not None else ''
-    if TestReport.objects.filter(project_id=id, sort=sort, algorithm='多元非线性回归').count() != 0:
-        model = TestReport.objects.get(project_id=id, sort=sort, algorithm='多元非线性回归')
-        model.formula = formula
-        model.r_square = r_square
-        model.mse = mse
-        model.rmse = rmse
-        model.mae = mae
-        model.choose_col = choose_col
-    else:
-        model = TestReport.objects.create(project_id=id, sort=sort, formula=formula, r_square=r_square,
-                                          mse=mse, rmse=rmse, mae=mae, choose_col=choose_col, algorithm='多元非线性回归')
-        model.save()
-
     return JsonResponse(response, safe=False)
 
 
@@ -1929,10 +1860,11 @@ def getRegressionReport(request):
     return JsonResponse(response, safe=False)
 
 
-def thread_regression(id, list):
-    ret = os.system('python backend/multi_regression/newpredict.py %s %s' % (id, list))
+def thread_regression(project_id, drop_index, special, user, file_path):
+    ret = os.system('python backend/multi_regression/newpredict.py %s %s %s %s %s' % (project_id, drop_index, special,
+                                                                                      user, file_path))
     if ret != 0:
-        model = multi_regression_project.objects.get(project_id=id)
+        model = multi_regression_project.objects.get(project_id=project_id)
         model.status = '运行出错'
         model.save()
 
@@ -1942,19 +1874,27 @@ def thread_regression(id, list):
 def start_regression_experiment(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
-    id = body.get('project_id')
-    list = body.get('index_list')
-    if list == '':
-        list = '-1'
-    if multi_regression_parameter.objects.filter(project_id=multi_regression_project(project_id=id)).count() == 0:
-        response['code'] = 50000
-        response['message'] = '该项目缺少数据，无法实验'
+    file_path = body.get('path')
+    user = body.get('name')
+    project_id = body.get('project_id')
+    special = body.get('special')
+    drop_col = body.get('drop_col')
+    drop_index = ''
+    if len(drop_col) == 0:
+        drop_index = '-1'
     else:
-        model = multi_regression_project.objects.get(project_id=id)
+        for i in range(len(drop_col)):
+            if i != len(drop_col) - 1:
+                drop_index = drop_index + str(drop_col[i]) + ','
+            else:
+                drop_index = drop_index + str(drop_col[i])
+
+        model = multi_regression_project.objects.get(project_id=project_id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_regression, args=(id, list))
+        task = threading.Thread(target=thread_regression, args=(project_id, drop_index, special, user, file_path))
         task.start()
+
     return JsonResponse(response, safe=False)
 
 
@@ -1973,12 +1913,28 @@ def finish_regression_experiment(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_regression_result(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = multi_regression_result.objects.filter(project_id=multi_regression_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
-
+    response = {'code': 20000, 'message': 'success'}
+    path = request.GET.get('path')
+    data = pd.read_excel(path)
+    dataset = data.values
+    fact = dataset[:, 1]
+    pred = dataset[:, 2]
+    choose_data = dataset[0, 3]
+    choose_col = dataset[0, 4]
+    formula = dataset[0, 5]
+    r_square = r2_score(fact, pred)
+    mse = mean_squared_error(fact, pred)
+    mae = mean_absolute_error(fact, pred)
+    rmse = mse ** 0.5
+    response['r_square'] = r_square
+    response['mse'] = mse
+    response['mae'] = mae
+    response['rmse'] = rmse
+    response['fact'] = fact.tolist()
+    response['pred'] = pred.tolist()
+    response['choose_data'] = choose_data
+    response['choose_col'] = choose_col
+    response['formula'] = formula
     return JsonResponse(response, safe=False)
 
 
@@ -2770,6 +2726,26 @@ def uploadLSTMModelFile(request):
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
+def uploadLinearRegressionFile(request):
+    response = {'code': 20000, 'message': 'success'}
+    file = ModelLinearRegressionFile(file_url=request.FILES['file'])
+    file.save()
+    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def uploadRegressionFile(request):
+    response = {'code': 20000, 'message': 'success'}
+    file = ModelRegressionFile(file_url=request.FILES['file'])
+    file.save()
+    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
 @require_http_methods(['GET'])
 def getdatafilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
@@ -2792,6 +2768,40 @@ def getmodellstmfilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     filelist = []
     for root, dirs, files in os.walk('media/static/modelfile/lstm'):
+        if len(files) != 0:
+            for file in files:
+                file_dict = {}
+                file_dict['name'] = file
+                file_dict['url'] = os.path.join(root, file)
+                filelist.append(file_dict)
+
+    response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getmodellinearregressionfilelist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    filelist = []
+    for root, dirs, files in os.walk('media/static/modelfile/linearregression'):
+        if len(files) != 0:
+            for file in files:
+                file_dict = {}
+                file_dict['name'] = file
+                file_dict['url'] = os.path.join(root, file)
+                filelist.append(file_dict)
+
+    response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getmodelregressionfilelist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    filelist = []
+    for root, dirs, files in os.walk('media/static/modelfile/regression'):
         if len(files) != 0:
             for file in files:
                 file_dict = {}
@@ -3775,94 +3785,12 @@ def amendLinearRegressionProject(request):
 
 
 @csrf_exempt
-@require_http_methods(['POST'])
-def addLinearRegressionParameter(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if LinearRegressionParameter.objects.filter(project_id=LinearRegression(project_id=id)).count() != 0:
-        response['code'] = 50000
-        response['message'] = '数据库中存在该项目参数，请先删除'
-    else:
-        for i in range(len(data)):
-            if data[i].__contains__('resident_population') and data[i].__contains__('population_of_density') and \
-                    data[i].__contains__('number_of_households') and data[i].__contains__(
-                'average_population_per_household') \
-                    and data[i].__contains__('urban_residents_per_capita_disposable_income') and data[i].__contains__(
-                'consumer_expenditure') \
-                    and data[i].__contains__('general_public_expenditure') and data[i].__contains__(
-                'investment_in_urban_infrastructure') \
-                    and data[i].__contains__('urban_population_density') and data[i].__contains__(
-                'greening_coverage') and \
-                    data[i].__contains__('gross_local_product') and data[i].__contains__(
-                'gross_domestic_product_per_capita') \
-                    and data[i].__contains__('gross_domestic_product_of_the_first_industry') and data[i].__contains__(
-                'gross_value_of_secondary_industry') \
-                    and data[i].__contains__('gross_value_of_the_tertiary_industry') and data[i].__contains__(
-                'investment_in_environmental_protection') \
-                    and data[i].__contains__('number_of_college_students') and data[i].__contains__(
-                'level_of_education') and \
-                    data[i].__contains__('municial_household_garbage'):
-                model = LinearRegressionParameter.objects.create(project_id=LinearRegression(project_id=id),
-                                                                  resident_population=data[i]['resident_population'],
-                                                                  population_of_density=data[i][
-                                                                      'population_of_density'],
-                                                                  number_of_households=data[i]['number_of_households'],
-                                                                  average_population_per_household=data[i][
-                                                                      'average_population_per_household'],
-                                                                  urban_residents_per_capita_disposable_income=data[i][
-                                                                      'urban_residents_per_capita_disposable_income'],
-                                                                  consumer_expenditure=data[i]['consumer_expenditure'],
-                                                                  general_public_expenditure=data[i][
-                                                                      'general_public_expenditure'],
-                                                                  investment_in_urban_infrastructure=data[i][
-                                                                      'investment_in_urban_infrastructure'],
-                                                                  urban_population_density=data[i][
-                                                                      'urban_population_density'],
-                                                                  greening_coverage=data[i]['greening_coverage'],
-                                                                  gross_local_product=data[i]['gross_local_product'],
-                                                                  gross_domestic_product_per_capita=data[i][
-                                                                      'gross_domestic_product_per_capita'],
-                                                                  gross_domestic_product_of_the_first_industry=data[i][
-                                                                      'gross_domestic_product_of_the_first_industry'],
-                                                                  gross_value_of_secondary_industry=data[i][
-                                                                      'gross_value_of_secondary_industry'],
-                                                                  gross_value_of_the_tertiary_industry=data[i][
-                                                                      'gross_value_of_the_tertiary_industry'],
-                                                                  investment_in_environmental_protection=data[i][
-                                                                      'investment_in_environmental_protection'],
-                                                                  number_of_college_students=data[i][
-                                                                      'number_of_college_students'],
-                                                                  level_of_education=data[i]['level_of_education'],
-                                                                  municial_household_garbage=data[i][
-                                                                      'municial_household_garbage'])
-                model.save()
-            else:
-                response['code'] = 50000
-                response['message'] = '表头与数据不一致或者缺少数据'
-
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
 @require_http_methods(['GET'])
 def getLinearRegressionidlist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     data = LinearRegression.objects.values('project_id').all()
     for item in data:
         response['data'].append(item)
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['GET'])
-def getParameterLinearRegression(request):
-    id = request.GET.get('project_id')
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    data = LinearRegressionParameter.objects.filter(project_id=LinearRegression(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
     return JsonResponse(response, safe=False)
 
 
@@ -3908,10 +3836,11 @@ def saveLinearRegressionResult(request):
     return JsonResponse(response, safe=False)
 
 
-def thread_linearregression(id, list):
-    ret = os.system('python backend/linearregression/main.py %s %s' % (id, list))
+def thread_linearregression(project_id, drop_index, special, user, file_path):
+    ret = os.system('python backend/linearregression/main.py %s %s %s %s %s' % (project_id, drop_index, special, user,
+                                                                                file_path))
     if ret != 0:
-        model = LinearRegression.objects.get(project_id=id)
+        model = LinearRegression.objects.get(project_id=project_id)
         model.status = '运行出错'
         model.save()
 
@@ -3921,19 +3850,27 @@ def thread_linearregression(id, list):
 def startLinearRegressionExperiment(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
-    id = body.get('project_id')
-    list = body.get('index_list')
-    if list == '':
-        list = '-1'
-    if LinearRegressionParameter.objects.filter(project_id=LinearRegression(project_id=id)).count() == 0:
-        response['code'] = 50000
-        response['message'] = '该项目缺少数据，无法实验'
+    file_path = body.get('path')
+    user = body.get('name')
+    project_id = body.get('project_id')
+    special = body.get('special')
+    drop_col = body.get('drop_col')
+    drop_index = ''
+    if len(drop_col) == 0:
+        drop_index = '-1'
     else:
-        model = LinearRegression.objects.get(project_id=id)
+        for i in range(len(drop_col)):
+            if i != len(drop_col) - 1:
+                drop_index = drop_index + str(drop_col[i]) + ','
+            else:
+                drop_index = drop_index + str(drop_col[i])
+
+        model = LinearRegression.objects.get(project_id=project_id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_linearregression, args=(id, list))
+        task = threading.Thread(target=thread_linearregression, args=(project_id, drop_index, special, user, file_path))
         task.start()
+
     return JsonResponse(response, safe=False)
 
 
@@ -3952,12 +3889,28 @@ def finishLinearRegression(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def getLinearRegressionResult(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = LinearRegressionResult.objects.filter(project_id=LinearRegression(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
-
+    response = {'code': 20000, 'message': 'success'}
+    path = request.GET.get('path')
+    data = pd.read_excel(path)
+    dataset = data.values
+    fact = dataset[:, 1]
+    pred = dataset[:, 2]
+    choose_data = dataset[0, 3]
+    choose_col = dataset[0, 4]
+    formula = dataset[0, 5]
+    r_square = r2_score(fact, pred)
+    mse = mean_squared_error(fact, pred)
+    mae = mean_absolute_error(fact, pred)
+    rmse = mse ** 0.5
+    response['r_square'] = r_square
+    response['mse'] = mse
+    response['mae'] = mae
+    response['rmse'] = rmse
+    response['fact'] = fact.tolist()
+    response['pred'] = pred.tolist()
+    response['choose_data'] = choose_data
+    response['choose_col'] = choose_col
+    response['formula'] = formula
     return JsonResponse(response, safe=False)
 
 

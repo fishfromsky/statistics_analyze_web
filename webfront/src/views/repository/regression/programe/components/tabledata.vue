@@ -162,7 +162,7 @@
 </template>
 
 <script>
-import { getlstmmodelfile, getLstmProject, getexcelinfo, LstmProjectStart, addLstmProject, amendLstmProject } from "@/api/model";
+import { getregressionmodelfile, getregression, getexcelinfo, startregression, addregression, amendregression } from "@/api/model";
 export default {
   data() {
     return {
@@ -211,7 +211,7 @@ export default {
     },
     AmendDataConfirm:function(){
       let that = this
-      amendLstmProject(this.form).then(res=>{
+      amendregression(this.form).then(res=>{
         if (res.code === 20000){
           this.$message({
             type: 'success',
@@ -238,7 +238,7 @@ export default {
       }
       else{
         let that = this
-        addLstmProject(this.add_form).then(res=>{
+        addregression(this.add_form).then(res=>{
           if (res.code === 20000){
             this.$message({
               type: 'success',
@@ -306,18 +306,18 @@ export default {
             data['special'] = this.getIndex(this.select_cols, this.reference_col)
             data['path'] = this.selectfilePath
             data['name'] = this.getCookie('environment_name')
-            LstmProjectStart(data).then(res=>{
-                if (res.code === 20000){
-                    this.$message({
-                        type: 'success',
-                        message: '运行成功'
-                    })
-                    that.table_loading = true;
-                    that.page_data = [];
-                    that.tableData = [];
-                    that.getData();
-                        }
-                    })
+            startregression(data).then(res=>{
+              if (res.code === 20000){
+                  this.$message({
+                      type: 'success',
+                      message: '运行成功'
+                  })
+                  that.table_loading = true;
+                  that.page_data = [];
+                  that.tableData = [];
+                  that.getData();
+                      }
+                  })
         }
     },
     chooseData:function(){
@@ -335,7 +335,7 @@ export default {
     },
     getData: function () {
       let that = this;
-      getLstmProject().then((res) => {
+      getregression().then((res) => {
         if (res.code === 20000) {
           that.table_loading = false;
           that.tableData = res.data;
@@ -355,7 +355,7 @@ export default {
     getFileList: function () {
       let that = this;
       this.fileData = [];
-      getlstmmodelfile().then((res) => {
+      getregressionmodelfile().then((res) => {
         if (res.code === 20000) {
           let data = res.data;
           for (let i = 0; i < data.length; i++) {

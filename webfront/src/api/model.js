@@ -1522,9 +1522,9 @@ export function getlstmmodelresult(data){
 // 删除模型数据文件
 export function deletemodelfile(data){
   return request({
-    url: '/deletemodelfile',
-    method: 'get',
-    params: data
+    url: '/deletefilemodel',
+    method: 'post',
+    data
   })
 }
 
@@ -1536,3 +1536,48 @@ export function getdatapathfromresult(data){
     params: data
   })
 }
+
+// 上传线性回归数据文件
+export function uploadlinearregressionfile(data){
+  return request({
+    url: '/uploadlinearregressionfile',
+    method: 'post',
+    data
+  })
+}
+
+// 获取线性回归数据文件
+export function getlinearregressionmodelfile(){
+  return request({
+    url: '/getlinearregressionmodelfile',
+    method: 'get'
+  })
+}
+
+// 获取线性回归结果数据文件
+export function getlinearregressionfilemodel(data){
+  return request({
+    url: '/getfileresultlinearregression',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取多元非线性回归数据文件
+export function getregressionmodelfile(){
+  return request({
+    url: '/getregressionfilelist',
+    method: 'get'
+  })
+}
+
+
+// 获取多元非线性回归结果文件
+export function getregressionmodelresult(data){
+  return request({
+    url: '/getregressionmodelresult',
+    method: 'get',
+    params: data
+  })
+}
+

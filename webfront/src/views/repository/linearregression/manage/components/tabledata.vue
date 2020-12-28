@@ -162,7 +162,7 @@
 </template>
 
 <script>
-import { getlstmmodelfile, getLstmProject, getexcelinfo, LstmProjectStart, addLstmProject, amendLstmProject } from "@/api/model";
+import { getlinearregressionmodelfile, getlinearregressionproject, getexcelinfo, startlinearregressionexperiment, amendlinearregressionproject, addlinearregressionproject } from "@/api/model";
 export default {
   data() {
     return {
@@ -184,10 +184,10 @@ export default {
       choose_col_dialog: false,
       reference_col: null,
       checkList: [],
-      add_form: {},
-      add_dialog: false,
       form: {},
-      amend_dialog: false
+      amend_dialog: false,
+      add_form: {},
+      add_dialog: false
     };
   },
   watch: {
@@ -205,26 +205,6 @@ export default {
     },
   },
   methods: {
-    AmendData(index){
-        this.form = this.page_data[index]
-        this.amend_dialog = true
-    },
-    AmendDataConfirm:function(){
-      let that = this
-      amendLstmProject(this.form).then(res=>{
-        if (res.code === 20000){
-          this.$message({
-            type: 'success',
-            message: '修改成功'
-          })
-          that.amend_dialog = false
-          that.table_loading = true;
-          that.page_data = [];
-          that.tableData = [];
-          that.getData();
-        }
-      })
-    },
     addPrograme:function(){
       this.add_dialog = true
     },
@@ -238,7 +218,7 @@ export default {
       }
       else{
         let that = this
-        addLstmProject(this.add_form).then(res=>{
+        addlinearregressionproject(this.add_form).then(res=>{
           if (res.code === 20000){
             this.$message({
               type: 'success',
@@ -252,6 +232,22 @@ export default {
           }
         })
       }
+    },
+    AmendDataConfirm:function(){
+      let that = this
+      amendlinearregressionproject(this.form).then(res=>{
+        if (res.code === 20000){
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+          that.amend_dialog = false
+          that.table_loading = true;
+          that.page_data = [];
+          that.tableData = [];
+          that.getData();
+        }
+      })
     },
     Select_Index: function (arr_main, arr_child) {
       let index = [];
@@ -306,7 +302,7 @@ export default {
             data['special'] = this.getIndex(this.select_cols, this.reference_col)
             data['path'] = this.selectfilePath
             data['name'] = this.getCookie('environment_name')
-            LstmProjectStart(data).then(res=>{
+            startlinearregressionexperiment(data).then(res=>{
                 if (res.code === 20000){
                     this.$message({
                         type: 'success',
@@ -329,13 +325,17 @@ export default {
       this.tableData = [];
       this.getData()
     },
+    AmendData: function (val) {
+      this.form = this.page_data[val]
+      this.amend_dialog = true
+    },
     Experiment: function (val) {
       this.selected_project_index = val;
       this.choose_data_dialog = true;
     },
     getData: function () {
       let that = this;
-      getLstmProject().then((res) => {
+      getlinearregressionproject().then((res) => {
         if (res.code === 20000) {
           that.table_loading = false;
           that.tableData = res.data;
@@ -355,7 +355,7 @@ export default {
     getFileList: function () {
       let that = this;
       this.fileData = [];
-      getlstmmodelfile().then((res) => {
+      getlinearregressionmodelfile().then((res) => {
         if (res.code === 20000) {
           let data = res.data;
           for (let i = 0; i < data.length; i++) {
