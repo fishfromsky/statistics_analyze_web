@@ -1,15 +1,13 @@
 from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City,\
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
-    lstm_project, lstm_result, multi_regression_project, \
-    multi_regression_result, kmeans_project, kmeans_result, kmeans_parameter, algorithm_project, relation_project, \
+    lstm_project, multi_regression_project, kmeans_project, kmeans_result, algorithm_project, relation_project, \
     relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
     selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
     Garbage_Info_Country, Economy_Info_District, Population_Info_District, LinearRegression, LinearRegressionResult, \
     Grey_Relation_Result, PearsonResult, TestReport, Garbage_District, ModelLSTMFile, ModelLinearRegressionFile, \
-    ModelRegressionFile
+    ModelRegressionFile, ModelKmeansFile
 
-from django.conf import settings
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
@@ -22,8 +20,7 @@ from django.db.models import Q
 import os
 import datetime
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-import time
-from apscheduler.schedulers.background import BackgroundScheduler
+import numpy as np
 import threading
 
 BASE_ROOT = 'http://101.133.238.216:8000/'
@@ -1753,6 +1750,22 @@ def getRegressionModelResult(request):
 
 @csrf_exempt
 @require_http_methods(['GET'])
+def getKmeansModelResult(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/kmeans/' + project_id
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
 def getdatasetfromresult(request):
     response = {'code': 20000, 'message': 'success'}
     file_path = request.GET.get('file_path')
@@ -1978,54 +1991,11 @@ def amend_kmeans_project(request):
     return JsonResponse(response, safe=False)
 
 
-@csrf_exempt
-@require_http_methods(['POST'])
-def save_result_kmeans(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if kmeans_result.objects.filter(project_id=kmeans_project(project_id=id)).count() != 0:
-        last_sort = kmeans_result.objects.filter(project_id=kmeans_project(project_id=id)).order_by(
-            '-id')[:1]
-        sort = last_sort.get().sort + 1
-    else:
-        sort = 1
-    for i in range(len(data)):
-        xaxis = data[i]['xaxis']
-        yaxis = data[i]['yaxis']
-        label = data[i]['label']
-        district = data[i]['district']
-        model = kmeans_result.objects.create(project_id=kmeans_project(project_id=id),
-                                             xaxis=xaxis, district=district, yaxis=yaxis, label=label, sort=sort)
-        model.save()
-
-    formula = body.get('formula') if body.get('formula') is not None else ''
-    r_square = body.get('r_square') if body.get('r_square') is not None else ''
-    mse = body.get('mse') if body.get('mse') is not None else ''
-    rmse = body.get('rmse') if body.get('rmse') is not None else ''
-    mae = body.get('mae') if body.get('mae') is not None else ''
-    choose_col = body.get('choose_col') if body.get('choose_col') is not None else ''
-    if TestReport.objects.filter(project_id=id, sort=sort, algorithm='聚类分析').count() != 0:
-        model = TestReport.objects.get(project_id=id, sort=sort, algorithm='聚类分析')
-        model.formula = formula
-        model.r_square = r_square
-        model.mse = mse
-        model.rmse = rmse
-        model.mae = mae
-        model.choose_col = choose_col
-    else:
-        model = TestReport.objects.create(project_id=id, sort=sort, formula=formula, r_square=r_square,
-                                          mse=mse, rmse=rmse, mae=mae, choose_col=choose_col, algorithm='聚类分析')
-        model.save()
-
-    return JsonResponse(response, safe=False)
-
-
-def thread_kmeans(id, list):
-    ret = os.system('python backend/KMeans/kmeans1.py %s %s' % (id, list))
+def thread_kmeans(project_id, drop_index, special, user, file_path):
+    ret = os.system('python backend/KMeans/kmeans1.py %s %s %s %s %s' % (project_id, drop_index, special, user,
+                                                                         file_path))
     if ret != 0:
-        model = kmeans_project.objects.get(project_id=id)
+        model = kmeans_project.objects.get(project_id=project_id)
         model.status = '运行出错'
         model.save()
 
@@ -2035,16 +2005,25 @@ def thread_kmeans(id, list):
 def start_kmeans(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
-    id = body.get('project_id')
-    index_list = body.get('index_list')
-    if kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id)).count() == 0:
-        response['code'] = 50000
-        response['message'] = '该项目缺少数据无法实验，请先补充数据'
+    file_path = body.get('path')
+    user = body.get('name')
+    project_id = body.get('project_id')
+    special = body.get('special')
+    drop_col = body.get('drop_col')
+    drop_index = ''
+    if len(drop_col) == 0:
+        drop_index = '-1'
     else:
-        model = kmeans_project.objects.get(project_id=id)
+        for i in range(len(drop_col)):
+            if i != len(drop_col) - 1:
+                drop_index = drop_index + str(drop_col[i]) + ','
+            else:
+                drop_index = drop_index + str(drop_col[i])
+
+        model = kmeans_project.objects.get(project_id=project_id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_kmeans, args=(id, index_list))
+        task = threading.Thread(target=thread_kmeans, args=(project_id, drop_index, special, user, file_path))
         task.start()
 
     return JsonResponse(response, safe=False)
@@ -2062,15 +2041,27 @@ def stop_kmeans(request):
     return JsonResponse(response, safe=False)
 
 
+def normalization(data):
+    _range = np.max(data) - np.min(data)
+    return (data - np.min(data)) / _range
+
+
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_result_kmeans(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = kmeans_result.objects.filter(project_id=kmeans_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
-
+    response = {'code': 20000, 'message': 'success'}
+    path = request.GET.get('path')
+    data = pd.read_excel(path)
+    dataset = data.values
+    columns = data.columns.values
+    xaixs = normalization(dataset[:, 1])
+    yaxis = normalization(dataset[:, 2])
+    label = dataset[:, 3]
+    response['xlabel'] = columns[1]
+    response['ylabel'] = columns[2]
+    response['xaxis'] = xaixs.tolist()
+    response['yaxis'] = yaxis.tolist()
+    response['label'] = label.tolist()
     return JsonResponse(response, safe=False)
 
 
@@ -2081,53 +2072,6 @@ def get_idlist_kmeans(request):
     data = kmeans_project.objects.values('project_id').all()
     for item in data:
         response['data'].append(item)
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['POST'])
-def input_parameter_kmeans(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id)).count() != 0:
-        response['code'] = 50000
-        response['message'] = '数据库中存在该项目参数，请先删除'
-    else:
-        for i in range(len(data)):
-            if data[i].__contains__('district') and data[i].__contains__('en_name') and data[i].__contains__('range') \
-                and data[i].__contains__('year') and data[i].__contains__('msw') and data[i].__contains__('pop') and \
-                data[i].__contains__('pup') and data[i].__contains__('hou') and data[i].__contains__('aph') and data[i].__contains__('gen') \
-                and data[i].__contains__('age1') and data[i].__contains__('age2') and data[i].__contains__('age3') \
-                and data[i].__contains__('inc') and data[i].__contains__('exp') and data[i].__contains__('bud') and \
-                    data[i].__contains__('gdp') and data[i].__contains__('gdp1') and data[i].__contains__('gdp2') and \
-                    data[i].__contains__('gdp3') and data[i].__contains__('pgdp') and data[i].__contains__('edu'):
-                model = kmeans_parameter.objects.create(district=data[i]['district'], en_name=data[i]['en_name'],
-                                                        range=data[i]['range'], year=data[i]['year'], msw=data[i]['msw'],
-                                                        pop=data[i]['pop'], pup=data[i]['pup'], hou=data[i]['hou'],
-                                                        aph=data[i]['aph'], gen=data[i]['gen'], age1=data[i]['age1'],
-                                                        age2=data[i]['age2'], age3=data[i]['age3'], inc=data[i]['inc'],
-                                                        exp=data[i]['exp'], bud=data[i]['bud'], gdp=data[i]['gdp'],
-                                                        gdp1=data[i]['gdp1'], gdp2=data[i]['gdp2'], gdp3=data[i]['gdp3'],
-                                                        pgdp=data[i]['pgdp'], edu=data[i]['edu'], project_id=kmeans_project(project_id=id))
-                model.save()
-            else:
-                response['code'] = 50000
-                response['message'] = '表头与数据不一致或者缺少数据'
-
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['GET'])
-def get_parameter_kmeans(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = kmeans_parameter.objects.filter(project_id=kmeans_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
-
     return JsonResponse(response, safe=False)
 
 
@@ -2746,6 +2690,16 @@ def uploadRegressionFile(request):
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
+def uploadKMeansFile(request):
+    response = {'code': 20000, 'message': 'success'}
+    file = ModelKmeansFile(file_url=request.FILES['file'])
+    file.save()
+    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
 @require_http_methods(['GET'])
 def getdatafilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
@@ -2802,6 +2756,23 @@ def getmodelregressionfilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     filelist = []
     for root, dirs, files in os.walk('media/static/modelfile/regression'):
+        if len(files) != 0:
+            for file in files:
+                file_dict = {}
+                file_dict['name'] = file
+                file_dict['url'] = os.path.join(root, file)
+                filelist.append(file_dict)
+
+    response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getmodelkmeansfilelist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    filelist = []
+    for root, dirs, files in os.walk('media/static/modelfile/kmeans'):
         if len(files) != 0:
             for file in files:
                 file_dict = {}

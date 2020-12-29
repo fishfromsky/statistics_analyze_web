@@ -1,22 +1,30 @@
-# -*- coding: utf-8 -*-
-from numpy import *
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-import pylab as mpl
-import sys
-import requests
-from pandas import json_normalize
 import json
+from sklearn import metrics
+from sklearn.cluster import KMeans
+import numpy as np
+import sys
+import pandas as pd
+from numpy import *
+from scipy.interpolate import lagrange
+import datetime
+import requests
+import os
 
-np.set_printoptions(suppress=True)
-mpl.rcParams['font.sans-serif'] = ['simHei']
-mpl.rcParams['axes.unicode_minus'] = False
 
-id = sys.argv[1]
-index_list = sys.argv[2]
+project_id = sys.argv[1]
+select_list = sys.argv[2]
+special = sys.argv[3]
+user = sys.argv[4]
+file_path = sys.argv[5]
 
-column_list = index_list.split(',')
+special = int(special)
+
+data_min = []
+norm_range = []
+
+norm_flag = False   # 判断是否已经调用过归一化函数
+
+column_list = select_list.split(',')
 column_list = list(map(int, column_list))
 
 
@@ -32,16 +40,69 @@ class NpEncoder(json.JSONEncoder):
             return super(NpEncoder, self).default(obj)
 
 
-def loadDataSet(filename):#MLiA_SourceCode\machinelearninginaction\Ch10\testSet.txt
-    dataMat = []
-    fr = open(filename)
-    for line in fr.readlines():
-        curLine = line.strip().split('\t')
-        # map() 会根据提供的函数对指定序列做映射。
-        # 第一个参数 function 以参数序列中的每一个元素调用 function 函数，返回包含每次 function 函数返回值的新列表。
-        fltLine = map(float, curLine)
-        dataMat.append(fltLine)
-    return dataMat
+def get_drop_col(origin, select):
+    drop_col = []
+    for item in origin:
+        if item not in select:
+            drop_col.append(item)
+
+    return drop_col
+
+
+def guiyihua():
+    global norm_flag
+    df = pd.read_excel(file_path)
+    dataset = df.drop(df.columns[column_list], axis=1)
+
+    dataset = deal_nan(dataset)
+
+    datasety = dataset
+    labels = dataset.columns
+    dataset = dataset.values
+    for i in range(dataset.shape[0]):
+        for j in range(dataset.shape[1]):
+            if isinstance(dataset[i][j], str):
+                if dataset[i][j].isspace():
+                    dataset[i][j].strip()
+    k = []
+
+    for i in range(dataset.shape[1]):
+        p = normalization(dataset[:, i])
+        if i == 0:
+            k = p
+        else:
+            k = np.c_[k, p]
+
+    if not norm_flag:
+        norm_flag = True
+
+    df = pd.DataFrame(k, columns=labels)
+
+    return df, datasety, labels
+
+
+def ploy(s, n, k=3):   # 拉格朗日插值函数
+    y = s.reindex(list(range(n-k, n))+list(range(n+1, n+1+k))) # 取数
+    y = y[y.notnull()]
+    return lagrange(y.index, list(y))(n)
+
+
+def deal_nan(data):
+    for i in data.columns:
+        for j in range(len(data)):
+            if (data[i].isnull())[j]:
+                data[i][j] = ploy(data[i], j)
+
+    return data
+
+
+def normalization(data):
+    global data_min, norm_range, norm_flag
+    _range = np.max(data) - np.min(data)
+    if not norm_flag:
+        norm_range.append(_range)
+        data_min.append(np.min(data))
+    return (data - np.min(data)) / _range
 
 
 def distEclud(vecA, vecB):
@@ -59,7 +120,7 @@ def randCent(dataSet, k):
 
 
 def kMeans(dataSet, k, distMeas=distEclud, createCent=randCent):
-    m = shape(dataSet)[0]#行数，数据点数目
+    m = shape(dataSet)[0]  #行数，数据点数目
     clusterAssment = mat(zeros((m, 2)))
     centroids = createCent(dataSet, k)
     clusterChanged = True
@@ -94,7 +155,7 @@ def bikmeans(dataset, k, distmeas=distEclud):
     while (len(centList) < k):
         lowestSSE = inf
         for i in range(len(centList)):
-            ptsInCurrCluster = dataset[nonzero(clusterAssment[:, 0].A == i)[0],:]  # get the data points currently in cluster i
+            ptsInCurrCluster = dataset[nonzero(clusterAssment[:, 0].A == i)[0], :]  # get the data points currently in cluster i
             centroidMat, splitClustAss = kMeans(ptsInCurrCluster, 2, distmeas)
             sseSplit = sum(splitClustAss[:, 1])  # compare the SSE to the currrent minimum
             sseNotSplit = sum(clusterAssment[nonzero(clusterAssment[:, 0].A != i)[0], 1])
@@ -114,111 +175,15 @@ def bikmeans(dataset, k, distmeas=distEclud):
     return mat(centList), clusterAssment
 
 
-def clusterclubs(mycentroids, clustassing,numclust,datmat,labels,savep):#bikmeans分类画图
-    otherpoints = []
-    for i in range(numclust):
-        ptsincurrcluster = datmat[nonzero(clustassing[:,0].A==i)[0], :]
-        otherpoints.append(ptsincurrcluster.getA())
-    # # title = []
-    # for i in range(len(labels)):
-    #     ch = labels[i].replace('\n', '').replace('\r', '')
-    #     title.append(ch)
-    #     if i != len(labels) - 1:
-    #         title.append('--')
-    # title = "".join(title)
-    # plt.title('bik-means分类效果图\n'+title,fontsize=12)
-    # plt.savefig(savep+'bik-means分类效果图.png')
-    # addpicture(savep+'bik-means分类效果图.png')
-    # plt.show()
-    return otherpoints
-
-
-def guiyihua(clearlist):#归一化
-    params = {'project_id': id}
-    res = requests.get('http://127.0.0.1:8000/api/get_parameter_kmeans', params=params)
-    json_data = json.loads(res.text).get('data')
-    df = json_normalize(json_data)
-    data = df.drop(df.columns[[0, 1, 2, 3, 4, -1]], axis=1)
-    dataset = data.drop(data.columns[column_list], axis=1)
-    # print(dataset)
-    datasety = dataset
-    labels = dataset.columns
-    dataset = dataset.values
-    for i in range(dataset.shape[0]):
-        for j in range(dataset.shape[1]):
-            if (isinstance(dataset[i][j], str)):
-                if (dataset[i][j].isspace()):
-                    dataset[i][j].strip()
-    k = []
-    for i in range(dataset.shape[1]):
-        p = normalization(dataset[:, i])
-
-        if (i == 0):
-            k = p
-        else:
-            k = np.c_[k, p]
-    df = pd.DataFrame(k, columns=labels)
-
-    return df,datasety,labels
-
-
-def normalization(data):
-    _range = np.max(data) - np.min(data)
-    return (data - np.min(data)) / _range
-
-
-def diaoyong(classnum, clearlist):
-    df, datasety,labels = guiyihua(clearlist)
-    df = mat(df.values)
-    mycentroids, clustassing = bikmeans(df, classnum, distmeas=distEclud)
-    return mycentroids,clustassing,df, labels
-
-
-#层次聚类
-def AgglomerativeClustering(path):
-    import numpy
-    import pandas
-    from sklearn import datasets
-    import scipy.cluster.hierarchy as hcluster
-
-    df, datasety, labels = guiyihua(path)
-    #df2 = pd.DataFrame(df.values.T, index=df.columns, columns=df.index)
-    corr_matrix = df.corr()
-    matrix = (1 - abs(mat(corr_matrix.values)))*10
-    # print(matrix)
-    target = labels.values.T
-    target = target.tolist()
-    # print(target)
-    # Compute and plot first dendrogram.
-    linkage = hcluster.linkage(
-        matrix,
-        method='average'
-    )
-
-    hcluster.dendrogram(
-        linkage,
-        orientation='right',
-        labels=target,
-        leaf_rotation=0,
-        leaf_font_size=9.
-    )
-    plt.title('层次聚类效果图')
-    plt.savefig('层次聚类效果图.png')
-    plt.show()
-
-
-#聚类评价指数
-def testnum(clearlist):
-    from sklearn import metrics
-    from sklearn.cluster import KMeans
-    df, datasety, x = guiyihua(clearlist)
+def testnum():
+    df, datasety, x = guiyihua()
     df = mat(df.values)
     max = 0
     index = -1
     for i in range(2, 10):
         kmeans = KMeans(n_clusters=i, random_state=123).fit(df)
         score = metrics.calinski_harabasz_score(df, kmeans.labels_)
-        if(score > max):
+        if score > max:
             max = score
             index = i
         # print("聚类%d簇的calinski_harabaz分数为：%f" % (i, score))
@@ -226,61 +191,61 @@ def testnum(clearlist):
     return index
 
 
+def diaoyong(classnum):
+    df, datasety, labels = guiyihua()
+    df = mat(df.values)
+    mycentroids, clustassing = bikmeans(df, classnum, distmeas=distEclud)
+    return mycentroids, clustassing, df, labels
+
+
+def clusterclubs(clustassing, numclust, datmat):   #bikmeans分类画图
+    otherpoints = []
+    for i in range(numclust):
+        ptsincurrcluster = datmat[nonzero(clustassing[:, 0].A == i)[0], :]
+        otherpoints.append(ptsincurrcluster.getA())
+    return otherpoints
+
+
 if __name__ == '__main__':
+    class_num = testnum()
+    mycentroids, clustassing, df, labels = diaoyong(class_num)
+    otherpoints = clusterclubs(clustassing, class_num, df)
+    col_num = otherpoints[0].shape[1]
+    data_tmp = []   # 暂存逆归一化后的数组
+    label_tmp = []  # 暂存标记数组
+    for i in range(col_num):
+        data_tmp.append([])
+    for i in range(len(otherpoints)):
+        for j in range(otherpoints[i].shape[1]):
+            arr_origin = otherpoints[i][:, j]
+            arr_final = arr_origin*norm_range[j]+data_min[j]
+            otherpoints[i][:, j] = arr_final
+            data_tmp[j].extend(arr_final)
+            if j == 0:
+                for k in range(len(arr_final)):
+                    label_tmp.append(i)
 
-    savep = "images/"
-    classnum = testnum(column_list)  # 聚类评价指数筛选最好的组数
-    # print("best num: %d" % classnum)
-    mycentroids, clustassing, df, labels = diaoyong(classnum, column_list)
-    otherpoints = clusterclubs(mycentroids, clustassing, classnum, df, labels, savep)
-    centpoints = mycentroids
-
-    classifylist = clustassing[:, 0]
-    classifylist = np.matrix.tolist(classifylist.T)
-    classifylist = np.array(classifylist[0], dtype=int)
-
-    df = np.array(df)
-
-    xaxis = []
-    yaxis = []
-    xaxis.extend(df[:, 0])
-    yaxis.extend(df[:, 1])
-
-    params = {'project_id': id}
-    res = requests.get('http://127.0.0.1:8000/api/get_parameter_kmeans', params=params)
-    json_data = json.loads(res.text).get('data')
-    df = json_normalize(json_data)
-    district_list = df[['district']]
-    districts = district_list.values[:, 0]
-
-    label_list = labels.values
-
-    choose_col = ''
-    for i in range(len(label_list)):
-        if i != len(label_list)-1:
-            choose_col = choose_col + label_list[i]+','
-        else:
-            choose_col = choose_col + label_list[i]
+    data_tmp = np.array(data_tmp).T
+    label_tmp = np.array(label_tmp).T
+    data_tmp = np.insert(data_tmp, data_tmp.shape[1], values=np.array(label_tmp).T, axis=1)
+    label_index = labels.values
+    my_dict = {
+        label_index[0]: data_tmp[:, 0],
+        label_index[1]: data_tmp[:, 1],
+        'label': data_tmp[:, 2]
+    }
+    dataframe = pd.DataFrame(my_dict)
+    path = 'media/static/modelresult/' + user + '/kmeans/'+project_id
+    if not os.path.exists(path):
+        os.makedirs(path)
+    time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+    dataframe.to_excel(path+'/'+time+'.xlsx')
 
     json_data = {}
-    json_data['project_id'] = id
-    result_list = []
-    for i in range(len(classifylist)):
-        dict_data = {}
-        dict_data['xaxis'] = xaxis[i]
-        dict_data['yaxis'] = yaxis[i]
-        dict_data['label'] = classifylist[i]
-        dict_data['district'] = districts[i]
-        result_list.append(dict_data)
-    json_data['data'] = result_list
-    json_data['choose_col'] = choose_col
+    json_data['project_id'] = project_id
     json_data = json.dumps(json_data, cls=NpEncoder)
-    requests.post('http://127.0.0.1:8000/api/save_result_kmeans', data=json_data)
+    requests.post('http://127.0.0.1:8000/api/finish_kmeans', data=json_data)
 
-    dict = {}
-    dict['project_id'] = id
-    data = json.dumps(dict)
-    requests.post('http://127.0.0.1:8000/api/finish_kmeans', data=data)
 
 
 

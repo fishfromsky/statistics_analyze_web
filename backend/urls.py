@@ -159,13 +159,10 @@ urlpatterns = [
     url('add_kmeans_project', views.add_kmeans_project),  # 添加kmeans项目
     url('get_kmeans_project', views.get_kmeans_project),  # 获取kmeans项目
     url('amend_kmeans_project', views.amend_kmeans_project),  # 修改kmeans项目
-    url('save_result_kmeans', views.save_result_kmeans),  # 保存kmeans运行结果
     url('start_kmeans', views.start_kmeans),  # 开始kmeans试验
     url('finish_kmeans', views.stop_kmeans),  # 结束kmeans算法
     url('get_result_kmeans', views.get_result_kmeans),  # 获得kmeans实验结果
     url('get_id_kmeans', views.get_idlist_kmeans),  # 获取kmeans所有项目编号
-    url('input_parameter_kmeans', views.input_parameter_kmeans),  # 输入kmeans实验数据
-    url('get_parameter_kmeans', views.get_parameter_kmeans),  # 获取kmeans实验参数
     url('get_kmeans_testreport', views.getKMeansTestReport),  # 获取kmeans报告
 
     url('add_relation_project', views.add_relation_project),  # 添加关联分析项目
@@ -222,6 +219,10 @@ urlpatterns = [
     url('uploadregressionfile', views.uploadRegressionFile),  # 获取多元非线性回归数据文件
     url('getregressionfilelist', views.getmodelregressionfilelist),  # 获取多元非线性回归数据文件
     url('getregressionmodelresult', views.getRegressionModelResult),  # 获取多元非线性回归数据文件
+
+    url('uploadkmeansfile', views.uploadKMeansFile),  # 上传kmeans数据文件
+    url('getkmeansfilelist', views.getmodelkmeansfilelist),  # 获取kmeans数据文件
+    url('getkmeansmodelresult', views.getKmeansModelResult),  # 获取kmeans模型结果
 
     url('getallmodels', views.getallmodels),  # 获取所有模型列表
     url('upload_img', views.upload_img),  # 上传图片文件

@@ -34,7 +34,6 @@
         data(){
             return {
                 chart: null,
-                districtlist: [],
                 xlabel: '',
                 ylabel: ''
             }
@@ -59,16 +58,6 @@
                         axisPointer: {
                             type: 'cross'
                         },
-                        formatter(params){
-                            let series_index = params.seriesIndex
-                            let data_index = params.dataIndex
-                            let district = that.districtlist[series_index][data_index]
-                            return `
-                                地区：${district}<br>
-                                横坐标: ${params.data[0]}<br>
-                                纵坐标: ${params.data[1]}
-                            `
-                        }
                     },
                     series: []
                 }
@@ -122,17 +111,14 @@
             setOptions(val){
                 this.xlabel = val.xlabel
                 this.ylabel = val.ylabel
-                this.districtlist = []
                 let label_num = this.judgesortnum(val.label)
                 let dataset = []
                 for (let i=0; i<label_num; i++){
                     dataset.push([])
-                    this.districtlist.push([])
                 }
                 for (let i=0; i<val.label.length; i++){
                     let index = val.label[i]
                     dataset[index].push([val.xaxis[i], val.yaxis[i]])
-                    this.districtlist[index].push(val.district[i])
                 }
                 this.getdataoption(dataset, label_num)
                 this.chart.setOption(this.option)

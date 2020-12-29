@@ -97,7 +97,7 @@
 
 <script>
 import {
-  getlinearregressionfilemodel,
+  getlinearregressionmodelresult,
   getlinearregressionresult,
   deleterelationexcelresult,
 } from "@/api/model";
@@ -188,7 +188,7 @@ export default {
       let data = {};
       data["project_id"] = project_id;
       data["user"] = this.getCookie("environment_name");
-      getlinearregressionfilemodel(data).then((res) => {
+      getlinearregressionmodelresult(data).then((res) => {
         if (res.code === 20000) {
           that.table_loading = false;
           let result = res.data;

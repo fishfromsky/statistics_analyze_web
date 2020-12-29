@@ -459,18 +459,6 @@ export const constantRoutes = [
             meta: { title: '项目管理' }
           },
           {
-            path: 'introduction',
-            name: 'introduction',
-            component: () => import('@/views/repository/kmeans/introduction/index'),
-            meta: { title: '算法简介'}
-          },
-          {
-            path: 'data',
-            name: 'data',
-            component: () => import('@/views/repository/kmeans/data/index'),
-            meta: { title: '数据导入'}
-          },
-          {
             path: 'result',
             name: 'result',
             component: () => import('@/views/repository/kmeans/result/index'),

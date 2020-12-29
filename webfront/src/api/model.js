@@ -1555,7 +1555,7 @@ export function getlinearregressionmodelfile(){
 }
 
 // 获取线性回归结果数据文件
-export function getlinearregressionfilemodel(data){
+export function getlinearregressionmodelresult(data){
   return request({
     url: '/getfileresultlinearregression',
     method: 'get',
@@ -1581,3 +1581,19 @@ export function getregressionmodelresult(data){
   })
 }
 
+// 获取聚类数据文件
+export function getkmeansfilelist(){
+  return request({
+    url: '/getkmeansfilelist',
+    method: 'get'
+  })
+}
+
+// 获取kmeans模型结果文件
+export function getkmeansmodelresult(data){
+  return request({
+    url: '/getkmeansmodelresult',
+    method: 'get',
+    params: data
+  })
+}

@@ -244,32 +244,6 @@ class kmeans_result(models.Model):
     sort = models.IntegerField(default=1)
 
 
-class kmeans_parameter(models.Model):
-    district = models.CharField(max_length=255, null=False)
-    en_name = models.CharField(max_length=255, null=False)
-    range = models.CharField(max_length=255, null=False)
-    year = models.CharField(max_length=255, null=False)
-    msw = models.FloatField()
-    pop = models.FloatField()
-    pup = models.FloatField()
-    hou = models.FloatField()
-    aph = models.FloatField()
-    gen = models.FloatField()
-    age1 = models.FloatField()
-    age2 = models.FloatField()
-    age3 = models.FloatField()
-    inc = models.FloatField()
-    exp = models.FloatField()
-    bud = models.FloatField()
-    gdp = models.FloatField()
-    gdp1 = models.FloatField()
-    gdp2 = models.FloatField()
-    gdp3 = models.FloatField()
-    pgdp = models.FloatField()
-    edu = models.FloatField()
-    project_id = models.ForeignKey(to="kmeans_project", on_delete=models.CASCADE)
-
-
 class relation_project(models.Model):
     project_id = models.CharField(max_length=255, primary_key=True, null=False)
     name = models.CharField(max_length=255, null=False)
@@ -401,6 +375,10 @@ class ModelLinearRegressionFile(models.Model):
 
 class ModelRegressionFile(models.Model):
     file_url = models.FileField("文件", upload_to="static/modelfile/regression/%Y/%m/%d")
+
+
+class ModelKmeansFile(models.Model):
+    file_url = models.FileField("文件", upload_to="static/modelfile/kmeans/%Y/%m/%d")
 
 
 class Experiment_Result_Excel(models.Model):
