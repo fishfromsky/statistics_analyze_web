@@ -205,6 +205,14 @@ export default {
     },
   },
   methods: {
+    isInArray(arr, item){
+      for (let i=0; i<arr.length; i++){
+        if (arr[i] === item){
+          return true
+        }
+      }
+      return false
+    },
     AmendData(index){
         this.form = this.page_data[index]
         this.amend_dialog = true
@@ -295,6 +303,9 @@ export default {
         }
         else if (this.checkList.length === 0){
             this.$message.error('请选择参考指标')
+        }
+        else if (this.isInArray(this.checkList, this.reference_col)){
+          this.$message.error('参考指标不能和试验指标重叠')
         }
         else{
             this.choose_col_dialog = false

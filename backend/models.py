@@ -275,29 +275,6 @@ class selected_algorithm_table(models.Model):
     status = models.CharField(max_length=100, default='未运行')
 
 
-class relation_parameter(models.Model):
-    year = models.FloatField(max_length=255, null=False, default=0)
-    garbage_clear = models.FloatField(null=False)
-    population = models.FloatField(null=False)
-    ratio_city_rural = models.FloatField(null=False)
-    household = models.FloatField(null=False)
-    people_per_capita = models.FloatField(null=False)
-    ratio_sex = models.FloatField(null=False)
-    age_0_14 = models.FloatField(null=False)
-    age_15_64 = models.FloatField(null=False)
-    age_65 = models.FloatField(null=False)
-    disposable_income = models.FloatField(null=False)
-    consume_cost = models.FloatField(null=False)
-    public_cost = models.FloatField(null=False)
-    gdp = models.FloatField(null=False)
-    gdp_first_industry = models.FloatField(null=False)
-    gdp_second_industry = models.FloatField(null=False)
-    gdp_third_industry = models.FloatField(null=False)
-    gnp = models.FloatField(null=False)
-    education = models.FloatField(null=False)
-    project_id = models.ForeignKey(to="relation_project", on_delete=models.CASCADE)
-
-
 class relation_hot_matrix_result(models.Model):
     project_id = models.ForeignKey(to="relation_project", on_delete=models.CASCADE)
     label = models.CharField(max_length=255, null=False)
@@ -379,6 +356,10 @@ class ModelRegressionFile(models.Model):
 
 class ModelKmeansFile(models.Model):
     file_url = models.FileField("文件", upload_to="static/modelfile/kmeans/%Y/%m/%d")
+
+
+class ModelRelationFile(models.Model):
+    file_url = models.FileField("文件", upload_to="static/modelfile/relation/%Y/%m/%d")
 
 
 class Experiment_Result_Excel(models.Model):

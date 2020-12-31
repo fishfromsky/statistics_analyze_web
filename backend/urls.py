@@ -169,14 +169,9 @@ urlpatterns = [
     url('get_relation_project', views.get_relation_project),  # 获得关联分析项目
     url('amend_relation_project', views.amend_relation_project),  # 修改关联分析项目信息
     url('get_id_relation', views.get_idlist_relation),  # 获得关联分析项目编号
-    url('get_relation_parameter', views.get_relation_parameter),  # 获得关联分析参数
-    url('input_relation_parameter', views.input_relation_parameter),  # 导入关联分析参数
-    url('save_relation_hot_matrix_result', views.save_relation_hot_matrix_result),  # 保存关联分析混淆矩阵结果
     url('start_relation', views.start_relation),  # 开始运行关联分析
     url('stop_relation', views.stop_relation),  # 结束运行关联分析模型
     url('get_relation_hot_matrix_result', views.get_relation_hot_matrix_result),  # 获取关联分析混淆矩阵结果
-    url('save_relation_RF_result', views.save_relation_RF_result),  # 保存关联分析随机森林结果
-    url('save_grey_relation_result', views.save_Grey_Relation_Result),  # 保存关联分析灰色模型结果
     url('get_grey_relation_result', views.get_grey_relation_result),  # 获取关联分析灰色模型结果
     url('get_relation_rf_result', views.get_relation_RF_result),  # 获得关联分析随机分析结果
     url('save_pearson_result', views.save_pearson_result),  # 保存皮尔逊系数结果
@@ -223,6 +218,13 @@ urlpatterns = [
     url('uploadkmeansfile', views.uploadKMeansFile),  # 上传kmeans数据文件
     url('getkmeansfilelist', views.getmodelkmeansfilelist),  # 获取kmeans数据文件
     url('getkmeansmodelresult', views.getKmeansModelResult),  # 获取kmeans模型结果
+
+    url('uploadrelationfile', views.uploadRelationFile),  # 上传关联分析数据文件
+    url('getrelationfilelist', views.getmodelrelationfilelist),  # 获取关联分析数据文件
+    url('gethotmatrixmodelresult', views.getHotMatrixModelResult),  # 获取混淆矩阵运行结果
+    url('getrfmodelresult', views.getRFModelResult),  # 获取随机森林运行结果
+    url('getgreyrelationmodelresult', views.getGreyRelationModelResult),  # 获取灰度关联分析结果
+    url('getpearsonrmodelresult', views.getPearsonrModelResult),  # 获取皮尔逊系数模型结果
 
     url('getallmodels', views.getallmodels),  # 获取所有模型列表
     url('upload_img', views.upload_img),  # 上传图片文件

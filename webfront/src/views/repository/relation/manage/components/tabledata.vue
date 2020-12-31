@@ -105,7 +105,7 @@
       custom-class="col_dialog"
     >
       <div class="col_dialog">
-        <span>选择聚类标记指标</span>
+        <span>选择关联分析参考指标</span>
         <el-radio-group
           v-model="reference_col"
           style="margin-top: 20px; margin-bottom: 20px"
@@ -116,7 +116,7 @@
             :key="item"
           ></el-radio>
         </el-radio-group>
-        <span>选择聚类依据指标(只能选2个纬度)</span>
+        <span>选择需要关联分析的指标</span>
         <el-checkbox-group
           v-model="checkList"
           style="margin-top: 20px; margin-bottom: 20px"
@@ -158,11 +158,20 @@
             <el-button @click="addDataConfirm" type="primary">确定</el-button>
         </div>
     </el-dialog>
+    <el-dialog :visible.sync="choose_dialog" title="选择关联分析算法" width="30%">
+        <el-select v-model="choose_value" placeholder="请选择想要进行的算法">
+            <el-option v-for="item in choose_item" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+        <div slot="footer">
+            <el-button @click="choose_dialog=false">取消</el-button>
+            <el-button @click="ExperimentConfirm" type="primary">确定</el-button>
+        </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getkmeansfilelist, getkmeansrpoject, getexcelinfo, startkmeans, addkmeansproject, amendkmeansproject } from "@/api/model";
+import { getrelationfilelist, getrelationproject, getexcelinfo, startrelation, addrelationproject, amendrelationproject } from "@/api/model";
 export default {
   data() {
     return {
@@ -187,7 +196,15 @@ export default {
       add_form: {},
       add_dialog: false,
       form: {},
-      amend_dialog: false
+      amend_dialog: false,
+      choose_dialog: false,
+      choose_value: null,
+      choose_item: [
+        { value: '1', label: '相关矩阵'},
+        { value: '2', label: '随机森林'},
+        { value: '3', label: '灰度分析'},
+        { value: '4', label: '皮尔逊系数'}
+      ],
     };
   },
   watch: {
@@ -219,7 +236,7 @@ export default {
     },
     AmendDataConfirm:function(){
       let that = this
-      amendkmeansproject(this.form).then(res=>{
+      amendrelationproject(this.form).then(res=>{
         if (res.code === 20000){
           this.$message({
             type: 'success',
@@ -246,7 +263,7 @@ export default {
       }
       else{
         let that = this
-        addkmeansproject(this.add_form).then(res=>{
+        addrelationproject(this.add_form).then(res=>{
           if (res.code === 20000){
             this.$message({
               type: 'success',
@@ -297,41 +314,46 @@ export default {
         return "";
     },
     startExperiment:function(){
-        let that = this
+        this.choose_dialog = true
+    },
+    ExperimentConfirm:function(){
+      let that = this
         if (this.reference_col === null){
-            this.$message.error('请选择预测指标')
+            this.$message.error('请选择关联分析参考指标')
         }
         else if (this.checkList.length === 0){
-            this.$message.error('请选择参考指标')
+            this.$message.error('请选择需要关联分析的指标')
         }
-        else if (this.checkList.length !== 2){
-          this.$message.error('只能选择两个参考指标')
+        else if (this.choose_value === null){
+          this.$message.error('请选择关联分析算法')
         }
         else if (this.isInArray(this.checkList, this.reference_col)){
-          this.$message.error('参考指标和试验指标不能重叠')
+          this.$message.error('参考指标和实验指标不能重叠')
         }
         else{
-            this.choose_col_dialog = false
-            this.choose_data_dialog = false
-            let data = {}
-            data['project_id'] = this.page_data[this.selected_project_index].project_id
-            let index_list = this.Select_Index(this.select_cols, this.checkList)
-            data['drop_col'] = index_list
-            data['special'] = this.getIndex(this.select_cols, this.reference_col)
-            data['path'] = this.selectfilePath
-            data['name'] = this.getCookie('environment_name')
-            startkmeans(data).then(res=>{
-                if (res.code === 20000){
-                    this.$message({
-                        type: 'success',
-                        message: '运行成功'
-                    })
-                    that.table_loading = true;
-                    that.page_data = [];
-                    that.tableData = [];
-                    that.getData();
-                        }
-                    })
+          this.choose_col_dialog = false
+          this.choose_data_dialog = false
+          let data = {}
+          data['project_id'] = this.page_data[this.selected_project_index].project_id
+          let index_list = this.Select_Index(this.select_cols, this.checkList)
+          data['drop_col'] = index_list
+          data['special'] = this.getIndex(this.select_cols, this.reference_col)
+          data['path'] = this.selectfilePath
+          data['name'] = this.getCookie('environment_name')
+          data['algorithm'] = this.choose_value
+          startrelation(data).then(res=>{
+            if (res.code === 20000){
+              this.$message({
+                  type: 'success',
+                  message: '运行成功'
+              })
+              that.table_loading = true;
+              that.page_data = [];
+              that.tableData = [];
+              that.getData();
+              that.choose_dialog = false
+            }
+          })
         }
     },
     chooseData:function(){
@@ -349,7 +371,7 @@ export default {
     },
     getData: function () {
       let that = this;
-      getkmeansrpoject().then((res) => {
+      getrelationproject().then((res) => {
         if (res.code === 20000) {
           that.table_loading = false;
           that.tableData = res.data;
@@ -369,7 +391,7 @@ export default {
     getFileList: function () {
       let that = this;
       this.fileData = [];
-      getkmeansfilelist().then((res) => {
+      getrelationfilelist().then((res) => {
         if (res.code === 20000) {
           let data = res.data;
           for (let i = 0; i < data.length; i++) {

@@ -14,13 +14,28 @@ import sys
 import json
 import requests
 import os
-from pandas import json_normalize
-
+import datetime
 
 np.set_printoptions(suppress=True)
 
 project_id = sys.argv[1]
-algorithm = sys.argv[2]
+select_list = sys.argv[2]
+special = sys.argv[3]
+user = sys.argv[4]
+file_path = sys.argv[5]
+algorithm = sys.argv[6]
+
+special = int(special)
+
+if select_list == '-1':
+    column_list = []
+else:
+    column_list = select_list.split(',')
+    column_list = list(map(int, column_list))
+
+
+BASE_ROOT = 'media/static/modelresult/' + user + '/relation' + '/' + project_id
+time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 
 class MyEncoder(json.JSONEncoder):
@@ -118,7 +133,6 @@ def deal1_csv(temppath):
     return datasetname
 
 
-
 def read_csv():
     dataset = pd.read_csv('dataset_new1.csv')
     dataset = dataset.drop(dataset.columns[[0]], axis=1)
@@ -139,7 +153,7 @@ def deal_data(dataset):
     showbar(labels, gbdt, 'GBDT')
 
 
-def showbar(labels, model, method):
+def showbar(labels, model):
     feature_importance_df = pd.DataFrame({
         'name': labels,
         'importance': model.feature_importances_
@@ -147,81 +161,45 @@ def showbar(labels, model, method):
     feature_importance_df.sort_values(by='importance', ascending=False, inplace=True)
     x_axis = list(feature_importance_df['name'])
     y_axis = list(feature_importance_df['importance'])
-    json_data = {}
-    json_data['project_id'] = project_id
-    result_list = []
-    for i in range(len(x_axis)):
-        dict = {}
-        dict['label'] = x_axis[i]
-        dict['value'] = y_axis[i]
-        result_list.append(dict)
-    json_data['data'] = result_list
-    json_data = json.dumps(json_data, cls=NpEncoder)
-    requests.post('http://127.0.0.1:8000/api/save_relation_RF_result', data=json_data)
-    # plt.subplots(figsize=(20, 10))
-    # plt.title('importance factors of residential garbage')
-    # plt.ylabel('importance')
-    # plt.xlabel('factors')
-    # plt.xticks(fontsize=9, rotation=30)
-    # plt.bar(x_axis, y_axis)
-    # if method == 'GBDT':
-    #     plt.savefig('GBDT_importance.png')
-    # if method == 'RF':
-    #     plt.savefig('RF_importance.png')
-    # plt.show()
+    my_dict = {
+        'label': x_axis,
+        'value': y_axis
+    }
+    path = BASE_ROOT + '/randomforest'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    df = pd.DataFrame(my_dict)
+    df.to_excel(path + '/' + time + '.xlsx')
 
 
 def hot_matrix(dataset):
     corr_matrix = dataset.corr()
-    json_data = {}
-    json_data['project_id'] = project_id
-    result_list = []
     labels = list(corr_matrix.columns)
     dataframe = corr_matrix.values
-    for i in range(len(labels)):
-        dict = {}
-        dict['label'] = labels[i]
-        dict['year'] = dataframe[:, 0][i]
-        dict['garbage_clear'] = dataframe[:, 1][i]
-        dict['population'] = dataframe[:, 2][i]
-        dict['city_rural_ratio'] = dataframe[:, 3][i]
-        dict['household'] = dataframe[:, 4][i]
-        dict['people_per_capita'] = dataframe[:, 5][i]
-        dict['sex_ratio'] = dataframe[:, 6][i]
-        dict['age_0_14'] = dataframe[:, 7][i]
-        dict['age_15_64'] = dataframe[:, 8][i]
-        dict['age_65'] = dataframe[:, 9][i]
-        dict['disposable_income'] = dataframe[:, 10][i]
-        dict['consume_cost'] = dataframe[:, 11][i]
-        dict['public_cost'] = dataframe[:, 12][i]
-        dict['gdp'] = dataframe[:, 13][i]
-        dict['gdp_first_industry'] = dataframe[:, 14][i]
-        dict['gdp_second_industry'] = dataframe[:, 15][i]
-        dict['gdp_third_industry'] = dataframe[:, 16][i]
-        dict['gnp'] = dataframe[:, 17][i]
-        dict['education'] = dataframe[:, 18][i]
-        result_list.append(dict)
-    json_data['data'] = result_list
-    json_data = json.dumps(json_data, cls=NpEncoder)
-    requests.post('http://127.0.0.1:8000/api/save_relation_hot_matrix_result', data=json_data)
 
-    # plt.subplots(figsize=(12, 12))
-    # sns.heatmap(corr_matrix, annot=True, vmax=1, square=True, yticklabels=dataset.columns, xticklabels=dataset.columns, cmap="YlGnBu",annot_kws={'size':7})
-    # plt.savefig('heatmap.png')
-    # plt.show()
+    my_dict = {}
+    for i in range(len(labels)):
+        my_dict[labels[i]] = dataframe[:, i]
+
+    path = BASE_ROOT+'/hot_matrix'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    df = pd.DataFrame(my_dict)
+    df.to_excel(path + '/' + time + '.xlsx')
 
 
 def RF(dataset):
     scaler = MinMaxScaler()
-    dataset = dataset.drop(dataset.columns[[0]], axis=1)
     labels = dataset.columns.values
     dataset = scaler.fit_transform(dataset)
-    labels = labels[1:]
-    x = dataset[:, 1:]
-    y = dataset[:, 0]
+    labels = np.concatenate((labels[:special], labels[special+1:]))
+    x = np.concatenate((dataset[:, :special], dataset[:, special+1:]), axis=1)
+    y = dataset[:, special]
     forest = RandomForestClassifier(n_estimators=500, max_depth=6, random_state=0)
     forest.fit(x, y.astype('int'))
-    showbar(labels, forest, 'RF')
+    showbar(labels, forest)
 
 
 def plot_lostdata():
@@ -294,55 +272,36 @@ def ShowGRAHeatMap(DataFrame, labels):
 
 def gray_relate(dataset):
     dataframe = dataset
-    dataframe = dataframe.drop(dataframe.columns[[0]], axis=1)
     cols = dataframe.columns.values
     data_gray = GRA(dataframe)
-    # ShowGRAHeatMap(data_gray, cols)
 
     dataframe = data_gray.values
 
-    json_data = {}
-    json_data['project_id'] = project_id
-    result_list = []
+    my_dict = {}
     labels = cols
     for i in range(len(labels)):
-        dict = {}
-        dict['label'] = labels[i]
-        dict['garbage_clear'] = dataframe[:, 0][i]
-        dict['population'] = dataframe[:, 1][i]
-        dict['city_rural_ratio'] = dataframe[:, 2][i]
-        dict['household'] = dataframe[:, 3][i]
-        dict['people_per_capita'] = dataframe[:, 4][i]
-        dict['sex_ratio'] = dataframe[:, 5][i]
-        dict['age_0_14'] = dataframe[:, 6][i]
-        dict['age_15_64'] = dataframe[:, 7][i]
-        dict['age_65'] = dataframe[:, 8][i]
-        dict['disposable_income'] = dataframe[:, 9][i]
-        dict['consume_cost'] = dataframe[:, 10][i]
-        dict['public_cost'] = dataframe[:, 11][i]
-        dict['gdp'] = dataframe[:, 12][i]
-        dict['gdp_first_industry'] = dataframe[:, 13][i]
-        dict['gdp_second_industry'] = dataframe[:, 14][i]
-        dict['gdp_third_industry'] = dataframe[:, 15][i]
-        dict['gnp'] = dataframe[:, 16][i]
-        dict['education'] = dataframe[:, 17][i]
-        result_list.append(dict)
-    json_data['data'] = result_list
-    json_data = json.dumps(json_data, cls=NpEncoder)
-    requests.post('http://127.0.0.1:8000/api/save_grey_relation_result', data=json_data)
+        my_dict[labels[i]] = dataframe[:, i]
+
+    path = BASE_ROOT + '/greyrelation'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    df = pd.DataFrame(my_dict)
+    df.to_excel(path + '/' + time + '.xlsx')
 
 
 # 归一化
 def guiyihua():
+    global special
+    column_list.remove(special)
 
-    params = {'project_id': project_id}
-    res = requests.get('http://127.0.0.1:8000/api/get_relation_parameter', params=params)
-    json_data = json.loads(res.text).get('data')
+    df = pd.read_excel(file_path)
+    head_list = df.columns.values
+    special_head = head_list[special]
 
-    df = json_normalize(json_data)
-    df = df.drop(df.columns[[df.shape[1] - 1]], axis=1)
-
-    dataset = df.drop(df.columns[[0]], axis=1)
+    dataset = df.drop(df.columns[[column_list]], axis=1)
+    new_head_list = dataset.columns.values
+    special = list(new_head_list).index(special_head)
 
     datasety = dataset
     labels = dataset.columns
@@ -356,9 +315,10 @@ def guiyihua():
     for i in range(dataset.shape[1]):
         p = normalization(dataset[:, i])
 
-        if i == 0: k = p
+        if i == 0:
+            k = p
         else:
-            k=np.c_[k, p]
+            k = np.c_[k, p]
     df = pd.DataFrame(k, columns=labels)
     return df, datasety
 
@@ -369,39 +329,46 @@ def normalization(data):
 
 
 def get_pearsonr(dataset):
-    dataset = dataset.drop(dataset.columns[[0]], axis=1)
     cols = list(dataset.columns.values)
-    cols.pop(0)
+
+    del cols[special]
+
     dataset = dataset.values
     scaler = MinMaxScaler()
     dataset = scaler.fit_transform(dataset)
     corr_list = list()
     n = dataset.shape[1]
-    for i in range(1, n):
-        p = pearsonr(dataset[:, i], dataset[:, 0])
-        corr_list.append(p)
+    for i in range(n):
+        if i != special:
+            p = pearsonr(dataset[:, i], dataset[:, special])
+            corr_list.append(p)
 
-    json_data = {}
-    json_data['project_id'] = project_id
-    result_list = []
-    labels = cols
-    for i in range(len(labels)):
-        dict = {}
-        dict['label'] = labels[i]
-        dict['relate'] = corr_list[i][0]
-        dict['p_value'] = corr_list[i][1]
-        result_list.append(dict)
-    json_data['data'] = result_list
-    json_data = json.dumps(json_data, cls=NpEncoder)
-    requests.post('http://127.0.0.1:8000/api/save_pearson_result', data=json_data)
+    corr_list_trans = []
+    for item in corr_list:
+        corr_list_trans.append(list(item))
+
+    corr_list_trans = np.array(corr_list_trans)
+
+    my_dict = {
+        'label': cols,
+        'relate': corr_list_trans[:, 0],
+        'p_value': corr_list_trans[:, 1]
+    }
+
+    path = BASE_ROOT + '/pearsonr'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    df = pd.DataFrame(my_dict)
+    df.to_excel(path + '/' + time + '.xlsx')
+
     return corr_list
 
 
 if __name__ == '__main__':
-
-    dataset, datasety = guiyihua() # 归一化
+    dataset, datasety = guiyihua()  # 归一化
     if algorithm == '1':
-        hot_matrix(dataset) # 相关系数热力图
+        hot_matrix(dataset)  # 相关系数热力图
     if algorithm == '2':
         RF(dataset)
     if algorithm == '3':

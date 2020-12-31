@@ -480,12 +480,6 @@ export const constantRoutes = [
             meta: { title: '项目管理' }
           },
           {
-            path: 'data',
-            name: 'data',
-            component: () => import('@/views/repository/relation/data/index'),
-            meta: { title: '数据导入' }
-          },
-          {
             path: 'result',
             name: 'result',
             component: () => import('@/views/repository/index'),

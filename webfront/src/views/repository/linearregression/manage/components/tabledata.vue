@@ -205,6 +205,14 @@ export default {
     },
   },
   methods: {
+    isInArray(arr, item){
+      for (let i=0; i<arr.length; i++){
+        if (arr[i] === item){
+          return true
+        }
+      }
+      return false
+    },
     addPrograme:function(){
       this.add_dialog = true
     },
@@ -291,6 +299,9 @@ export default {
         }
         else if (this.checkList.length === 0){
             this.$message.error('请选择参考指标')
+        }
+        else if (this.isInArray(this.checkList, this.reference_col)){
+          this.$message.error('参考指标和试验指标不能重叠')
         }
         else{
             this.choose_col_dialog = false

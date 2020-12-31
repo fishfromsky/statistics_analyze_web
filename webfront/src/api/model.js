@@ -1597,3 +1597,47 @@ export function getkmeansmodelresult(data){
     params: data
   })
 }
+
+// 获取关联分析数据文件
+export function getrelationfilelist(){
+  return request({
+    url: '/getrelationfilelist',
+    method: 'get'
+  })
+}
+
+// 获取相关矩阵结果文件
+export function gethotmatrixmodelresult(data){
+  return request({
+    url: '/gethotmatrixmodelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取随机森林结果文件
+export function getrfmodelresult(data){
+  return request({
+    url: '/getrfmodelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取灰度关联结果文件
+export function getgreyrelationmodelresult(data){
+  return request({
+    url: '/getgreyrelationmodelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取皮尔逊系数模型结果文件
+export function getpearsonrmodelresult(data){
+  return request({
+    url: '/getpearsonrmodelresult',
+    method: 'get',
+    params: data
+  })
+}

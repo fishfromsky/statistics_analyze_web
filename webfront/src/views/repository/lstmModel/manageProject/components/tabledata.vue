@@ -205,6 +205,14 @@ export default {
     },
   },
   methods: {
+    isInArray(arr, item){
+      for (let i=0; i<arr.length; i++){
+        if (arr[i] === item){
+          return true
+        }
+      }
+      return false
+    },
     AmendData(index){
         this.form = this.page_data[index]
         this.amend_dialog = true
@@ -235,6 +243,9 @@ export default {
       }
       else if (this.add_form.name === ''){
           this.$message.error('请输入项目名称')
+      }
+      else if (this.isInArray(this.checkList, this.reference_col)){
+        thid.$message.error('参考指标和试验指标不能重叠')
       }
       else{
         let that = this

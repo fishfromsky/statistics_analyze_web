@@ -2,11 +2,11 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
     lstm_project, multi_regression_project, kmeans_project, kmeans_result, algorithm_project, relation_project, \
-    relation_parameter, relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
+    relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
     selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
     Garbage_Info_Country, Economy_Info_District, Population_Info_District, LinearRegression, LinearRegressionResult, \
     Grey_Relation_Result, PearsonResult, TestReport, Garbage_District, ModelLSTMFile, ModelLinearRegressionFile, \
-    ModelRegressionFile, ModelKmeansFile
+    ModelRegressionFile, ModelKmeansFile, ModelRelationFile
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -1766,6 +1766,70 @@ def getKmeansModelResult(request):
 
 @csrf_exempt
 @require_http_methods(['GET'])
+def getHotMatrixModelResult(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/relation/' + project_id+'/hot_matrix'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getGreyRelationModelResult(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/relation/' + project_id + '/greyrelation'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getRFModelResult(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/relation/' + project_id + '/randomforest'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getPearsonrModelResult(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/relation/' + project_id + '/pearsonr'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
 def getdatasetfromresult(request):
     response = {'code': 20000, 'message': 'success'}
     file_path = request.GET.get('file_path')
@@ -2197,64 +2261,11 @@ def delete_algorithm_list(request):
     return JsonResponse(response, safe=False)
 
 
-@csrf_exempt
-@require_http_methods(['GET'])
-def get_relation_parameter(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    data = relation_parameter.objects.all()
-    for item in data:
-        response['data'].append(to_dict(item))
-
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['POST'])
-def input_relation_parameter(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if relation_project.objects.filter(project_id=id).count() == 0:
-        response['code'] = 50000
-        response['message'] = '不存在该编号的项目'
-    else:
-        if relation_parameter.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
-            response['code'] = 50000
-            response['message'] = '数据库中存在该项目参数，请先删除'
-        else:
-            for i in range(len(data)):
-                if data[i].__contains__('year') and data[i].__contains__('garbage_clear') and data[i].__contains__('population') \
-                    and data[i].__contains__('ratio_city_rural') and data[i].__contains__('household') and data[i].__contains__('people_per_capita') \
-                    and data[i].__contains__('ratio_sex') and data[i].__contains__('age_0_14') and data[i].__contains__('age_15_64') \
-                    and data[i].__contains__('age_65') and data[i].__contains__('disposable_income') and data[i].__contains__('consume_cost') \
-                    and data[i].__contains__('public_cost') and data[i].__contains__('gdp') and data[i].__contains__('gdp_first_industry') \
-                    and data[i].__contains__('gdp_second_industry') and data[i].__contains__('gdp_third_industry') and data[i].__contains__('gnp')\
-                    and data[i].__contains__('education'):
-                    model = relation_parameter.objects.create(project_id=relation_project(project_id=id), year=data[i]['year'],
-                                                              garbage_clear=data[i]['garbage_clear'], population=data[i]['population'],
-                                                              ratio_city_rural=data[i]['ratio_city_rural'],
-                                                              household=data[i]['household'], people_per_capita=data[i]['people_per_capita'],
-                                                              ratio_sex=data[i]['ratio_sex'], age_0_14=data[i]['age_0_14'],
-                                                              age_15_64=data[i]['age_15_64'], age_65=data[i]['age_65'],
-                                                              disposable_income=data[i]['disposable_income'], consume_cost=data[i]['consume_cost'],
-                                                              public_cost=data[i]['public_cost'], gdp=data[i]['gdp'],
-                                                              gdp_first_industry=data[i]['gdp_first_industry'],
-                                                              gdp_second_industry=data[i]['gdp_second_industry'],
-                                                              gdp_third_industry=data[i]['gdp_third_industry'], gnp=data[i]['gnp'],
-                                                              education=data[i]['education'])
-                    model.save()
-                else:
-                    response['code'] = 50000
-                    response['message'] = '表头与数据不一致或者缺少数据'
-
-    return JsonResponse(response, safe=False)
-
-
-def thread_relation(id, sort):
-    ret = os.system('python backend/relationship/GBDT.py %s %s' % (id, sort))
+def thread_relation(project_id, drop_index, special, user, file_path, algorithm):
+    ret = os.system('python backend/relationship/GBDT.py %s %s %s %s %s %s' % (project_id, drop_index, special, user,
+                                                                               file_path, algorithm))
     if ret != 0:
-        model = relation_project.objects.get(project_id=id)
+        model = relation_project.objects.get(project_id=project_id)
         model.status = '运行出错'
         model.save()
 
@@ -2264,64 +2275,28 @@ def thread_relation(id, sort):
 def start_relation(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
-    id = body.get('project_id')
-    sort = body.get('algorithm')
-    if relation_parameter.objects.filter(project_id=relation_project(project_id=id)).count() == 0:
-        response['code'] = 50000
-        response['message'] = '该项目缺少数据无法实验，请先补充数据'
+    file_path = body.get('path')
+    user = body.get('name')
+    project_id = body.get('project_id')
+    special = body.get('special')
+    drop_col = body.get('drop_col')
+    algorithm = body.get('algorithm')
+    drop_index = ''
+    if len(drop_col) == 0:
+        drop_index = '-1'
     else:
-        model = relation_project.objects.get(project_id=id)
+        for i in range(len(drop_col)):
+            if i != len(drop_col) - 1:
+                drop_index = drop_index + str(drop_col[i]) + ','
+            else:
+                drop_index = drop_index + str(drop_col[i])
+
+        model = relation_project.objects.get(project_id=project_id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_relation, args=(id, sort))
+        task = threading.Thread(target=thread_relation, args=(project_id, drop_index, special, user, file_path,
+                                                              algorithm))
         task.start()
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['POST'])
-def save_relation_hot_matrix_result(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if relation_hot_matrix_result.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
-        last_sort = relation_hot_matrix_result.objects.filter(project_id=relation_project(project_id=id)).order_by(
-            '-id')[:1]
-        sort = last_sort.get().sort + 1
-    else:
-        sort = 1
-    for i in range(len(data)):
-        label = data[i]['label']
-        year = data[i]['year']
-        garbage_clear = data[i]['garbage_clear']
-        population = data[i]['population']
-        city_rural_ratio = data[i]['city_rural_ratio']
-        household = data[i]['household']
-        people_per_capita = data[i]['people_per_capita']
-        sex_ratio = data[i]['sex_ratio']
-        age_0_14 = data[i]['age_0_14']
-        age_15_64 = data[i]['age_15_64']
-        age_65 = data[i]['age_65']
-        disposable_income = data[i]['disposable_income']
-        consume_cost = data[i]['consume_cost']
-        public_cost = data[i]['public_cost']
-        gdp = data[i]['gdp']
-        gdp_first_industry = data[i]['gdp_first_industry']
-        gdp_second_industry = data[i]['gdp_second_industry']
-        gdp_third_industry = data[i]['gdp_third_industry']
-        gnp = data[i]['gnp']
-        education = data[i]['education']
-        model = relation_hot_matrix_result.objects.create(project_id=relation_project(project_id=id),
-                                             label=label, year=year, garbage_clear=garbage_clear, population=population,
-                                                          ratio_city_rural=city_rural_ratio, household=household,
-                                                          people_per_capita=people_per_capita, ratio_sex=sex_ratio,
-                                                          age_0_14=age_0_14, age_15_64=age_15_64, age_65=age_65,
-                                                          disposable_income=disposable_income, consume_cost=consume_cost,
-                                                          public_cost=public_cost, gdp=gdp, gdp_first_industry=gdp_first_industry, gdp_second_industry=gdp_second_industry,
-                                                          gdp_third_industry=gdp_third_industry, gnp=gnp,
-                                                          education=education, sort=sort)
-        model.save()
 
     return JsonResponse(response, safe=False)
 
@@ -2341,34 +2316,19 @@ def stop_relation(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_relation_hot_matrix_result(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = relation_hot_matrix_result.objects.filter(project_id=relation_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
-
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
-@require_http_methods(['POST'])
-def save_relation_RF_result(request):
     response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if relation_RF_result.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
-        last_sort = relation_RF_result.objects.filter(project_id=relation_project(project_id=id)).order_by(
-            '-id')[:1]
-        sort = last_sort.get().sort + 1
-    else:
-        sort = 1
-    for i in range(len(data)):
-        label = data[i]['label']
-        value = data[i]['value']
-        model = relation_RF_result.objects.create(project_id=relation_project(project_id=id), label=label, value=value,
-                                                  sort=sort)
-        model.save()
+    path = request.GET.get('path')
+    data = pd.read_excel(path)
+    data = data.drop(data.columns[[0]], axis=1)
+
+    label = data.columns.values
+    dataset = data.values
+    my_dict = []
+    for i in range(data.shape[0]):
+        my_dict.append(list(dataset[i]))
+
+    response['data'] = my_dict
+    response['label'] = list(label)
 
     return JsonResponse(response, safe=False)
 
@@ -2376,11 +2336,11 @@ def save_relation_RF_result(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_relation_RF_result(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = relation_RF_result.objects.filter(project_id=relation_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
+    response = {'code': 20000, 'message': 'success'}
+    path = request.GET.get('path')
+    data = pd.read_excel(path).values
+    response['label'] = data[:, 1].tolist()
+    response['value'] = data[:, 2].tolist()
 
     return JsonResponse(response, safe=False)
 
@@ -2700,6 +2660,16 @@ def uploadKMeansFile(request):
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
+def uploadRelationFile(request):
+    response = {'code': 20000, 'message': 'success'}
+    file = ModelRelationFile(file_url=request.FILES['file'])
+    file.save()
+    response['url'] = BASE_ROOT + 'media/' + str(file.file_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
 @require_http_methods(['GET'])
 def getdatafilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
@@ -2773,6 +2743,23 @@ def getmodelkmeansfilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     filelist = []
     for root, dirs, files in os.walk('media/static/modelfile/kmeans'):
+        if len(files) != 0:
+            for file in files:
+                file_dict = {}
+                file_dict['name'] = file
+                file_dict['url'] = os.path.join(root, file)
+                filelist.append(file_dict)
+
+    response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getmodelrelationfilelist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    filelist = []
+    for root, dirs, files in os.walk('media/static/modelfile/relation'):
         if len(files) != 0:
             for file in files:
                 file_dict = {}
@@ -3886,64 +3873,21 @@ def getLinearRegressionResult(request):
 
 
 @csrf_exempt
-@require_http_methods(['POST'])
-def save_Grey_Relation_Result(request):
-    response = {'code': 20000, 'message': 'success'}
-    body = json.loads(request.body)
-    id = body.get('project_id')
-    data = body.get('data')
-    if Grey_Relation_Result.objects.filter(project_id=relation_project(project_id=id)).count() != 0:
-        last_sort = Grey_Relation_Result.objects.filter(project_id=relation_project(project_id=id)).order_by(
-            '-id')[:1]
-        sort = last_sort.get().sort + 1
-    else:
-        sort = 1
-    for i in range(len(data)):
-        label = data[i]['label']
-        garbage_clear = data[i]['garbage_clear']
-        population = data[i]['population']
-        city_rural_ratio = data[i]['city_rural_ratio']
-        household = data[i]['household']
-        people_per_capita = data[i]['people_per_capita']
-        sex_ratio = data[i]['sex_ratio']
-        age_0_14 = data[i]['age_0_14']
-        age_15_64 = data[i]['age_15_64']
-        age_65 = data[i]['age_65']
-        disposable_income = data[i]['disposable_income']
-        consume_cost = data[i]['consume_cost']
-        public_cost = data[i]['public_cost']
-        gdp = data[i]['gdp']
-        gdp_first_industry = data[i]['gdp_first_industry']
-        gdp_second_industry = data[i]['gdp_second_industry']
-        gdp_third_industry = data[i]['gdp_third_industry']
-        gnp = data[i]['gnp']
-        education = data[i]['education']
-        model = Grey_Relation_Result.objects.create(project_id=relation_project(project_id=id),
-                                                    label=label, garbage_clear=garbage_clear,
-                                                    population=population,
-                                                    ratio_city_rural=city_rural_ratio, household=household,
-                                                    people_per_capita=people_per_capita, ratio_sex=sex_ratio,
-                                                    age_0_14=age_0_14, age_15_64=age_15_64, age_65=age_65,
-                                                    disposable_income=disposable_income,
-                                                    consume_cost=consume_cost,
-                                                    public_cost=public_cost, gdp=gdp,
-                                                    gdp_first_industry=gdp_first_industry,
-                                                    gdp_second_industry=gdp_second_industry,
-                                                    gdp_third_industry=gdp_third_industry, gnp=gnp,
-                                                    education=education, sort=sort)
-        model.save()
-
-    return JsonResponse(response, safe=False)
-
-
-@csrf_exempt
 @require_http_methods(['GET'])
 def get_grey_relation_result(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = Grey_Relation_Result.objects.filter(project_id=relation_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
+    response = {'code': 20000, 'message': 'success'}
+    path = request.GET.get('path')
+    data = pd.read_excel(path)
+    data = data.drop(data.columns[[0]], axis=1)
+
+    label = data.columns.values
+    dataset = data.values
+    my_dict = []
+    for i in range(data.shape[0]):
+        my_dict.append(list(dataset[i]))
+
+    response['data'] = my_dict
+    response['label'] = list(label)
 
     return JsonResponse(response, safe=False)
 
@@ -3976,11 +3920,12 @@ def save_pearson_result(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_pearson_relation_result(request):
-    response = {'code': 20000, 'message': 'success', 'data': []}
-    id = request.GET.get('project_id')
-    data = PearsonResult.objects.filter(project_id=relation_project(project_id=id))
-    for item in data:
-        response['data'].append(to_dict(item))
+    response = {'code': 20000, 'message': 'success'}
+    path = request.GET.get('path')
+    data = pd.read_excel(path).values
+    response['label'] = data[:, 1].tolist()
+    response['relate'] = data[:, 2].tolist()
+    response['p_value'] = data[:, 3].tolist()
 
     return JsonResponse(response, safe=False)
 
