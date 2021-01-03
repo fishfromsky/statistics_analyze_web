@@ -48,7 +48,7 @@ class NpEncoder(json.JSONEncoder):
             return super(NpEncoder, self).default(obj)
 
 
-def draw(ypredict, Y_test, gongshi, choose_col, special_head):
+def draw(ypredict, Y_test, gongshi, choose_col, special_head, coef, intercept):
 
     select_col = ''
     for i in range(len(choose_col)):
@@ -72,12 +72,14 @@ def draw(ypredict, Y_test, gongshi, choose_col, special_head):
     my_dict = {
         'fact': fact,
         'pred': pred,
-        'head': special_head,
-        'head_list': select_col,
-        'formula': formula,
-        'path': file_path
+        'head': [special_head],
+        'head_list': [select_col],
+        'formula': [formula],
+        'path': [file_path],
+        'coef': coef,
+        'intercept': [intercept]
     }
-    df = pd.DataFrame(my_dict)
+    df = pd.DataFrame.from_dict(my_dict, orient="index")
     df.to_excel(path + '/' + time + '.xlsx')
 
 
@@ -104,7 +106,7 @@ def yuchuli(iterations):
     x_poly = po.fit_transform(x)
     x_change = pd.DataFrame(x_poly, columns=po.get_feature_names())
     labels = x_change.columns
-    X_train, X_test, Y_train, Y_test = train_test_split(x_change,y,test_size=0.2, random_state=1)
+    X_train, X_test, Y_train, Y_test = train_test_split(x_change, y, test_size=0.2, random_state=1)
     model2 = LassoCV(alphas=alphaslist)  # 导入模型传入参数alpha=0.1
     model2.fit(X_train, Y_train)  # 训练数据
     # model2 = Lasso(max_iter = iterations, alphas=1).fit(X_train,Y_train)
@@ -112,33 +114,37 @@ def yuchuli(iterations):
     newindex = []
     if len(labels) == len(index):
         for i in range(len(index)):
-            if index[i] >= 0.00001 and i != 0: # 选择系数值绝对值大于等于0.00001的系数
+            if index[i] >= 0.00001 and i != 0:  # 选择系数值绝对值大于等于0.00001的系数
                 pass
             else:
                 pass
             if abs(index[i]) >= 0.00001:
                 newindex.append(i)
     ypre = model2.predict(X_test)
-    x_changenew = x_change.iloc[:, newindex] # 形成新的dataset
-    # 选择新的特征系数重新进行线性回归————————————————————————————————————————————————————————————————————————————————————-———
+    x_changenew = x_change.iloc[:, newindex]  # 形成新的dataset
+    # 选择新的特征系数重新进行线性回归
     X_train, X_test, Y_train, Y_test = train_test_split(x_changenew, y, test_size=0.2, random_state=1)
     model2 = RidgeCV(alphas=alphaslist)  # 导入模型传入参数alpha=0.1
     model2.fit(X_train, Y_train)  # 训练数据
     # model2 = Lasso(max_iter=iterations).fit(X_train, Y_train)
     index = model2.coef_
+    intercept = model2.intercept_
     gongshi = []
     for i in range(len(index)):
         if index[i] >= 0 and i != 0:
             gongshi.append('+')
         gongshi.append('%.5f' % index[i]+labels[i])
 
-    return ypre, Y_test, gongshi, choose_col, special_head
+    gongshi.append('+')
+    gongshi.append(str(intercept))
+
+    return ypre, Y_test, gongshi, choose_col, special_head, index, intercept
 
 
 if __name__ == '__main__':
     # 判定系数（r2）：说明列入模型的所有解释变量对因变量的联合的影响程度，不说明模型中单个解释变量的影响程度。
-    ypre, y_test, gongshi, choose_col, special_head = yuchuli(2000)
-    draw(ypre, y_test, gongshi, choose_col, special_head)
+    ypre, y_test, gongshi, choose_col, special_head, coef, intercept = yuchuli(2000)
+    draw(ypre, y_test, gongshi, choose_col, special_head, coef, intercept)
     dict = {}
     dict['project_id'] = project_id
     data = json.dumps(dict)

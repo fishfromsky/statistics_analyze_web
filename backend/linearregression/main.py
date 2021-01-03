@@ -87,12 +87,13 @@ def test():
     my_dict = {
         'fact': real,
         'pred': predict,
-        'head': new_special_head,
-        'head_list': choose_col,
-        'formula': formula,
-        'path': file_path
+        'head': [new_special_head],
+        'head_list': [choose_col],
+        'formula': [formula],
+        'coef': coef,
+        'intercept': [intercept]
     }
-    df = pd.DataFrame(my_dict)
+    df = pd.DataFrame.from_dict(my_dict, orient='index')
     df.to_excel(path + '/' + time + '.xlsx')
 
     dict = {}

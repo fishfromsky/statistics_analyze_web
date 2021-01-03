@@ -210,6 +210,11 @@ urlpatterns = [
     url('uploadlinearregressionfile', views.uploadLinearRegressionFile),  # 上传线性回归数据文件
     url('getlinearregressionmodelfile', views.getmodellinearregressionfilelist),  # 获取线性回归数据文件
     url('getfileresultlinearregression', views.getLinearRegressionModelResult),  # 获取多元线性回归结果文件
+    url('makepredictionlinearregression', views.makePredictionLinearRegression),  # 多元回归预测
+
+    url('makepredictionLSTM', views.makePredictionLstm),  # LSTM预测模型
+    url('getlstmpredictresult', views.getLSTMPredictionResult),  # 获取lstm预测结果
+    url('makepredictionregression', views.makePredictionRegression),  # 获取回归预测结果
 
     url('uploadregressionfile', views.uploadRegressionFile),  # 获取多元非线性回归数据文件
     url('getregressionfilelist', views.getmodelregressionfilelist),  # 获取多元非线性回归数据文件

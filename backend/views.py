@@ -23,7 +23,7 @@ from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 import numpy as np
 import threading
 
-BASE_ROOT = 'http://101.133.238.216:8000/'
+BASE_ROOT = 'http://127.0.0.1:8000/'
 
 
 def to_dict(self, fields=None, exclude=None):
@@ -1716,6 +1716,41 @@ def getlstmmodelresult(request):
     return JsonResponse(response, safe=False)
 
 
+def start_lstm_prediction_thread(path, days, user, project_id):
+    os.system('python backend/LSTM/predict.py %s %s %s %s' % (path, days, user, project_id))
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def makePredictionLstm(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    path = body.get('path')
+    days = body.get('days')
+    user = body.get('user')
+    project_id = body.get('project_id')
+    task = threading.Thread(target=start_lstm_prediction_thread, args=(path, days, user, project_id))
+    task.start()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getLSTMPredictionResult(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/modelresult/' + user + '/lstm/' + project_id + '/predict'
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
+    return JsonResponse(response, safe=False)
+
+
 @csrf_exempt
 @require_http_methods(['GET'])
 def getLinearRegressionModelResult(request):
@@ -1994,11 +2029,11 @@ def get_regression_result(request):
     path = request.GET.get('path')
     data = pd.read_excel(path)
     dataset = data.values
-    fact = dataset[:, 1]
-    pred = dataset[:, 2]
-    choose_data = dataset[0, 3]
-    choose_col = dataset[0, 4]
-    formula = dataset[0, 5]
+    fact = dataset[0, 1:]
+    pred = dataset[1, 1:]
+    choose_data = dataset[2][~pd.isnull(dataset[2])][1]
+    choose_col = dataset[3][~pd.isnull(dataset[3])][1]
+    formula = dataset[4][~pd.isnull(dataset[4])][1]
     r_square = r2_score(fact, pred)
     mse = mean_squared_error(fact, pred)
     mae = mean_absolute_error(fact, pred)
@@ -2012,6 +2047,23 @@ def get_regression_result(request):
     response['choose_data'] = choose_data
     response['choose_col'] = choose_col
     response['formula'] = formula
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def makePredictionRegression(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    file_path = body.get('path')
+    data = pd.read_excel(file_path)
+    dataset = data.values
+    coef = dataset[6][~pd.isnull(dataset[6])][1:]
+    intercept = dataset[7][~pd.isnull(dataset[7])][1:]
+    response['formula'] = dataset[4][~pd.isnull(dataset[4])][1]
+    response['choose_col'] = dataset[3][~pd.isnull(dataset[3])][1]
+    response['coef'] = coef.tolist()
+    response['intercept'] = intercept.tolist()
     return JsonResponse(response, safe=False)
 
 
@@ -3851,11 +3903,11 @@ def getLinearRegressionResult(request):
     path = request.GET.get('path')
     data = pd.read_excel(path)
     dataset = data.values
-    fact = dataset[:, 1]
-    pred = dataset[:, 2]
-    choose_data = dataset[0, 3]
-    choose_col = dataset[0, 4]
-    formula = dataset[0, 5]
+    fact = dataset[0, 1:]
+    pred = dataset[1, 1:]
+    choose_data = dataset[2][~pd.isnull(dataset[2])][1]
+    choose_col = dataset[3][~pd.isnull(dataset[3])][1]
+    formula = dataset[4][~pd.isnull(dataset[4])][1]
     r_square = r2_score(fact, pred)
     mse = mean_squared_error(fact, pred)
     mae = mean_absolute_error(fact, pred)
@@ -3869,6 +3921,23 @@ def getLinearRegressionResult(request):
     response['choose_data'] = choose_data
     response['choose_col'] = choose_col
     response['formula'] = formula
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def makePredictionLinearRegression(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    file_path = body.get('path')
+    data = pd.read_excel(file_path)
+    dataset = data.values
+    coef = dataset[5][~pd.isnull(dataset[5])][1:]
+    intercept = dataset[6][~pd.isnull(dataset[6])][1:]
+    response['formula'] = dataset[4][~pd.isnull(dataset[4])][1]
+    response['choose_col'] = dataset[3][~pd.isnull(dataset[3])][1]
+    response['coef'] = coef.tolist()
+    response['intercept'] = intercept.tolist()
     return JsonResponse(response, safe=False)
 
 

@@ -31,6 +31,7 @@
             @click="DeleteExcel(scope.$index)"
             >删除</el-button
           >
+          <el-button size="mini" type="success" @click="makePrediction(scope.$index)">预测</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -81,6 +82,31 @@
         </div>
       </div>
     </el-dialog>
+    <el-dialog title="数值预测" :visible.sync="predict_dialog">
+      <div class="report">
+        <div class="report-item">
+          <div class="report-title">选择指标：</div>
+          <div>{{predict_form.choose_col}}</div>
+        </div>
+        <div class="report-item">
+          <div class="report-title">回归公式：</div>
+          <div class="report-title">{{predict_form.formula}}</div>
+        </div>
+        <div class="report-item">
+          <div class="report-title">填写参数：</div>
+          <div v-for="item in predict_form.coef.length" :key="item">
+            <el-input v-model="formula_params[item-1]" size="mini" style="width: 50px; margin-left: 10px"></el-input>
+          </div>
+        </div>
+        <div class="report-item">
+          <div class="report-title">预测结果</div>
+          <div class="predict-result">{{predict_result}}</div>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button type="success" @click="startPrediction">开始预测</el-button>
+      </div>
+    </el-dialog>
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -96,15 +122,18 @@
 </template>
 
 <script>
+import CountTo from 'vue-count-to'
 import {
   getlinearregressionmodelresult,
   getlinearregressionresult,
   deleterelationexcelresult,
+  makepredictionlinearregression
 } from "@/api/model";
 import chartresult from "./components/resultchart";
 export default {
   components: {
     chartresult,
+    CountTo
   },
   props: {
     projectId: {
@@ -141,6 +170,15 @@ export default {
         rmse: "",
         mae: "",
       },
+      predict_dialog: false,
+      predict_form: {
+        choose_col: '',
+        coef: [],
+        intercept: [],
+        formula: ''
+      },
+      formula_params: [],
+      predict_result: 0
     };
   },
   watch: {
@@ -154,6 +192,24 @@ export default {
     },
   },
   methods: {
+    startPrediction:function(){
+      let flag = true
+      for (let i=0; i<this.formula_params.length; i++){
+        if (this.formula_params[i] === ''){
+          flag = false
+          this.$message.error('请输入完整参数')
+          break
+        }
+      }
+      if (flag){
+        let sum = 0;
+        for (let i=0; i<this.formula_params.length; i++){
+          sum = sum + this.predict_form.coef[i]*parseFloat(this.formula_params[i])
+        }
+        sum = sum+this.predict_form.intercept[0]
+        this.predict_result = sum.toFixed(4)
+      }
+    },
     DeleteExcel: function (val) {
       let that = this;
       let data = {};
@@ -222,6 +278,23 @@ export default {
         }
       });
     },
+    makePrediction(val){
+      let data = {}
+      data['path'] = this.page_data[val].path
+      makepredictionlinearregression(data).then(res=>{
+        if (res.code === 20000){
+          this.formula_params = []
+          this.predict_form.choose_col = res.choose_col
+          this.predict_form.coef = res.coef
+          this.predict_form.intercept = res.intercept
+          this.predict_form.formula = res.formula
+          this.predict_dialog = true
+          for (let i=0; i<res.coef.length; i++){
+            this.formula_params.push('')
+          }
+        }
+      })
+    },
     Visualization(val) {
       let that = this;
       let data = {};
@@ -278,5 +351,10 @@ export default {
 }
 .report-title {
   font-size: 15px;
+}
+.predict-result{
+  font-size: 20px;
+  margin-left: 20px;
+  color: orangered;
 }
 </style>

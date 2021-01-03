@@ -1641,3 +1641,39 @@ export function getpearsonrmodelresult(data){
     params: data
   })
 }
+
+// 多元线性回归预测接口
+export function makepredictionlinearregression(data){
+  return request({
+    url: '/makepredictionlinearregression',
+    method: 'post',
+    data
+  })
+}
+
+// lstm预测模型
+export function makepredictionLSTM(data){
+  return request({
+    url: '/makepredictionLSTM',
+    method: 'post',
+    data
+  })
+}
+
+// 获取lstm预测模型
+export function getlstmpredictionresult(data){
+  return request({
+    url: '/getlstmpredictresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取多元非线性回归预测
+export function makepredictionregression(data){
+  return request({
+    url: '/makepredictionregression',
+    method: 'post',
+    data
+  })
+}

@@ -31,9 +31,38 @@
             @click="DeleteExcel(scope.$index)"
             >删除</el-button
           >
+          <el-button size="mini" type="success" @click="makePrediction(scope.$index)">预测</el-button>
+          <el-button size="mini" type="success" @click="getPrediction">查看预测结果</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog :visible.sync="result_dialog" title="实验结果历史记录">
+      <el-table :data="excelList" border style="margin-top: 20px">
+        <el-table-column label="运行结果文件" prop="name"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="100">
+          <template slot-scope="{ row }">
+            <a style="color: #1890FF; font-size: 12px" :href="row.url">下载</a>
+            <el-button
+              @click="DeleteRelationExcel(row.url)"
+              type="text"
+              size="small"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+    <el-dialog title="数值预测" :visible.sync="predict_dialog">
+      <div class="report">
+        <div class="report-item">
+          <div class="report-title">输入预测年数：</div>
+          <el-input type="number" v-model="predictDay" style="margin-left: 20px; width: 120px"></el-input>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button type="success" @click="startPrediction">开始预测</el-button>
+      </div>
+    </el-dialog>
     <el-dialog :visible.sync="chart_dialog">
       <chartresult :chart-data="graph_data" style="height: 35vh"></chartresult>
       <div class="report">
@@ -97,7 +126,9 @@ import {
   deleterelationexcelresult,
   LstmProjectStart,
   getdatapathfromresult,
-  getexcelinfo
+  getexcelinfo,
+  makepredictionLSTM,
+  getlstmpredictionresult
 } from "@/api/model";
 import chartresult from "./components/resultchart";
 export default {
@@ -138,6 +169,11 @@ export default {
         rmse: "",
         mae: "",
       },
+      predictDay: '',
+      predict_dialog: false,
+      predictFilePath: '',
+      result_dialog: false,
+      excelList: []
     };
   },
   watch: {
@@ -151,6 +187,45 @@ export default {
     },
   },
   methods: {
+    getPrediction:function(){
+      this.result_dialog = true
+      this.getExcelResult()
+    },
+    getExcelResult() {
+      let that = this;
+      let username = this.getCookie("environment_name");
+      let data = {};
+      this.excelList = []
+      data["user"] = username;
+      data['project_id'] = this.project_id
+      getlstmpredictionresult(data).then((res) => {
+        if (res.code === 20000) {
+          let result = res.data;
+          for (let i = 0; i < result.length; i++) {
+            let dict = {};
+            dict["url"] = result[i];
+            let name = result[i].split("/");
+            dict["name"] = name[name.length - 1];
+            that.excelList.push(dict);
+          }
+        }
+      });
+    },
+    DeleteRelationExcel: function (index) {
+      let that = this
+      let data = {};
+      data["url"] = index;
+      deleterelationexcelresult(data).then((res) => {
+        if (res.code === 20000) {
+          that.result_dialog = false
+          this.$message({
+            type: "success",
+            message: "删除成功",
+          });
+          this.getExcelResult()
+        }
+      });
+    },
     DeleteExcel: function (val) {
       let that = this;
       let data = {};
@@ -229,6 +304,31 @@ export default {
           that.total_size = result_data.length;
         }
       });
+    },
+    makePrediction:function(val){
+      this.predict_dialog = true
+      this.predictFilePath = this.page_data[val].path
+    },
+    startPrediction:function(){
+      if (this.predictDay <= 0){
+        this.$message.error('输入年数必须大于0')
+      }
+      else if (this.predictDay > 10){
+        this.$message.error('输入年数必须小于10')
+      }
+      else{
+        let data = {}
+        data['path'] = this.predictFilePath
+        data["project_id"] = this.project_id;
+        data["user"] = this.getCookie("environment_name");
+        data['days'] = this.predictDay
+        makepredictionLSTM(data).then(res=>{
+          if (res.code === 20000){
+            this.$message.success('正在预测中')
+            this.predict_dialog = false
+          }
+        })
+      }
     },
     Visualization(val) {
       let that = this;
