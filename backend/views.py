@@ -6,7 +6,7 @@ from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, Cit
     selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
     Garbage_Info_Country, Economy_Info_District, Population_Info_District, LinearRegression, LinearRegressionResult, \
     Grey_Relation_Result, PearsonResult, TestReport, Garbage_District, ModelLSTMFile, ModelLinearRegressionFile, \
-    ModelRegressionFile, ModelKmeansFile, ModelRelationFile
+    ModelRegressionFile, ModelKmeansFile, ModelRelationFile, TestFile
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -1710,7 +1710,8 @@ def getlstmmodelresult(request):
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append(BASE_ROOT + root + '/' + file)
+            if len(dirs) != 0:
+                file_list.append(BASE_ROOT + root + '/' + file)
 
     response['data'] = file_list
     return JsonResponse(response, safe=False)
@@ -2019,6 +2020,52 @@ def finish_regression_experiment(request):
     model = multi_regression_project.objects.get(project_id=id)
     model.status = '未运行'
     model.save()
+    return JsonResponse(response, safe=False)
+
+
+def thread_Regression_Prediction_Excel(user, project_id, data_path, coef_path):
+    os.system('python backend/multi_regression/predictfromexcel.py %s %s %s %s' % (user, project_id, data_path,
+                                                                                   coef_path))
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def startRegressionExcelPrediction(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    result_path = body.get('result')
+    data_path = body.get('data')
+    user = body.get('user')
+    project_id = body.get('project_id')
+    data = pd.read_excel(result_path).values
+    coef = data[6][~pd.isnull(data[6])][1:].tolist()
+    test_data = pd.read_excel(data_path)
+
+    check_data = test_data.values[0].tolist()
+    if len(check_data) != len(coef):
+        response['code'] = 50000
+        response['message'] = '导入参数和需要计算参数数量不一致'
+    else:
+        task = threading.Thread(target=thread_Regression_Prediction_Excel, args=(user, project_id, data_path,
+                                                                                 result_path))
+        task.start()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getRegressionExcelPrediction(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/predictresult/' + user + '/regression/' + project_id
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
     return JsonResponse(response, safe=False)
 
 
@@ -2722,6 +2769,16 @@ def uploadRelationFile(request):
 
 
 @csrf_exempt
+@require_http_methods(['POST'])
+def uploadTestFile(request):
+    response = {'code': 20000, 'message': 'success'}
+    file = TestFile(file_url=request.FILES['file'])
+    file.save()
+    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
 @require_http_methods(['GET'])
 def getdatafilelist(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
@@ -2735,6 +2792,68 @@ def getdatafilelist(request):
                 filelist.append(file_dict)
 
     response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getmodeltestfilelist(request):
+    response = {'code': 20000, 'message': 'success', 'data': []}
+    filelist = []
+    for root, dirs, files in os.walk('media/static/testfile'):
+        if len(files) != 0:
+            for file in files:
+                file_dict = {}
+                file_dict['name'] = file
+                file_dict['url'] = os.path.join(root, file)
+                filelist.append(file_dict)
+
+    response['data'] = filelist
+    return JsonResponse(response, safe=False)
+
+
+def LinearPredictionfromexcel(user, project_id, data_path, result_path):
+    os.system('python backend/linearregression/predictfromexcel.py %s %s %s %s' % (user, project_id, data_path,
+                                                                                   result_path))
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def startLinearpredictionfromexcel(request):
+    response = {'code': 20000, 'message': 'success'}
+    body = json.loads(request.body)
+    result_path = body.get('result')
+    data_path = body.get('data')
+    user = body.get('user')
+    project_id = body.get('project_id')
+    data = pd.read_excel(result_path).values
+    coef = data[5][~pd.isnull(data[5])][1:].tolist()
+    test_data = pd.read_excel(data_path)
+
+    check_data = test_data.values[0].tolist()
+    if len(check_data) != len(coef):
+        response['code'] = 50000
+        response['message'] = '导入参数和需要计算参数数量不一致'
+    else:
+        task = threading.Thread(target=LinearPredictionfromexcel, args=(project_id, user, data_path, result_path))
+        task.start()
+
+    return JsonResponse(response, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def getLinearPredictionfromExcel(request):
+    response = {'code': 20000, 'message': 'success'}
+    user = request.GET.get('user')
+    project_id = request.GET.get('project_id')
+    path = 'media/static/predictresult/' + user + '/linearregression/' + project_id
+    file_list = []
+    for (root, dirs, files) in os.walk(path):
+        for file in files:
+            file_list.append(BASE_ROOT + root + '/' + file)
+
+    response['data'] = file_list
     return JsonResponse(response, safe=False)
 
 

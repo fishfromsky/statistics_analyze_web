@@ -94,14 +94,16 @@ def yuchuli(iterations):
     special_head = head_list[special]
 
     dataset = df.drop(df.columns[drop_list], axis=1)
-    new_head_list = df.columns.values
-    special = list(new_head_list).index(special_head)
+    new_head_list = dataset.columns.values
 
-    choose_col = dataset.columns.values
+    special = list(new_head_list).index(special_head)
 
     dataset = dataset.fillna(0.1)
     y = dataset.iloc[:, special]
     x = dataset.drop(dataset.columns[[special]], axis=1)
+
+    choose_col = x.columns.values
+
     po = PolynomialFeatures(degree=2, interaction_only=False, include_bias=False)
     x_poly = po.fit_transform(x)
     x_change = pd.DataFrame(x_poly, columns=po.get_feature_names())

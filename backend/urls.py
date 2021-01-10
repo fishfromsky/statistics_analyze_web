@@ -216,6 +216,13 @@ urlpatterns = [
     url('getlstmpredictresult', views.getLSTMPredictionResult),  # 获取lstm预测结果
     url('makepredictionregression', views.makePredictionRegression),  # 获取回归预测结果
 
+    url('uploadtestfile', views.uploadTestFile),  # 上传预测实验数据
+    url('gettestfilelist', views.getmodeltestfilelist),  # 获取预测实验数据
+    url('startlinearpredictionfromexcel', views.startLinearpredictionfromexcel),  # 从excel中开始预测
+    url('getlinearpredictionfromexcel', views.getLinearPredictionfromExcel),  # 从excel表中获取结果
+    url('startregressionpredictionfromexcel', views.startRegressionExcelPrediction),  # 开始非线性回归
+    url('getregressionpredictionfromexcel', views.getRegressionExcelPrediction),  # 获取非线性结果
+
     url('uploadregressionfile', views.uploadRegressionFile),  # 获取多元非线性回归数据文件
     url('getregressionfilelist', views.getmodelregressionfilelist),  # 获取多元非线性回归数据文件
     url('getregressionmodelresult', views.getRegressionModelResult),  # 获取多元非线性回归数据文件

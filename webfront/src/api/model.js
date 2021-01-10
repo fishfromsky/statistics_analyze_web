@@ -1677,3 +1677,47 @@ export function makepredictionregression(data){
     data
   })
 }
+
+// 获取实验数据文件
+export function gettestfilelist(){
+  return request({
+    url: '/gettestfilelist',
+    method: 'get'
+  })
+}
+
+// 从excel表中开始预测
+export function startlinearpredictionfromexcel(data){
+  return request({
+    url: '/startlinearpredictionfromexcel',
+    method: 'post',
+    data
+  })
+}
+
+// 获取多元线性回归预测结果
+export function getlinearpredictionfromexcel(data){
+  return request({
+    url: '/getlinearpredictionfromexcel',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取多元非线性回归预测结果
+export function startregressionpredictionfromexcel(data){
+  return request({
+    url: '/startregressionpredictionfromexcel',
+    method: 'post',
+    data
+  })
+}
+
+// 获取非线性回归预测结果
+export function getregressionpredictionfromexcel(data){
+  return request({
+    url: '/getregressionpredictionfromexcel',
+    method: 'get',
+    params: data
+  })
+}

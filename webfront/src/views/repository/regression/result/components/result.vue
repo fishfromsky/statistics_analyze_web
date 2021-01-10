@@ -32,9 +32,79 @@
             >删除</el-button
           >
           <el-button size="mini" type="success" @click="makePrediction(scope.$index)">预测</el-button>
+          <el-button size="mini" type="warning" @click="excelPrediction(scope.$index)">表格预测</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-drawer :visible.sync="drawer_dialog" direction="rtl" size="50%">
+      <el-scrollbar style="height: 100vh">
+        <div class="drawer-container">
+          <div class="drawer-title">导入表格预测数值</div>
+          <div class="divider" style="margin-top: 10px"></div>
+          <div class="drawer-vice-title">1  导入实验数据文件</div>
+          <el-upload
+            class="upload-demo"
+            action="http://101.133.238.216:8000/api/uploadtestfile"
+            :file-list="fileList"
+            :on-error="handleError"
+            :on-success="handleSuccess"
+            style="margin-top: 20px">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">
+              上传数据文件，仅限excel文件
+            </div>
+          </el-upload>
+          <div class="divider" style="margin-top: 20px"></div>
+          <div class="drawer-vice-title">2  选择实验数据文件</div>
+          <el-table v-loading="table_loading_predict" :key="tablekey_predict"
+          :data="page_data_predict" border fit highlight-current-row style="width: 100%; margin-top: 20px">
+            <el-table-column label="上传日期" align="center">
+              <template slot-scope="{row}">
+                <span>{{row.time}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="文件名" align="center">
+              <template slot-scope="{row}">
+                <span>{{row.name}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button type="success" size="mini" @click="startPredictfromExcel(scope.$index)">预测</el-button>
+                <el-button type="danger" size="mini" @click="deletePredictfromExcel(scope.$index)">删除</el-button>
+                <el-button type="primary" size="mini" @click="seePredictfromExcel">结果</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+            @size-change="handleSizeChangePreidct"
+            @current-change="handleCurrentChangePredict"
+            :current-page="currentPage_predict"
+            :page-sizes="[10, 20, 30, 40, 50]"
+            :page-size="page_size_predict"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total_size_predict"
+            style="margin-top: 20px"
+          />
+        </div>
+      </el-scrollbar>
+    </el-drawer>
+    <el-dialog :visible.sync="result_dialog" title="批量预测结果">
+      <el-table :data="predictResult" border style="margin-top: 20px">
+        <el-table-column label="运行结果文件" prop="file_name"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="100">
+          <template slot-scope="{ row }">
+            <a style="color: #1890FF; font-size: 12px" :href="row.url">下载</a>
+            <el-button
+              @click="DeletePredictionResult(row.path)"
+              type="text"
+              size="small"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
     <el-dialog :visible.sync="chart_dialog">
       <chartresult :chart-data="graph_data" style="height: 35vh"></chartresult>
       <div class="report">
@@ -94,8 +164,10 @@
         </div>
         <div class="report-item">
           <div class="report-title">填写参数：</div>
-          <div v-for="item in predict_form.coef.length" :key="item">
-            <el-input v-model="formula_params[item-1]" size="mini" style="width: 50px; margin-left: 10px"></el-input>
+          <div class="input-container">
+            <div v-for="item in predict_form.coef.length" :key="item">
+              <el-input v-model="formula_params[item-1]" size="mini" style="width: 50px; margin-left: 10px; margin-bottom: 5px; float: left"></el-input>
+            </div>
           </div>
         </div>
         <div class="report-item">
@@ -127,6 +199,10 @@ import {
   getregressionresult,
   deleterelationexcelresult,
   makepredictionregression,
+  gettestfilelist,
+  deletemodelfile,
+  startregressionpredictionfromexcel,
+  getregressionpredictionfromexcel
 } from "@/api/model";
 import chartresult from "./components/resultchart";
 export default {
@@ -176,7 +252,19 @@ export default {
         formula: ''
       },
       formula_params: [],
-      predict_result: 0
+      predict_result: 0,
+      drawer_dialog: false,
+      fileList: [],
+      selectpredictdatafile: null,
+      tablekey_predict: 0,
+      tableData_predict: [],
+      page_data_predict: [],
+      total_size_predict: 0,
+      currentPage_predict: 1,
+      page_size_predict: 10,
+      table_loading_predict: false,
+      predictResult: [],
+      result_dialog: false
     };
   },
   watch: {
@@ -190,6 +278,128 @@ export default {
     },
   },
   methods: {
+    DeletePredictionResult:function(path){
+      let data = {}
+      data['url'] = path
+      deletemodelfile(data).then(res=>{
+        if (res.code === 20000){
+          this.$message.success('删除成功')
+          this.seePredictfromExcel()
+        }
+      })
+    },
+    seePredictfromExcel:function(){
+      let data = {}
+      data['user'] = this.getCookie('environment_name')
+      data['project_id'] = this.project_id
+      getregressionpredictionfromexcel(data).then(res=>{
+        if (res.code === 20000){
+          let result = res.data;
+          let result_data = [];
+          for (let i = 0; i < result.length; i++) {
+            let dict = {};
+            let split_list = result[i].split("/");
+            let path = "";
+            for (let j = 3; j < split_list.length; j++) {
+              if (j != split_list.length - 1) {
+                path = path + split_list[j] + "/";
+              } else {
+                path = path + split_list[j];
+              }
+            }
+            dict["url"] = result[i];
+            dict["file_name"] = split_list[split_list.length - 1];
+            dict["path"] = path;
+            result_data.push(dict)
+          }
+          this.predictResult = result_data
+          this.result_dialog = true
+        }
+      })
+    },
+    startPredictfromExcel:function(val){
+      let data = {}
+      data['result'] = this.selectpredictdatafile
+      data['data'] = this.page_data_predict[val].path
+      data['user'] = this.getCookie('environment_name')
+      data['project_id'] = this.project_id
+      startregressionpredictionfromexcel(data).then(res=>{
+        if (res.code === 20000){
+          this.$message.success('正在预测中...')
+        }
+      })
+    },
+    handleError:function(){
+      this.$message.error('上传失败')
+    },
+    handleSuccess:function(){
+      this.$message.success('上传成功')
+      this.getTestFileList()
+    },
+     handleSizeChangePreidct:function(val){
+      this.table_loading_predict = true;
+      this.page_size_predict = val;
+      this.currentPage_predict = 1;
+      this.page_data_predict = [];
+      this.getTestFileList()
+    },
+    handleCurrentChangePredict:function(val){
+      this.currentPage_predict = val;
+      this.page_data_predict = [];
+      this.getTestFileList()
+    },
+    deletePredictfromExcel:function(val){
+      let data = {}
+      data['url'] = this.page_data_predict[val].path
+      deletemodelfile(data).then(res=>{
+        if (res.code === 20000){
+          this.$message.success('删除成功')
+          this.tableData_predict = []
+          this.page_data_predict = []
+          this.getTestFileList()
+        }
+      })
+    },
+    getTestFileList:function(){
+      this.page_data_predict = []
+      this.tableData_predict = []
+      this.table_loading_predict = true
+      gettestfilelist().then(res=>{
+        if (res.code === 20000){
+          let data = res.data;
+          let predictData = []
+          this.table_loading_predict = false
+          for (let i = 0; i < data.length; i++) {
+            let dict = {}
+            dict["name"] = data[i].name;
+            dict["path"] = data[i].url;
+            let splttime = data[i].url.split("/");
+            dict["time"] =
+              splttime[splttime.length - 4] +
+              "年" +
+              splttime[splttime.length - 3] +
+              "月" +
+              splttime[splttime.length - 2] +
+              "日";
+            predictData.push(dict);
+          }
+          this.tableData_predict = predictData
+          let size = this.page_size_predict;
+          let index = this.currentPage_predict - 1;
+          for (let i = index * size; i < (index + 1) * size; i++) {
+            if (i == predictData.length) {
+              break;
+            }
+            this.page_data_predict.push(predictData[i]);
+          }
+          this.total_size_predict = predictData.length;
+        }
+      })
+    },
+    excelPrediction:function(val){
+      this.drawer_dialog = true
+      this.selectpredictdatafile = this.page_data[val].path
+    },
     startPrediction:function(){
       let flag = true
       for (let i=0; i<this.formula_params.length; i++){
@@ -329,7 +539,9 @@ export default {
       this.initTable(this.project_id);
     },
   },
-  mounted() {},
+  mounted() {
+    this.getTestFileList()
+  },
 };
 </script>
 
@@ -354,5 +566,29 @@ export default {
   font-size: 20px;
   margin-left: 20px;
   color: orangered;
+}
+.drawer-container{
+  width: 100%;
+  min-height: 400px;
+  padding: 20px;
+  margin-bottom: 10vh;
+}
+.drawer-title{
+  color: dimgrey;
+  font-size: 20px;
+}
+.drawer-vice-title{
+  color: dimgray;
+  font-size: 15px;
+  margin-top: 20px;
+}
+.divider{
+  width: 100%;
+  height: 0;
+  border-top: 1px solid #555;
+}
+.input-container{
+  width: 100%;
+  min-height: 40px;
 }
 </style>

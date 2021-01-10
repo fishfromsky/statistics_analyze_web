@@ -362,6 +362,10 @@ class ModelRelationFile(models.Model):
     file_url = models.FileField("文件", upload_to="static/modelfile/relation/%Y/%m/%d")
 
 
+class TestFile(models.Model):
+    file_url = models.FileField("文件", upload_to="static/testfile/%Y/%m/%d")
+
+
 class Experiment_Result_Excel(models.Model):
     user = models.ForeignKey(to="UserProfile", on_delete=models.CASCADE)
     url = models.CharField(max_length=255, default='')

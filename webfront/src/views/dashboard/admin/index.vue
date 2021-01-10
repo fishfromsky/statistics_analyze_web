@@ -331,7 +331,8 @@ export default {
     VisitChart,
     ModelVisit,
     Student,
-    BarChart
+    BarChart,
+    CountTo
   },
   data() {
     return {
