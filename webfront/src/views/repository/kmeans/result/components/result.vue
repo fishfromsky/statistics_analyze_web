@@ -36,6 +36,12 @@
     </el-table>
     <el-dialog :visible.sync="chart_dialog">
       <chartresult :chart-data="graph_data" style="height: 50vh"></chartresult>
+      <div class="report-item">
+        <div class="report-title">簇内误差平方和SSE:</div>
+        <div class="report-title" style="margin-left: 10px">
+          {{ graph_data.sse }}
+        </div>
+      </div>
     </el-dialog>
     <el-pagination
       @size-change="handleSizeChange"
@@ -89,7 +95,8 @@ export default {
         yaxis: [],
         label: [],
         xlabel: '',
-        ylabel: ''
+        ylabel: '',
+        sse: null
       },
     };
   },
@@ -182,6 +189,7 @@ export default {
           this.graph_data.label = res.label;
           this.graph_data.xlabel = res.xlabel
           this.graph_data.ylabel = res.ylabel
+          this.graph_data.sse = res.SSE
           this.chart_dialog = true;
         }
       });

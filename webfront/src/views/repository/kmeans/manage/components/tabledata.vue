@@ -105,18 +105,7 @@
       custom-class="col_dialog"
     >
       <div class="col_dialog">
-        <span>选择聚类标记指标</span>
-        <el-radio-group
-          v-model="reference_col"
-          style="margin-top: 20px; margin-bottom: 20px"
-        >
-          <el-radio
-            v-for="item in select_cols"
-            :label="item"
-            :key="item"
-          ></el-radio>
-        </el-radio-group>
-        <span>选择聚类依据指标(只能选2个纬度)</span>
+        <span>选择聚类依据指标(只能选2个维度)</span>
         <el-checkbox-group
           v-model="checkList"
           style="margin-top: 20px; margin-bottom: 20px"
@@ -127,11 +116,17 @@
             :key="item"
           ></el-checkbox>
         </el-checkbox-group>
-      </div>
-        <div slot="footer">
-            <el-button @click="choose_col_dialog=false">取消</el-button>
-            <el-button type="primary" @click="startExperiment">确定</el-button>
+        <span>是否自定义k值</span>
+        <div class="switch-container" style="margin-top: 10px">
+          <el-switch v-model="choose_k_status"></el-switch>
+          <div style="margin-left: 20px">输入k值：</div>
+          <el-input v-model="k_value" :disabled="!choose_k_status" type="number" style="margin-left: 10px; width: 90px"></el-input>
         </div>
+      </div>
+      <div slot="footer">
+          <el-button @click="choose_col_dialog=false">取消</el-button>
+          <el-button type="primary" @click="startExperiment">确定</el-button>
+      </div>
     </el-dialog>
     <el-dialog :visible.sync="amend_dialog" title="修改数据" width="40%">
       <el-form :model="form">
@@ -187,7 +182,9 @@ export default {
       add_form: {},
       add_dialog: false,
       form: {},
-      amend_dialog: false
+      amend_dialog: false,
+      choose_k_status: false,
+      k_value: null
     };
   },
   watch: {
@@ -298,10 +295,7 @@ export default {
     },
     startExperiment:function(){
         let that = this
-        if (this.reference_col === null){
-            this.$message.error('请选择预测指标')
-        }
-        else if (this.checkList.length === 0){
+        if (this.checkList.length === 0){
             this.$message.error('请选择参考指标')
         }
         else if (this.checkList.length !== 2){
@@ -310,6 +304,9 @@ export default {
         else if (this.isInArray(this.checkList, this.reference_col)){
           this.$message.error('参考指标和试验指标不能重叠')
         }
+        else if (this.choose_k_status == true && this.k_value <= 0){
+          this.$message.error('请输入正确的k值')
+        }
         else{
             this.choose_col_dialog = false
             this.choose_data_dialog = false
@@ -317,7 +314,8 @@ export default {
             data['project_id'] = this.page_data[this.selected_project_index].project_id
             let index_list = this.Select_Index(this.select_cols, this.checkList)
             data['drop_col'] = index_list
-            data['special'] = this.getIndex(this.select_cols, this.reference_col)
+            data['choose_k'] = this.choose_k_status
+            data['k_value'] = this.k_value
             data['path'] = this.selectfilePath
             data['name'] = this.getCookie('environment_name')
             startkmeans(data).then(res=>{
@@ -413,5 +411,12 @@ export default {
   min-height: 100px;
   display: flex;
   flex-direction: column;
+}
+.switch-container{
+  width: 100%;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>

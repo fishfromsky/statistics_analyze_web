@@ -13,11 +13,9 @@ import os
 
 project_id = sys.argv[1]
 select_list = sys.argv[2]
-special = sys.argv[3]
-user = sys.argv[4]
-file_path = sys.argv[5]
-
-special = int(special)
+user = sys.argv[3]
+file_path = sys.argv[4]
+k_value = sys.argv[5]
 
 data_min = []
 norm_range = []
@@ -172,7 +170,7 @@ def bikmeans(dataset, k, distmeas=distEclud):
         centList[bestCentToSplit] = bestNewCents[0, :].tolist()[0]  # replace a centroid with two best centroids
         centList.append(bestNewCents[1, :].tolist()[0])
         clusterAssment[nonzero(clusterAssment[:, 0].A == bestCentToSplit)[0],:] = bestClustAss  # reassign new clusters, and SSE
-    return mat(centList), clusterAssment
+    return mat(centList), clusterAssment, lowestSSE
 
 
 def testnum():
@@ -194,8 +192,8 @@ def testnum():
 def diaoyong(classnum):
     df, datasety, labels = guiyihua()
     df = mat(df.values)
-    mycentroids, clustassing = bikmeans(df, classnum, distmeas=distEclud)
-    return mycentroids, clustassing, df, labels
+    mycentroids, clustassing, lowestSSE = bikmeans(df, classnum, distmeas=distEclud)
+    return mycentroids, clustassing, df, labels, lowestSSE
 
 
 def clusterclubs(clustassing, numclust, datmat):   #bikmeans分类画图
@@ -207,8 +205,11 @@ def clusterclubs(clustassing, numclust, datmat):   #bikmeans分类画图
 
 
 if __name__ == '__main__':
-    class_num = testnum()
-    mycentroids, clustassing, df, labels = diaoyong(class_num)
+    if k_value == '-1':
+        class_num = testnum()
+    else:
+        class_num = int(k_value)
+    mycentroids, clustassing, df, labels, lowestSSE = diaoyong(class_num)
     otherpoints = clusterclubs(clustassing, class_num, df)
     col_num = otherpoints[0].shape[1]
     data_tmp = []   # 暂存逆归一化后的数组
@@ -232,7 +233,8 @@ if __name__ == '__main__':
     my_dict = {
         label_index[0]: data_tmp[:, 0],
         label_index[1]: data_tmp[:, 1],
-        'label': data_tmp[:, 2]
+        'label': data_tmp[:, 2],
+        'SSE': lowestSSE
     }
     dataframe = pd.DataFrame(my_dict)
     path = 'media/static/modelresult/' + user + '/kmeans/'+project_id

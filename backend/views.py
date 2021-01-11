@@ -2154,9 +2154,9 @@ def amend_kmeans_project(request):
     return JsonResponse(response, safe=False)
 
 
-def thread_kmeans(project_id, drop_index, special, user, file_path):
-    ret = os.system('python backend/KMeans/kmeans1.py %s %s %s %s %s' % (project_id, drop_index, special, user,
-                                                                         file_path))
+def thread_kmeans(project_id, drop_index, user, file_path, k_value):
+    ret = os.system('python backend/KMeans/kmeans1.py %s %s %s %s %s' % (project_id, drop_index, user,
+                                                                         file_path, k_value))
     if ret != 0:
         model = kmeans_project.objects.get(project_id=project_id)
         model.status = '运行出错'
@@ -2171,8 +2171,13 @@ def start_kmeans(request):
     file_path = body.get('path')
     user = body.get('name')
     project_id = body.get('project_id')
-    special = body.get('special')
     drop_col = body.get('drop_col')
+    choose_k = body.get('choose_k')
+    k_value = body.get('k_value')
+    if choose_k:
+        k_value = str(k_value)
+    else:
+        k_value = '-1'
     drop_index = ''
     if len(drop_col) == 0:
         drop_index = '-1'
@@ -2186,7 +2191,7 @@ def start_kmeans(request):
         model = kmeans_project.objects.get(project_id=project_id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_kmeans, args=(project_id, drop_index, special, user, file_path))
+        task = threading.Thread(target=thread_kmeans, args=(project_id, drop_index, user, file_path, k_value))
         task.start()
 
     return JsonResponse(response, safe=False)
@@ -2220,8 +2225,10 @@ def get_result_kmeans(request):
     xaixs = normalization(dataset[:, 1])
     yaxis = normalization(dataset[:, 2])
     label = dataset[:, 3]
+    SSE = dataset[0, 4]
     response['xlabel'] = columns[1]
     response['ylabel'] = columns[2]
+    response['SSE'] = SSE
     response['xaxis'] = xaixs.tolist()
     response['yaxis'] = yaxis.tolist()
     response['label'] = label.tolist()
