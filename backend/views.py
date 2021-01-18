@@ -1973,9 +1973,9 @@ def getRegressionReport(request):
     return JsonResponse(response, safe=False)
 
 
-def thread_regression(project_id, drop_index, special, user, file_path):
-    ret = os.system('python backend/multi_regression/newpredict.py %s %s %s %s %s' % (project_id, drop_index, special,
-                                                                                      user, file_path))
+def thread_regression(project_id, drop_index, special, user, file_path, dim):
+    ret = os.system('python backend/multi_regression/newpredict.py %s %s %s %s %s %s' % (project_id, drop_index, special,
+                                                                                         user, file_path, dim))
     if ret != 0:
         model = multi_regression_project.objects.get(project_id=project_id)
         model.status = '运行出错'
@@ -1992,6 +1992,7 @@ def start_regression_experiment(request):
     project_id = body.get('project_id')
     special = body.get('special')
     drop_col = body.get('drop_col')
+    dim = body.get('dim')
     drop_index = ''
     if len(drop_col) == 0:
         drop_index = '-1'
@@ -2005,7 +2006,7 @@ def start_regression_experiment(request):
         model = multi_regression_project.objects.get(project_id=project_id)
         model.status = '正在运行'
         model.save()
-        task = threading.Thread(target=thread_regression, args=(project_id, drop_index, special, user, file_path))
+        task = threading.Thread(target=thread_regression, args=(project_id, drop_index, special, user, file_path, dim))
         task.start()
 
     return JsonResponse(response, safe=False)
@@ -2069,6 +2070,13 @@ def getRegressionExcelPrediction(request):
     return JsonResponse(response, safe=False)
 
 
+def remove_nan(list):
+    while np.nan in list:
+        list.remove(np.nan)
+
+    return list
+
+
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_regression_result(request):
@@ -2078,6 +2086,8 @@ def get_regression_result(request):
     dataset = data.values
     fact = dataset[0, 1:]
     pred = dataset[1, 1:]
+    fact = remove_nan(fact)
+    pred = remove_nan(pred)
     choose_data = dataset[2][~pd.isnull(dataset[2])][1]
     choose_col = dataset[3][~pd.isnull(dataset[3])][1]
     formula = dataset[4][~pd.isnull(dataset[4])][1]
@@ -4031,6 +4041,8 @@ def getLinearRegressionResult(request):
     dataset = data.values
     fact = dataset[0, 1:]
     pred = dataset[1, 1:]
+    fact = remove_nan(fact)
+    pred = remove_nan(pred)
     choose_data = dataset[2][~pd.isnull(dataset[2])][1]
     choose_col = dataset[3][~pd.isnull(dataset[3])][1]
     formula = dataset[4][~pd.isnull(dataset[4])][1]

@@ -127,6 +127,8 @@
             :key="item"
           ></el-checkbox>
         </el-checkbox-group>
+        <span>选择回归公式高阶次方</span>
+        <el-input v-model="formula_dim" type="number" style="margin-top: 20px; width: 120px"></el-input>
       </div>
         <div slot="footer">
             <el-button @click="choose_col_dialog=false">取消</el-button>
@@ -187,7 +189,8 @@ export default {
       add_form: {},
       add_dialog: false,
       form: {},
-      amend_dialog: false
+      amend_dialog: false,
+      formula_dim: null
     };
   },
   watch: {
@@ -307,6 +310,12 @@ export default {
         else if (this.isInArray(this.checkList, this.reference_col)){
           this.$message.error('参考指标不能和试验指标重叠')
         }
+        else if (this.formula_dim === null){
+          this.$message.error('请输入公式高次方项')
+        }
+        else if (this.formula_dim <= 0){
+          this.$message.error('输入高次方必须为正')
+        }
         else{
             this.choose_col_dialog = false
             this.choose_data_dialog = false
@@ -317,6 +326,7 @@ export default {
             data['special'] = this.getIndex(this.select_cols, this.reference_col)
             data['path'] = this.selectfilePath
             data['name'] = this.getCookie('environment_name')
+            data['dim'] = this.formula_dim
             startregression(data).then(res=>{
               if (res.code === 20000){
                   this.$message({

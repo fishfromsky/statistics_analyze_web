@@ -26,6 +26,9 @@ select_list = sys.argv[2]
 special = sys.argv[3]
 user = sys.argv[4]
 file_path = sys.argv[5]
+dim = sys.argv[6]
+
+dim = int(dim)
 
 special = int(special)
 
@@ -104,7 +107,7 @@ def yuchuli(iterations):
 
     choose_col = x.columns.values
 
-    po = PolynomialFeatures(degree=2, interaction_only=False, include_bias=False)
+    po = PolynomialFeatures(degree=dim, interaction_only=False, include_bias=False)
     x_poly = po.fit_transform(x)
     x_change = pd.DataFrame(x_poly, columns=po.get_feature_names())
     labels = x_change.columns
@@ -116,11 +119,11 @@ def yuchuli(iterations):
     newindex = []
     if len(labels) == len(index):
         for i in range(len(index)):
-            if index[i] >= 0.00001 and i != 0:  # 选择系数值绝对值大于等于0.00001的系数
+            if index[i] >= 0 and i != 0:  # 选择系数值绝对值大于等于0.00001的系数
                 pass
             else:
                 pass
-            if abs(index[i]) >= 0.00001:
+            if abs(index[i]) >= 0:
                 newindex.append(i)
     ypre = model2.predict(X_test)
     x_changenew = x_change.iloc[:, newindex]  # 形成新的dataset
