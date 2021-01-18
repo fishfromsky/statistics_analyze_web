@@ -2071,10 +2071,12 @@ def getRegressionExcelPrediction(request):
 
 
 def remove_nan(list):
-    while np.nan in list:
-        list.remove(np.nan)
+    result = []
+    for item in list:
+        if item != '':
+            result.append(float(item))
 
-    return list
+    return result
 
 
 @csrf_exempt
@@ -2082,7 +2084,7 @@ def remove_nan(list):
 def get_regression_result(request):
     response = {'code': 20000, 'message': 'success'}
     path = request.GET.get('path')
-    data = pd.read_excel(path)
+    data = pd.read_excel(path, keep_default_na=False)
     dataset = data.values
     fact = dataset[0, 1:]
     pred = dataset[1, 1:]
@@ -2099,8 +2101,8 @@ def get_regression_result(request):
     response['mse'] = mse
     response['mae'] = mae
     response['rmse'] = rmse
-    response['fact'] = fact.tolist()
-    response['pred'] = pred.tolist()
+    response['fact'] = fact
+    response['pred'] = pred
     response['choose_data'] = choose_data
     response['choose_col'] = choose_col
     response['formula'] = formula
@@ -4054,8 +4056,8 @@ def getLinearRegressionResult(request):
     response['mse'] = mse
     response['mae'] = mae
     response['rmse'] = rmse
-    response['fact'] = fact.tolist()
-    response['pred'] = pred.tolist()
+    response['fact'] = fact
+    response['pred'] = pred
     response['choose_data'] = choose_data
     response['choose_col'] = choose_col
     response['formula'] = formula
