@@ -2,8 +2,8 @@
   <div class="inner index_tabs">
     <!--header-->
     <div class="header">
-      <div class="school-badge"></div>
-      <div class="college-badge"></div>
+      <!-- <div class="school-badge"></div>
+      <div class="college-badge"></div> -->
       <div class="bg_header">
         <!-- <img class="school-badge" src="../../image/badge.png" />
         <img class="college-badge" src="../../image/college.png" /> -->
