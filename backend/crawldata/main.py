@@ -4,6 +4,16 @@ from scrapy.cmdline import execute
 import pandas as pd
 import datetime
 
+# # 更新代理
+# from proxies import Proxies
+# a = Proxies()
+# a.verify_proxies()
+# print (a.proxies)
+# proxie = a.proxies
+# with open('proxies.txt', 'w') as f:
+#     for proxy in proxie:
+#          f.write(proxy+'\n')
+
 #爬取全国的空气污染数据
 # execute('scrapy crawl nationalpm'.split())
 #爬取世界的空气污染数据

@@ -47,6 +47,7 @@ class NationalWaterPollutionSpider(scrapy.Spider):
                      item[namelist[i]] = ''
                  else:
                      item[namelist[i]] = data.xpath('.//text()').extract()[0]
+             #         返回提取到的每个item数据 ，给管道文件处理，同时还会回来继续执行后面的代码
              yield item
      except Exception as e:
          print(e)
