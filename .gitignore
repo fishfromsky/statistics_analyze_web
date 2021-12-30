@@ -1,0 +1,9 @@
+node_modules/
+settings.py
+.idea/
+__pycache__/
+.env.development
+.env.production
+.env.staging
+/webfront/debug.log
+media/

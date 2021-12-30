@@ -1,0 +1,280 @@
+<template>
+    <div :class="className" :style="{width: width,height: height}" ref="myEchart"></div>
+</template>
+<script>
+import { getgarbagecountry } from '@/api/model'
+import echarts from "echarts"
+import resize from './mixins/resize'
+import $ from "jquery"
+import "../../../../../node_modules/echarts-gl/dist/echarts-gl.js";
+import "../../../../../node_modules/echarts/map/js/province/shanghai.js";
+
+export default {
+  name: "echarts",
+  mixins:[resize],
+  props:{
+    className: {
+      type: String,
+      default: 'chart'
+    },
+    width: {
+      type: String,
+      default: '100%'
+    },
+    height: {
+      type: String,
+      default: '300px'
+    },
+    autoResize: {
+      type: Boolean,
+      default: true
+    },
+  },
+  data() {
+    return {
+      chart: null,
+      datax: []
+    };
+  },
+  mounted() {
+    this.getData()
+  },
+  beforeDestroy() {
+    if (!this.chart) {
+      return;
+    }
+    this.chart.dispose();
+    this.chart = null;
+  },
+  methods: {
+    getData:function(){
+      let that = this
+      this.datax = []
+      getgarbagecountry().then(res=>{
+        if (res.code === 20000){
+          let result = res.data
+          for (let i=0; i<result.length; i++){
+            that.datax.push([result[i].longitude, result[i].latitude, parseFloat(result[i].production), result[i].name, result[i].production, result[i].district])
+          }
+          that.chinaConfigure()
+        }
+      })
+    },
+    tipFormatter:function(params){
+        var name = params.data[3];
+        var value = params.data[4];
+        let res =
+          "<div class='div-tip'><span style='color:#fff;'>" +
+          name +
+          "</span><br/>数据：" +
+          value+"</div>";
+        return res
+    },
+    chinaConfigure() {
+      let that = this
+      let myChart = echarts.init(this.$refs.myEchart); //这里是为了获得容器所在位置
+      window.onresize = myChart.resize;
+      myChart.setOption({
+        // 进行相关配置
+        backgroundColor: "rgba(0, 0, 0, 0)",
+        tooltip: {
+          trigger: "item",
+          backgroundColor: "rgba(0, 161, 255, 0.5)",
+          borderColor: "#00faff",
+          showDelay: 0,
+          hideDelay: 0,
+          enterable: true,
+          transitionDuration: 0,
+          extraCssText: "z-index:100",
+          formatter: function (params, ticket, callback) {
+            //根据业务自己拓展要显示的内容
+            return that.tipFormatter(params)
+          },
+        },
+        geo3D: {
+          map: "上海",
+          shading: "lambert",
+          regions: [
+            {
+              name: "黄浦区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "徐汇区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "长宁区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "静安区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "普陀区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "虹口区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "杨浦区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "闵行区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "宝山区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "嘉定区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "浦东新区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "金山区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "松江区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "青浦区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "奉贤区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+            {
+              name: "崇明区",
+              itemStyle: {
+                color: "#062031",
+              },
+            },
+          ],
+          light: {
+            main: {
+              intensity: 4,
+              shadow: true,
+              shadowQuality: "low",
+              alpha: 150,
+              beta: 100,
+            },
+            ambient: {
+              intensity: 0,
+            },
+          },
+          viewControl: {
+            distance: 170,
+            panMouseButton: "left",
+            rotateMouseButton: "right",
+            alpha:40,
+            center: [0,-30,0], // 视角中心点，旋转也会围绕这个中心点旋转，默认为[0,0,0]
+          },
+          groundPlane: {
+            show: false,
+            color: "#999",
+          },
+          postEffect: {
+            enable: true,
+            bloom: {
+              enable: false,
+            },
+            SSAO: {
+              radius: 1,
+              intensity: 1,
+              enable: true,
+            },
+            depthOfField: {
+              enable: false,
+              focalRange: 10,
+              blurRadius: 10,
+              fstop: 1,
+            },
+          },
+          temporalSuperSampling: {
+            enable: true,
+          },
+          itemStyle: {
+            borderWidth: 1.5,
+            borderColor: "#43D0D6",
+          },
+          regionHeight: 2,
+        },
+        series: [
+          {
+            type: "bar3D",
+            coordinateSystem: "geo3D",
+            shading: "lambert",
+            data: that.datax,
+            barSize: 0.8,
+            minHeight: 0.2,
+            // silent: true,
+            itemStyle: {
+              color: "#33ffff",
+              opacity: 0.7,
+            },
+          },
+        ],
+      });
+    },
+  },
+};
+</script>
+
+<style scoped>
+.echarts{
+  background: url('bg.png');
+  background-position: center center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+.div-tip{
+  width: 80px;
+  height: 50px;
+  background: url("frame.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center center;
+}
+</style>

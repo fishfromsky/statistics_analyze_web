@@ -1,0 +1,4 @@
+运行main.py得到结果
+
+
+运行plot_allocation.py画图，p=12需要改，12表示集散厂个数
