@@ -297,7 +297,11 @@ export const constantRoutes = [
     path: '/repository',
     component: Layout,
     redirect: '/repository/p_median',
+<<<<<<< HEAD
     meta: { title: '决策模型', icon: 'algo'},
+=======
+    meta: { title: '模型仓库', icon: 'algo'},
+>>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
     children: [
       {
         path: 'p_median',
@@ -383,6 +387,7 @@ export const constantRoutes = [
         ]
       },
       {
+<<<<<<< HEAD
         path: 'greenHouse',
         name: 'greenHouse',
         redirect: '/repository/greenHouse',
@@ -424,6 +429,8 @@ export const constantRoutes = [
         ]
       },
       {
+=======
+>>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
         path: 'lstmModel',
         name: 'lstmModel',
         redirect: '/repository/lstmModel',
@@ -444,6 +451,7 @@ export const constantRoutes = [
           }
         ]
       },
+<<<<<<< HEAD
        {
         path: 'linearregression',
         name: 'linearregression',
@@ -465,6 +473,8 @@ export const constantRoutes = [
           }
         ]
       },
+=======
+>>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
       {
         path: 'linearregression',
         name: 'linearregression',

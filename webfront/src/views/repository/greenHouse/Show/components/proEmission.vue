@@ -46,7 +46,17 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      chartData
+    }
+  },
+  watch:{
+     chartData: {
+        deep: true,
+        handler(val) {
+        this.setOptions(val)
+                }
+      }
   },
   mounted() {
     let this_ = this;

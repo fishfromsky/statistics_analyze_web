@@ -84,7 +84,10 @@ export default {
                borderWidth :3
             },
             backgroundColor: "rgb(8, 15, 62)"
-          }
+          },
+          "magicType": {
+            type: ['line', 'bar','stack']
+                },  //切换为折线图，切换为柱状图
         }
       },
       "tooltip": {
@@ -94,7 +97,6 @@ export default {
           textStyle: {
             color: "#fff"
           }
-
         },
       },
       "grid": {
@@ -111,7 +113,7 @@ export default {
         textStyle: {
           color: '#90979c',
         },
-        "data": ['CO2排放','N2O排放','CH4排放','总排放','CO2抵消']
+        "data": ['CO2净排','N2O净排','CH4净排']
       },
 
 
@@ -191,11 +193,8 @@ export default {
       }],
       "series": [
       {
-        "name": "CO2排放",
+        "name": "CO2净排",
         "type": "bar",
-        "stack": "总量",
-        "barMaxWidth": 35,
-        "barGap": "10%",
         "itemStyle": {
           "normal": {
             "color": "rgba(65,105,225,1)",
@@ -211,25 +210,12 @@ export default {
             }
           }
         },
-        "data": [
-           17,
-           19,
-           27,
-           35,
-           40,
-           47,
-           56,
-           64,
-          77,
-           92
-        ],
+        "data": [1.7, 0.4, 2.0, 2.3, 3.6, 3.6, 3.7, 5.2, 5.3, 7.1],
       },
       {
-        "name": "N2O排放",
+        "name": "N2O净排",
         "type": "bar",
-        "stack": "总量",
-        "barMaxWidth": 35,
-        "barGap":  '-100%',
+
         "itemStyle": {
           "normal": {
             "color": "rgba(64,224,208,1)",
@@ -245,23 +231,11 @@ export default {
             }
           }
         },
-        "data": [
-           1,
-           1,
-           2,
-           2,
-           3,
-           3,
-           4,
-           5,
-           6,
-           7,
-        ],
+        "data": [0.1, 0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3],
       },  
       {
-        "name": "CH4排放",
+        "name": "CH4净排",
         "type": "bar",
-        "stack": "总量",
         "itemStyle": {
           "normal": {
             "color": "#FF6666",
@@ -275,81 +249,7 @@ export default {
             }
           }
         },
-        "data": [
-        142,
-        149,
-        156,
-        155,
-        159,
-        170,
-        176,
-        178,
-        174,
-        163,
-        ]
-      },
-      {
-        "name": "总排放",
-        "type": "line",
-        symbolSize: 10,
-        symbol: 'circle',
-        "itemStyle": {
-          "normal": {
-            "color": "rgba(219,112,147,1)",
-            "barBorderRadius": 0,
-            "label": {
-              "show": true,
-              "position": "top",
-              formatter: function (p) {
-                return p.value > 0 ? (p.value) : '';
-              }
-            }
-          }
-        },
-        "data": [
-         161,
-         171,
-         186,
-         193,
-         203,
-         221,
-         237,
-         248,
-         258,
-         263,
-        ]
-      },
-      {
-        "name": "CO2抵消",
-        "type": "bar",
-        "stack": "总量",
-        "barMaxWidth": 35,
-        "barGap": "10%",
-        "itemStyle": {
-          "normal": {
-            "color": "rgba(	255,255,0,1)",
-            "barBorderRadius": 0,
-            "label": {
-              "show": true,
-              "position": "top",
-              formatter: function (p) {
-                return p.value > 0 ? (p.value) : '';
-              }
-            }
-          }
-        },
-        "data": [
-         14,
-         16,
-         22,
-         28,
-         32,
-         38,
-         45,
-         52,
-         63,
-         75,
-        ]
+        "data": [6.2, 5.4, 5.8, 6.3, 4.9, 4.9, 4.9, 5.5, 5.8, 3.3]
       },
       ]
     };

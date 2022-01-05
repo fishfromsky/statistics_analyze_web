@@ -149,7 +149,11 @@ cd vue-element-admin
 
 # install dependency
 npm install
+<<<<<<< HEAD
 m 
+=======
+
+>>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
 # develop
 npm run dev
 ```

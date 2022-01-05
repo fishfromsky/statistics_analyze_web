@@ -82,7 +82,8 @@ export default {
                borderWidth :3
             },
             backgroundColor: "rgb(8, 15, 62)"
-          }
+          },
+          
         }
       },
       "tooltip": {
