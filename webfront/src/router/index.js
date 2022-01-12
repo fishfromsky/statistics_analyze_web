@@ -297,7 +297,11 @@ export const constantRoutes = [
     path: '/repository',
     component: Layout,
     redirect: '/repository/p_median',
+<<<<<<< HEAD
+    meta: { title: '决策模型', icon: 'algo'},
+=======
     meta: { title: '模型仓库', icon: 'algo'},
+>>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
     children: [
       {
         path: 'p_median',
@@ -383,6 +387,50 @@ export const constantRoutes = [
         ]
       },
       {
+<<<<<<< HEAD
+        path: 'greenHouse',
+        name: 'greenHouse',
+        redirect: '/repository/greenHouse',
+        meta: { title: '温室气体排放预测模型' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'manage',
+            component: () => import('@/views/repository/greenHouse/manageProject/index.vue'),
+            meta: { title: '管理项目'}
+          },
+          {
+            path: 'test',
+            name: 'echartstest',
+            component: () => import('@/views/repository/index'),
+            meta: { title: '结果展示' },
+            children:[
+              {
+                path:'Nation',
+                name:'Nation',
+                component:()=>import('@/views/repository/greenHouse/Show/Nation'),
+                meta:{title:'全国情况'},
+              },
+              {
+                path:'SH',
+                name:'SH',
+                component:()=>import('@/views/repository/greenHouse/Show/index'),
+                meta:{title:'上海市情况'},
+              },
+              {
+                path:'NationMap',
+                name:'NationMap',
+                component:()=>import('@/views/repository/greenHouse/Show/NationMap'),
+                meta:{title:'各省份情况'},
+              },
+            ]
+          }
+        ]
+      },
+      {
+=======
+>>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
         path: 'lstmModel',
         name: 'lstmModel',
         redirect: '/repository/lstmModel',
@@ -403,6 +451,30 @@ export const constantRoutes = [
           }
         ]
       },
+<<<<<<< HEAD
+       {
+        path: 'linearregression',
+        name: 'linearregression',
+        redirect: '/repository/linearregression',
+        meta: { title: '多元线性回归' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
+            path: 'manage',
+            name: 'linearregressionmanage',
+            component: () => import('@/views/repository/linearregression/manage/index'),
+            meta: { title: '管理项目' }
+          },
+          {
+            path: 'result',
+            name: 'linearregressionresult',
+            component: () => import('@/views/repository/linearregression/result/index'),
+            meta: { title: '结果查询' }
+          }
+        ]
+      },
+=======
+>>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
       {
         path: 'linearregression',
         name: 'linearregression',
