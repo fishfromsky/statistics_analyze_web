@@ -1,12 +1,12 @@
-from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City,\
-    Garbage_Info_City,District,Town,Gargabe_Deal_City,Gargage_Deal_Capacity_City,Garbage_Deal_Volume_City,\
+from .models import UserProfile, ModelsList, FactoryList, Economy_Info_City, City, Population_Info_City, \
+    Garbage_Info_City, District, Town, Gargabe_Deal_City, Gargage_Deal_Capacity_City, Garbage_Deal_Volume_City, \
     p_median_project, basic, ts, rrc, cost_matrix, TransferFactoryList, CollectFactoryList, Crawl_Data_Record, \
     lstm_project, multi_regression_project, kmeans_project, kmeans_result, algorithm_project, relation_project, \
     relation_hot_matrix_result, relation_RF_result, garbage_element, model_table, Img, \
     selected_algorithm_table, File, Dangerous_Garbage_City, garbage_clear, GarbageIron, Experiment_Result_Excel, \
     Garbage_Info_Country, Economy_Info_District, Population_Info_District, LinearRegression, LinearRegressionResult, \
     Grey_Relation_Result, PearsonResult, TestReport, Garbage_District, ModelLSTMFile, ModelLinearRegressionFile, \
-    ModelRegressionFile, ModelKmeansFile, ModelRelationFile, TestFile
+    ModelRegressionFile, ModelKmeansFile, ModelRelationFile, TestFile, Garbage_City_Production
 
 from django.http import JsonResponse
 from django.db.models.fields import DateTimeField
@@ -55,7 +55,7 @@ def login(request):
         response['message'] = 'please use post method'
         return JsonResponse(response, safe=False)
     user_info = json.loads(request.body)
-    print('user:',user_info)
+    print('user:', user_info)
     username = user_info.get('username')
     password = user_info.get('password')
     if not username:
@@ -168,7 +168,7 @@ def getModel(request):
 def fetchModel(request):
     title = request.GET.get('title')
     star = request.GET.get('star')
-    response = {'code': 20000, 'data':[]}
+    response = {'code': 20000, 'data': []}
     if title is None and star is None:
         modellist = ModelsList.objects.all()
         for model in modellist:
@@ -362,7 +362,8 @@ def addCity(request):
             response['code'] = 50000
             response['message'] = "表头和数据表不一致或者缺少数据！"
             break
-    return JsonResponse(response,safe = False)
+    return JsonResponse(response, safe=False)
+
 
 # 批量导入区表
 @csrf_exempt
@@ -382,6 +383,7 @@ def addDistrict(request):
             response['message'] = "表头和数据表不一致或缺少数据！"
             break
     return JsonResponse(response, safe=False)
+
 
 # 批量导入城镇表
 @csrf_exempt
@@ -427,8 +429,10 @@ def addEconomyCity(request):
                 gdp_second_industry = data[i]['gdp_second_industry']
                 gdp_third_industry = data[i]['gdp_third_industry']
                 list = Economy_Info_City.objects.create(
-                    city=City(id=city_id), year=year, gdp=gdp, gdp_per_capita=gdp_per_capita, gdp_growth_rate=gdp_growth_rate,
-                    gdp_first_industry=gdp_first_industry, gdp_second_industry=gdp_second_industry, gdp_third_industry=gdp_third_industry)
+                    city=City(id=city_id), year=year, gdp=gdp, gdp_per_capita=gdp_per_capita,
+                    gdp_growth_rate=gdp_growth_rate,
+                    gdp_first_industry=gdp_first_industry, gdp_second_industry=gdp_second_industry,
+                    gdp_third_industry=gdp_third_industry)
                 list.save()
         else:
             response['code'] = 50000
@@ -446,7 +450,9 @@ def addPopulationCity(request):
     body = json.loads(request.body)
     data = body.get('data')
     for i in range(len(data)):
-        if data[i].__contains__('year') and data[i].__contains__('population') and data[i].__contains__('population_density') and data[i].__contains__('population_rate') and data[i].__contains__('households') and data[i].__contains__('average_person_per_household'):
+        if data[i].__contains__('year') and data[i].__contains__('population') and data[i].__contains__(
+                'population_density') and data[i].__contains__('population_rate') and data[i].__contains__(
+                'households') and data[i].__contains__('average_person_per_household'):
             if Population_Info_City.objects.filter(year=data[i]['year']).count() != 0:
                 response['code'] = 50000
                 response['message'] = '该年份数据已存在，请先删除'
@@ -457,14 +463,17 @@ def addPopulationCity(request):
                 population_rate = data[i]['population_rate']
                 households = data[i]['households']
                 average_person_per_household = data[i]['average_person_per_household']
-                list = Population_Info_City.objects.create(city=City(id=city_id), year=year, population=population, population_density=population_density,
-                                        population_rate=population_rate, households=households, average_person_per_household=average_person_per_household)
+                list = Population_Info_City.objects.create(city=City(id=city_id), year=year, population=population,
+                                                           population_density=population_density,
+                                                           population_rate=population_rate, households=households,
+                                                           average_person_per_household=average_person_per_household)
                 list.save()
         else:
             response['code'] = 50000
             response['message'] = '表头和数据表不一致或者缺少数据!'
             break
     return JsonResponse(response, safe=False)
+
 
 # 批量导入全市生活垃圾表
 @csrf_exempt
@@ -491,8 +500,10 @@ def addbatchgarbagedata_city(request):
                 response['message'] = '该年份数据已存在，请先删除'
                 break
             else:
-                list = Garbage_Info_City.objects.create(city=City(id=city_id), year=year, rate_of_treated=rate_of_treated,
-                                                        collect_transport_garbage=collect_transport_garbage, volume_of_treated=volume_of_treated)
+                list = Garbage_Info_City.objects.create(city=City(id=city_id), year=year,
+                                                        rate_of_treated=rate_of_treated,
+                                                        collect_transport_garbage=collect_transport_garbage,
+                                                        volume_of_treated=volume_of_treated)
                 list.save()
                 pass
         else:
@@ -505,11 +516,12 @@ def addbatchgarbagedata_city(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def addGarbageDealCity(request):
-    response = {'code':20000,'message':'success'}
+    response = {'code': 20000, 'message': 'success'}
     city_id = 1
     body = json.loads(request.body)
     data = body.get('data')
-    column_list = ['year', 'factory_num_total', 'collect_factory_num', 'landfill', 'incineration', 'compost', 'else_num']
+    column_list = ['year', 'factory_num_total', 'collect_factory_num', 'landfill', 'incineration', 'compost',
+                   'else_num']
     for i in range(len(data)):
         flag = True
         for key in data[i].keys():
@@ -527,15 +539,17 @@ def addGarbageDealCity(request):
                 incineration = data[i]['incineration'] if 'incineration' in data[i].keys() else ''
                 compost = data[i]['compost'] if 'compost' in data[i].keys() else ''
                 else_num = data[i]['else_num'] if 'else_num' in data[i].keys() else ''
-                list = Gargabe_Deal_City.objects.create(city=City(id=city_id), year=year, collect_factory_num=collect_factory_num,
+                list = Gargabe_Deal_City.objects.create(city=City(id=city_id), year=year,
+                                                        collect_factory_num=collect_factory_num,
                                                         factory_num_total=factory_num_total, landFill=landFill,
-                                                    incineration=incineration, compost=compost, else_num=else_num)
+                                                        incineration=incineration, compost=compost, else_num=else_num)
                 list.save()
         else:
             response['code'] = 50000
             response['message'] = '表头和数据表不一致或者缺少数据!'
             break
     return JsonResponse(response, safe=False)
+
 
 # 批量导入全市无害化处能力表
 @csrf_exempt
@@ -562,13 +576,17 @@ def addGarbageDealCapacityCity(request):
                 incineration = data[i]['incineration'] if 'incineration' in data[i].keys() else ''
                 compost = data[i]['compost'] if 'compost' in data[i].keys() else ''
                 else_num = data[i]['else_num'] if 'else_num' in data[i].keys() else ''
-                list = Gargage_Deal_Capacity_City.objects.create(city=City(id=city_id), year=year, deal_num_total=deal_num_total, landfill=landfill, incineration=incineration, compost=compost, else_num=else_num)
+                list = Gargage_Deal_Capacity_City.objects.create(city=City(id=city_id), year=year,
+                                                                 deal_num_total=deal_num_total, landfill=landfill,
+                                                                 incineration=incineration, compost=compost,
+                                                                 else_num=else_num)
                 list.save()
         else:
             response['code'] = 50000
             response['message'] = '表头与数据表不一致'
             break
     return JsonResponse(response, safe=False)
+
 
 # 批量导入全市无害化处理量表
 @csrf_exempt
@@ -595,7 +613,10 @@ def addGarbageDealVolumeCity(request):
                 incineration = data[i]['incineration'] if 'incineration' in data[i].keys() else ''
                 compost = data[i]['compost'] if 'compost' in data[i].keys() else ''
                 else_num = data[i]['else_num'] if 'else_num' in data[i].keys() else ''
-                list = Garbage_Deal_Volume_City.objects.create(city=City(id=city_id), year=year, deal_volume_total=deal_volume_total, landfill=landfill, incineration=incineration, compost=compost, else_num=else_num)
+                list = Garbage_Deal_Volume_City.objects.create(city=City(id=city_id), year=year,
+                                                               deal_volume_total=deal_volume_total, landfill=landfill,
+                                                               incineration=incineration, compost=compost,
+                                                               else_num=else_num)
                 list.save()
         else:
             response['code'] = 50000
@@ -703,7 +724,9 @@ def addFactoryListCity(request):
     body = json.loads(request.body)
     data = body.get('data')
     for i in range(len(data)):
-        if data[i].__contains__('name') and data[i].__contains__('district') and data[i].__contains__('company') and data[i].__contains__('address') and data[i].__contains__('type') and data[i].__contains__('typeId') and data[i].__contains__('longitude') and data[i].__contains__('latitude') and data[i].__contains__('deal'):
+        if data[i].__contains__('name') and data[i].__contains__('district') and data[i].__contains__('company') and \
+                data[i].__contains__('address') and data[i].__contains__('type') and data[i].__contains__('typeId') and \
+                data[i].__contains__('longitude') and data[i].__contains__('latitude') and data[i].__contains__('deal'):
             name = data[i]['name']
             district = data[i]['district']
             company = data[i]['company']
@@ -713,7 +736,8 @@ def addFactoryListCity(request):
             longitude = data[i]['longitude']
             latitude = data[i]['latitude']
             deal = data[i]['deal']
-            list = FactoryList(name=name, district=district, address=address, company=company, type=type, typeId=typeId, longitude=longitude, latitude=latitude, deal=deal)
+            list = FactoryList(name=name, district=district, address=address, company=company, type=type, typeId=typeId,
+                               longitude=longitude, latitude=latitude, deal=deal)
             list.save()
         else:
             response['code'] = 50000
@@ -729,14 +753,17 @@ def addTransferFactory(request):
     body = json.loads(request.body)
     data = body.get('data')
     for i in range(len(data)):
-        if data[i].__contains__('district') and data[i].__contains__('name') and data[i].__contains__('address') and data[i].__contains__('longitude') and data[i].__contains__('latitude') and data[i].__contains__('capacity'):
+        if data[i].__contains__('district') and data[i].__contains__('name') and data[i].__contains__('address') and \
+                data[i].__contains__('longitude') and data[i].__contains__('latitude') and data[i].__contains__(
+                'capacity'):
             district = data[i]['district']
             name = data[i]['name']
             address = data[i]['address']
             longitude = data[i]['longitude']
             latitude = data[i]['latitude']
             capacity = data[i]['capacity']
-            list = TransferFactoryList(district=district, name=name, address=address, longitude=longitude, latitude=latitude, capacity=capacity)
+            list = TransferFactoryList(district=district, name=name, address=address, longitude=longitude,
+                                       latitude=latitude, capacity=capacity)
             list.save()
         else:
             response['code'] = 50000
@@ -756,6 +783,7 @@ def getTransferFactory(request):
         response['data'].append(to_dict(list))
 
     return JsonResponse(response, safe=False)
+
 
 # 修改中转站信息表
 @csrf_exempt
@@ -779,6 +807,7 @@ def AmendTransferFactory(request):
     record.district = district
     record.save()
     return JsonResponse(response, safe=False)
+
 
 # 删除中转站信息
 @csrf_exempt
@@ -804,7 +833,8 @@ def addtransferbyrow(request):
     latitude = body.get('latitude')
     capacity = body.get('capacity')
     district = body.get('district')
-    record = TransferFactoryList(name=name, address=address, longitude=longitude, latitude=latitude, capacity=capacity, district=district)
+    record = TransferFactoryList(name=name, address=address, longitude=longitude, latitude=latitude, capacity=capacity,
+                                 district=district)
     record.save()
     return JsonResponse(response, safe=False)
 
@@ -836,7 +866,8 @@ def addfactorylistbyrow(request):
     typeId = body.get('typeId')
     company = body.get('company')
     district = body.get('district')
-    record = FactoryList(name=name, address=address, longitude=longitude, latitude=latitude, deal=deal, type=type, typeId=typeId, company=company, district=district)
+    record = FactoryList(name=name, address=address, longitude=longitude, latitude=latitude, deal=deal, type=type,
+                         typeId=typeId, company=company, district=district)
     record.save()
     return JsonResponse(response, safe=False)
 
@@ -891,7 +922,8 @@ def AddCollectFactory(request):
     body = json.loads(request.body)
     data = body.get('data')
     for i in range(len(data)):
-        if data[i].__contains__('district') and data[i].__contains__('address') and data[i].__contains__('longitude') and data[i].__contains__('latitude'):
+        if data[i].__contains__('district') and data[i].__contains__('address') and data[i].__contains__(
+                'longitude') and data[i].__contains__('latitude'):
             district = data[i]['district']
             address = data[i]['address']
             longitude = data[i]['longitude']
@@ -930,6 +962,7 @@ def geteconomydata_city(request):
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
 
+
 # 请求城市人口表数据
 @csrf_exempt
 @require_http_methods(['GET'])
@@ -940,6 +973,19 @@ def getpopulation_city(request):
     for list in data:
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
+
+
+# 请求城市人口表数据
+@csrf_exempt
+@require_http_methods(['GET'])
+def getgarbage_city_production(request):
+    response = {'code': 20000, 'message': 'success'}
+    data = Garbage_City_Production.objects.all()
+    response['data'] = []
+    for list in data:
+        response['data'].append(to_dict(list))
+    return JsonResponse(response, safe=False)
+
 
 # 请求城市生活垃圾表数据
 @csrf_exempt
@@ -952,6 +998,7 @@ def getgarbage_city(request):
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
 
+
 # 请求城市无害化处理厂表数据
 @csrf_exempt
 @require_http_methods(['GET'])
@@ -963,6 +1010,7 @@ def getgarbagedeal_city(request):
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
 
+
 # 请求城市无害化处理能力表数据
 @csrf_exempt
 @require_http_methods(['GET'])
@@ -973,6 +1021,7 @@ def getgarbagecapacity_city(request):
     for list in data:
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
+
 
 # 请求城市无害化处理量表数据
 @csrf_exempt
@@ -986,7 +1035,6 @@ def getgarbagevolume_city(request):
     return JsonResponse(response, safe=False)
 
 
-
 # 请求p_median项目
 @csrf_exempt
 @require_http_methods(['GET'])
@@ -997,6 +1045,7 @@ def getpmedianproject(request):
     for list in data:
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
+
 
 # 修改p_median项目
 @csrf_exempt
@@ -1015,6 +1064,7 @@ def amendpmedianproject(request):
     data.cost_matrix_size = body.get('cost_matrix_size')
     data.save()
     return JsonResponse(response, safe=False)
+
 
 # 修改经济表数据
 @csrf_exempt
@@ -1041,9 +1091,10 @@ def amendeconomydata_city(request):
     data.save()
     return JsonResponse(response, safe=False)
 
+
 # 删除经济表数据
 @csrf_exempt
-@ require_http_methods(['POST'])
+@require_http_methods(['POST'])
 def deleteeconomydata_city(request):
     response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
@@ -1051,6 +1102,7 @@ def deleteeconomydata_city(request):
     data = Economy_Info_City.objects.get(id=id)
     data.delete()
     return JsonResponse(response, safe=False)
+
 
 # 修改人口表数据
 @csrf_exempt
@@ -1070,6 +1122,7 @@ def amendpopulationdata_city(request):
     data.save()
     return JsonResponse(response, safe=False)
 
+
 # 删除人口表数据
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -1080,6 +1133,7 @@ def deletepopulationdata_city(request):
     data = Population_Info_City.objects.get(id=id)
     data.delete()
     return JsonResponse(response, safe=False)
+
 
 # 修改生活垃圾表数据
 @csrf_exempt
@@ -1096,6 +1150,7 @@ def amendgarbagedata_city(request):
     data.save()
     return JsonResponse(response, safe=False)
 
+
 # 删除生活垃圾表数据
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -1106,6 +1161,7 @@ def deletegarbagedata_city(request):
     data = Garbage_Info_City.objects.get(id=id)
     data.delete()
     return JsonResponse(response, safe=False)
+
 
 # 修改无害化处理厂表数据
 @csrf_exempt
@@ -1125,6 +1181,7 @@ def amendgarbagedealdata_city(request):
     data.save()
     return JsonResponse(response, safe=False)
 
+
 # 删除无害化处理厂表数据
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -1135,6 +1192,7 @@ def deletegarbagedealdata_city(request):
     data = Gargabe_Deal_City.objects.get(id=id)
     data.delete()
     return JsonResponse(response, safe=False)
+
 
 # 修改无害化处理能力表数据
 @csrf_exempt
@@ -1165,6 +1223,7 @@ def deletegarbagecapacitydata_city(request):
     data.delete()
     return JsonResponse(response, safe=False)
 
+
 # 修改无害化处理量表数据
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -1181,6 +1240,7 @@ def amendgarbagevolumedata_city(request):
     data.else_num = body.get('else_num')
     data.save()
     return JsonResponse(response, safe=False)
+
 
 # 删除无害化处理量表数据
 @csrf_exempt
@@ -1212,11 +1272,14 @@ def addsinglerow_cityeconomy(request):
         response['code'] = 50000
         response['message'] = '该年份数据已存在，请先删除'
     else:
-        data = Economy_Info_City.objects.create(city=City(id=city_id),  year=year, gdp=gdp, gdp_per_capita=gdp_per_capita,
+        data = Economy_Info_City.objects.create(city=City(id=city_id), year=year, gdp=gdp,
+                                                gdp_per_capita=gdp_per_capita,
                                                 gdp_growth_rate=gdp_growth_rate, gdp_first_industry=gdp_first_industry,
-                                                gdp_second_industry=gdp_second_industry, gdp_third_industry=gdp_third_industry)
+                                                gdp_second_industry=gdp_second_industry,
+                                                gdp_third_industry=gdp_third_industry)
         data.save()
     return JsonResponse(response, safe=False)
+
 
 # 添加一条人口表数据
 @csrf_exempt
@@ -1235,10 +1298,13 @@ def addsinglepopulation(request):
         response['code'] = 50000
         response['message'] = '该年份数据已存在，请先删除'
     else:
-        data = Population_Info_City.objects.create(city=City(id=city_id), year=year, population=population, population_density=population_density,
-                                                   population_rate=population_rate, households=households, average_person_per_household=average_person_per_household)
+        data = Population_Info_City.objects.create(city=City(id=city_id), year=year, population=population,
+                                                   population_density=population_density,
+                                                   population_rate=population_rate, households=households,
+                                                   average_person_per_household=average_person_per_household)
         data.save()
     return JsonResponse(response, safe=False)
+
 
 # 添加一条生活垃圾表数据
 @csrf_exempt
@@ -1249,7 +1315,8 @@ def addsinglegarbageinfocity(request):
     city_id = 1
     year = body.get('year')
     rate_of_treated = body.get('rate_of_treated') if body.get('rate_of_treated') is not None else ''
-    collect_transport_garbage = body.get('collect_transport_garbage') if body.get('collect_transport_garbage') is not None else ''
+    collect_transport_garbage = body.get('collect_transport_garbage') if body.get(
+        'collect_transport_garbage') is not None else ''
     volume_of_treated = body.get('volume_of_treated') if body.get('volume_of_treated') is not None else ''
     if Garbage_Info_City.objects.filter(year=year).count() != 0:
         response['code'] = 50000
@@ -1280,10 +1347,13 @@ def addsinglegarbagedealcity(request):
         response['code'] = 50000
         response['message'] = '该年份数据已存在，请先删除'
     else:
-        data = Gargabe_Deal_City.objects.create(city=City(id=city_id), year=year, collect_factory_num=collect_factory_num,
-                                                factory_num_total=factory_num_total, landFill=landFill, incineration=incineration, compost=compost, else_num=else_num)
+        data = Gargabe_Deal_City.objects.create(city=City(id=city_id), year=year,
+                                                collect_factory_num=collect_factory_num,
+                                                factory_num_total=factory_num_total, landFill=landFill,
+                                                incineration=incineration, compost=compost, else_num=else_num)
         data.save()
     return JsonResponse(response, safe=False)
+
 
 # 添加一条无害化处理能力表数据
 @csrf_exempt
@@ -1302,9 +1372,12 @@ def addsinglegarbagedealcapacity(request):
         response['code'] = 50000
         response['message'] = '该年份数据已存在，请先删除'
     else:
-        data = Gargage_Deal_Capacity_City.objects.create(city=City(id=city_id), year=year, deal_num_total=deal_num_total, landfill=landfill, incineration=incineration, compost=compost, else_num=else_num)
+        data = Gargage_Deal_Capacity_City.objects.create(city=City(id=city_id), year=year,
+                                                         deal_num_total=deal_num_total, landfill=landfill,
+                                                         incineration=incineration, compost=compost, else_num=else_num)
         data.save()
     return JsonResponse(response, safe=False)
+
 
 # 添加一条无害化处理量表数据
 @csrf_exempt
@@ -1323,7 +1396,9 @@ def addsinglegarbagedealvolume(request):
         response['code'] = 50000
         response['message'] = '该年份数据已存在，请先删除'
     else:
-        data = Garbage_Deal_Volume_City.objects.create(city=City(id=city_id), year=year, deal_volume_total=deal_volume_total, landfill=landfill, incineration=incineration, compost=compost, else_num=else_num)
+        data = Garbage_Deal_Volume_City.objects.create(city=City(id=city_id), year=year,
+                                                       deal_volume_total=deal_volume_total, landfill=landfill,
+                                                       incineration=incineration, compost=compost, else_num=else_num)
         data.save()
     return JsonResponse(response, safe=False)
 
@@ -1340,9 +1415,11 @@ def add_p_median_project(request):
         response['code'] = 50000
         response['message'] = '该项目已存在，请先删除！'
     else:
-        data = p_median_project.objects.create(name=name, basic_size=0, ts_size=0, rrc_size=0, cost_matrix_size=0, project_id=project_id)
+        data = p_median_project.objects.create(name=name, basic_size=0, ts_size=0, rrc_size=0, cost_matrix_size=0,
+                                               project_id=project_id)
         data.save()
     return JsonResponse(response, safe=False)
+
 
 # 启动集散厂优化模型
 @csrf_exempt
@@ -1363,6 +1440,7 @@ def start_p_median_project(request):
     project.save()
     return JsonResponse(response, safe=False)
 
+
 # 爬取国内水体污染实时数据
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -1381,7 +1459,8 @@ def get_water_pollution(request):
     time = hour + ':' + minute + ':' + second
     key_words = '-'
     file_location = path
-    data = Crawl_Data_Record.objects.create(table_type=table_type, time=time, key_words=key_words, file_location=file_location)
+    data = Crawl_Data_Record.objects.create(table_type=table_type, time=time, key_words=key_words,
+                                            file_location=file_location)
     data.save()
     return JsonResponse(response, safe=False)
 
@@ -1410,6 +1489,7 @@ def get_nation_pm(request):
     data.save()
     return JsonResponse(response, safe=False)
 
+
 # 爬取国内固体废弃物数据
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -1418,11 +1498,13 @@ def get_nation_solid_pollution(request):
     body = json.loads(request.body)
     key_word = body.get('key_word')
     count = body.get('count')
-    startYear = int(body.get('startYear')[0:4])+1
-    endYear = int(body.get('endYear')[0:4])+1
+    startYear = int(body.get('startYear')[0:4]) + 1
+    endYear = int(body.get('endYear')[0:4]) + 1
     district = body.get('district')
     date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    os.system('python backend/start_crawl.py ' + 'nation_solid_pollution ' + count + " " + key_word + " " + district + " " + str(startYear) + " " + str(endYear))
+    os.system(
+        'python backend/start_crawl.py ' + 'nation_solid_pollution ' + count + " " + key_word + " " + district + " " + str(
+            startYear) + " " + str(endYear))
     path = os.path.join("static/国内固体废物数据/" + date + '国内固体废物实时数据.xlsx')
     os.renames("static/国内固体废物数据/国内固体废物实时数据.xlsx", path)
     response['excel_url'] = BASE_ROOT + path
@@ -1477,11 +1559,13 @@ def getgarbagepropduction_city(request):
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
 
+
 # 获取历史爬虫数据
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_crawl_record(request):
-    response = {'code': 20000, 'message': 'success', 'data': [], 'unique_year_list': [], 'unique_kw_list': [], 'unique_city_list':[]}
+    response = {'code': 20000, 'message': 'success', 'data': [], 'unique_year_list': [], 'unique_kw_list': [],
+                'unique_city_list': []}
     table_type = request.GET.get('type')
     data = Crawl_Data_Record.objects.filter(table_type=table_type)
     for item in data:
@@ -1507,11 +1591,13 @@ def get_crawl_record(request):
     response['unique_city_list'] = unique_city_list
     return JsonResponse(response, safe=False)
 
+
 # 筛选爬虫历史数据
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_crawl_record_select(request):
-    response = {'code': 20000, 'message': 'success', 'data': [], 'unique_year_list': [], 'unique_kw_list': [], 'unique_city_list':[]}
+    response = {'code': 20000, 'message': 'success', 'data': [], 'unique_year_list': [], 'unique_kw_list': [],
+                'unique_city_list': []}
     table_type = request.GET.get('table_type')
     year = request.GET.get('year')
     key_words = request.GET.get('key_words')
@@ -1561,6 +1647,7 @@ def delete_crawl_data(request):
     os.remove(data.file_location)
     data.delete()
     return JsonResponse(response, safe=False)
+
 
 # 获取lstm项目
 @csrf_exempt
@@ -1707,7 +1794,7 @@ def getlstmmodelresult(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     user = request.GET.get('user')
     project_id = request.GET.get('project_id')
-    path = 'media/static/modelresult/' + user + '/lstm/'+project_id
+    path = 'media/static/modelresult/' + user + '/lstm/' + project_id
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
@@ -1772,7 +1859,7 @@ def getLinearRegressionModelResult(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def getRegressionModelResult(request):
-    response = {'code':20000, 'message': 'success'}
+    response = {'code': 20000, 'message': 'success'}
     user = request.GET.get('user')
     project_id = request.GET.get('project_id')
     path = 'media/static/modelresult/' + user + '/regression/' + project_id
@@ -1807,7 +1894,7 @@ def getHotMatrixModelResult(request):
     response = {'code': 20000, 'message': 'success'}
     user = request.GET.get('user')
     project_id = request.GET.get('project_id')
-    path = 'media/static/modelresult/' + user + '/relation/' + project_id+'/hot_matrix'
+    path = 'media/static/modelresult/' + user + '/relation/' + project_id + '/hot_matrix'
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
@@ -1900,7 +1987,7 @@ def get_lstm_result(request):
     r_square = r2_score(fact, pred)
     mse = mean_squared_error(fact, pred)
     mae = mean_absolute_error(fact, pred)
-    rmse = mse**0.5
+    rmse = mse ** 0.5
     response['r_square'] = r_square
     response['mse'] = mse
     response['mae'] = mae
@@ -1975,8 +2062,9 @@ def getRegressionReport(request):
 
 
 def thread_regression(project_id, drop_index, special, user, file_path, dim):
-    ret = os.system('python backend/multi_regression/newpredict.py %s %s %s %s %s %s' % (project_id, drop_index, special,
-                                                                                         user, file_path, dim))
+    ret = os.system(
+        'python backend/multi_regression/newpredict.py %s %s %s %s %s %s' % (project_id, drop_index, special,
+                                                                             user, file_path, dim))
     if ret != 0:
         model = multi_regression_project.objects.get(project_id=project_id)
         model.status = '运行出错'
@@ -2508,7 +2596,7 @@ def input_garbage_element(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def get_garbage_element(request):
-    response={'code': 20000, 'message': 'success', 'data': []}
+    response = {'code': 20000, 'message': 'success', 'data': []}
     data = garbage_element.objects.all()
     for item in data:
         response['data'].append(to_dict(item))
@@ -2519,7 +2607,7 @@ def get_garbage_element(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def add_garbage_element(request):
-    response={'code': 20000, 'message': 'success'}
+    response = {'code': 20000, 'message': 'success'}
     body = json.loads(request.body)
     city_id = 1
     year = body.get('year')
@@ -2615,7 +2703,8 @@ def addGarbageClear(request):
                 recycle = data[i]['recycle'] if 'recycle' in data[i].keys() else ''
                 harm = data[i]['harm'] if 'harm' in data[i].keys() else ''
                 total = data[i]['total'] if 'total' in data[i].keys() else ''
-                model = garbage_clear.objects.create(city=City(id=city_id), year=year, wet=wet, dry=dry, recycle=recycle,
+                model = garbage_clear.objects.create(city=City(id=city_id), year=year, wet=wet, dry=dry,
+                                                     recycle=recycle,
                                                      harm=harm, total=total)
                 model.save()
         else:
@@ -2724,7 +2813,7 @@ def upload_img(request):
     response = {'code': 20000, 'message': 'success'}
     img = Img(img_url=request.FILES['file'])
     img.save()
-    response['url'] = BASE_ROOT+'media/'+str(img.img_url)
+    response['url'] = BASE_ROOT + 'media/' + str(img.img_url)
     return JsonResponse(response, safe=False)
 
 
@@ -2734,7 +2823,7 @@ def upload_file(request):
     response = {'code': 20000, 'message': 'success'}
     file = File(file_url=request.FILES['file'])
     file.save()
-    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    response['url'] = BASE_ROOT + 'media/' + str(file.file_url)
     return JsonResponse(response, safe=False)
 
 
@@ -2744,7 +2833,7 @@ def uploadLSTMModelFile(request):
     response = {'code': 20000, 'message': 'success'}
     file = ModelLSTMFile(file_url=request.FILES['file'])
     file.save()
-    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    response['url'] = BASE_ROOT + 'media/' + str(file.file_url)
     return JsonResponse(response, safe=False)
 
 
@@ -2754,7 +2843,7 @@ def uploadLinearRegressionFile(request):
     response = {'code': 20000, 'message': 'success'}
     file = ModelLinearRegressionFile(file_url=request.FILES['file'])
     file.save()
-    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    response['url'] = BASE_ROOT + 'media/' + str(file.file_url)
     return JsonResponse(response, safe=False)
 
 
@@ -2764,7 +2853,7 @@ def uploadRegressionFile(request):
     response = {'code': 20000, 'message': 'success'}
     file = ModelRegressionFile(file_url=request.FILES['file'])
     file.save()
-    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    response['url'] = BASE_ROOT + 'media/' + str(file.file_url)
     return JsonResponse(response, safe=False)
 
 
@@ -2774,7 +2863,7 @@ def uploadKMeansFile(request):
     response = {'code': 20000, 'message': 'success'}
     file = ModelKmeansFile(file_url=request.FILES['file'])
     file.save()
-    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    response['url'] = BASE_ROOT + 'media/' + str(file.file_url)
     return JsonResponse(response, safe=False)
 
 
@@ -2794,7 +2883,7 @@ def uploadTestFile(request):
     response = {'code': 20000, 'message': 'success'}
     file = TestFile(file_url=request.FILES['file'])
     file.save()
-    response['url'] = BASE_ROOT+'media/'+str(file.file_url)
+    response['url'] = BASE_ROOT + 'media/' + str(file.file_url)
     return JsonResponse(response, safe=False)
 
 
@@ -2993,7 +3082,8 @@ def getmodelconstruction(request):
     algorithm_id = request.GET.get('algorithm_id')
     user_id = UserProfile.objects.get(username=name).id
     modellist = selected_algorithm_table.objects.filter(user=UserProfile(id=user_id),
-                                                        algorithm=algorithm_project(project_id=algorithm_id)).values('model')
+                                                        algorithm=algorithm_project(project_id=algorithm_id)).values(
+        'model')
     for item in modellist:
         model_id = item['model']
         model = model_table.objects.get(id=model_id)
@@ -3023,7 +3113,7 @@ def select_model_add(request):
     algorithm_id = body.get('algorithm_id')
     model_id = body.get('model_id')
     if selected_algorithm_table.objects.filter(model=model_table(id=model_id), user=UserProfile(id=user_id),
-                                  algorithm=algorithm_project(project_id=algorithm_id)).count() != 0:
+                                               algorithm=algorithm_project(project_id=algorithm_id)).count() != 0:
         response['code'] = 50000
         response['message'] = '该算法中已经存在该模型'
     else:
@@ -3044,7 +3134,8 @@ def select_model_delete(request):
     algorithm_id = body.get('algorithm_id')
     model_id = body.get('model_id')
     model = selected_algorithm_table.objects.get(user=UserProfile(id=user_id),
-                                                 algorithm=algorithm_project(project_id=algorithm_id), model=model_table(id=model_id))
+                                                 algorithm=algorithm_project(project_id=algorithm_id),
+                                                 model=model_table(id=model_id))
     model.delete()
 
     return JsonResponse(response, safe=False)
@@ -3062,7 +3153,7 @@ def algorithmtest(request):
     test_dict['algorithm'] = to_dict(algorithm)
     user_id = UserProfile.objects.get(username=name).id
     modellist = selected_algorithm_table.objects.filter(user=UserProfile(id=user_id),
-                                                        algorithm=algorithm_project(project_id=algorithm_id))\
+                                                        algorithm=algorithm_project(project_id=algorithm_id)) \
         .values('model', 'status')
 
     test_dict['model'] = []
@@ -3094,9 +3185,11 @@ def getexceldetail(request):
 def groupthread_relation(selected_id, user, file_path, relative_max, select_list, choose_col, algorithm_id, model_id,
                          test_type, next_list):
     ret = os.system('python backend/experiment/relation/relation.py %s %s %s %s %s %s %s %s %s' % (user, file_path,
-                                                                                                relative_max, select_list,
-                                                                                                choose_col, algorithm_id,
-                                                                                                model_id, test_type,
+                                                                                                   relative_max,
+                                                                                                   select_list,
+                                                                                                   choose_col,
+                                                                                                   algorithm_id,
+                                                                                                   model_id, test_type,
                                                                                                    next_list))
     if ret != 0:
         model = selected_algorithm_table.objects.get(id=selected_id)
@@ -3122,8 +3215,9 @@ def grouptest_relation(request):
     model = selected_algorithm_table.objects.get(model=model_table(id=model_id), user=UserProfile(id=user_id),
                                                  algorithm=algorithm_project(project_id=algorithm_id))
     selected_id = model.id
-    task = threading.Thread(target=groupthread_relation, args=(selected_id, user, file_path, relative_max, select_list, choose_col,
-                                                               algorithm_id, model_id, test_type, next_list))
+    task = threading.Thread(target=groupthread_relation,
+                            args=(selected_id, user, file_path, relative_max, select_list, choose_col,
+                                  algorithm_id, model_id, test_type, next_list))
     task.start()
     model.status = '正在运行'
     model.save()
@@ -3157,10 +3251,10 @@ def grouptest_regression(request):
     selected_id = model.id
     drop_index = ''
     for i in range(len(drop_col)):
-        if i != len(drop_col)-1:
-            drop_index = drop_index+str(drop_col[i])+','
+        if i != len(drop_col) - 1:
+            drop_index = drop_index + str(drop_col[i]) + ','
         else:
-            drop_index = drop_index+str(drop_col[i])
+            drop_index = drop_index + str(drop_col[i])
     task = threading.Thread(target=groupthread_regression, args=(selected_id, file_path, drop_index, special, name,
                                                                  algorithm_id, model_id))
     task.start()
@@ -3220,10 +3314,10 @@ def grouptest_lstm(request):
     drop_col = body.get('drop_col')
     drop_index = ''
     for i in range(len(drop_col)):
-        if i != len(drop_col)-1:
-            drop_index = drop_index+str(drop_col[i])+','
+        if i != len(drop_col) - 1:
+            drop_index = drop_index + str(drop_col[i]) + ','
         else:
-            drop_index = drop_index+str(drop_col[i])
+            drop_index = drop_index + str(drop_col[i])
 
     user = body.get('name')
     algorithm_id = body.get('algorithm_id')
@@ -3263,11 +3357,11 @@ def grouptest_finish_lstm(request):
 def getRegressionExcelResult(request):
     response = {'code': 20000, 'message': 'success'}
     user = request.GET.get('user')
-    path = 'media/static/result/'+user+'/regression'
+    path = 'media/static/result/' + user + '/regression'
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append(BASE_ROOT+root+'/'+file)
+            file_list.append(BASE_ROOT + root + '/' + file)
 
     response['data'] = file_list
 
@@ -3279,11 +3373,11 @@ def getRegressionExcelResult(request):
 def getLSTMExcelResultList(request):
     response = {'code': 20000, 'message': 'success'}
     user = request.GET.get('user')
-    path = 'media/static/result/'+user+'/lstm'
+    path = 'media/static/result/' + user + '/lstm'
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append(BASE_ROOT+root+'/'+file)
+            file_list.append(BASE_ROOT + root + '/' + file)
 
     response['data'] = file_list
     return JsonResponse(response, safe=False)
@@ -3294,11 +3388,11 @@ def getLSTMExcelResultList(request):
 def getRelaionExcelResultList(request):
     response = {'code': 20000, 'message': 'success', 'data': []}
     user = request.GET.get('user')
-    path = 'media/static/result/'+user+'/relation'
+    path = 'media/static/result/' + user + '/relation'
     file_list = []
     for (root, dirs, files) in os.walk(path):
         for file in files:
-            file_list.append(BASE_ROOT+root+'/'+file)
+            file_list.append(BASE_ROOT + root + '/' + file)
 
     response['data'] = file_list
     return JsonResponse(response, safe=False)
@@ -3313,9 +3407,9 @@ def DeleteRelationExcelResult(request):
     url = ''
     for i in range(len(path)):
         if i == 0:
-            url = url+path[i]
+            url = url + path[i]
         else:
-            url = url+'/'+path[i]
+            url = url + '/' + path[i]
     os.remove(url)
     return JsonResponse(response, safe=False)
 
@@ -3478,7 +3572,8 @@ def InputGarbageCountry(request):
                 latitude = data[i]['latitude']
                 district_id = District.objects.get(name=district).id
                 model = Garbage_Info_Country.objects.create(name=name, district=District(id=district_id), year=year,
-                                                            production=production, longitude=longitude, latitude=latitude)
+                                                            production=production, longitude=longitude,
+                                                            latitude=latitude)
                 model.save()
         else:
             response['code'] = 50000
@@ -3619,7 +3714,8 @@ def InputEconomyDistrict(request):
                 year = data[i]['year'] if 'year' in data[i].keys() else ''
                 district_id = District.objects.get(name=district).id
                 model = Economy_Info_District.objects.create(year=year, gdp=gdp, gdp_first_industry=gdp_first_industry,
-                                                             gdp_second_industry=gdp_second_industry, gdp_third_industry=gdp_third_industry,
+                                                             gdp_second_industry=gdp_second_industry,
+                                                             gdp_third_industry=gdp_third_industry,
                                                              district=District(id=district_id))
                 model.save()
         else:
@@ -3823,7 +3919,8 @@ def addPopulationDistrict(request):
             response['message'] = '该区该年份下数据已存在，请先删除'
         else:
             model = Population_Info_District.objects.create(year=year, district=District(id=district_id),
-                                                            population=population, population_density=population_density)
+                                                            population=population,
+                                                            population_density=population_density)
             model.save()
 
     return JsonResponse(response, safe=False)
@@ -4287,6 +4384,3 @@ def getKMeansTestReport(request):
 # scheduler.add_job(crawl_water_pollution_data, 'cron', day_of_week='mon-sun', hour='11', minute='27', second='40')
 # scheduler.add_job(crawl_nation_air_pllution_data, 'cron', day_of_week='mon-sun', hour='10', minute='10', second='10')
 # scheduler.start()
-
-
-

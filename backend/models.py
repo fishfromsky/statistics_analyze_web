@@ -89,6 +89,10 @@ class Population_Info_City(models.Model):
     households = models.FloatField(max_length=200, null=True, default=0)   # 户数
     average_person_per_household = models.FloatField(max_length=200, null=True, default=0)  # 每户平均人口
 
+# 全市垃圾产量信息表
+class Garbage_City_Production(models.Model):
+    year = models.CharField(max_length=250)
+    production=models.CharField(max_length=250)
 
 # 全市生活垃圾表
 class Garbage_Info_City(models.Model):

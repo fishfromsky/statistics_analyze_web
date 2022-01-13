@@ -249,3 +249,8 @@ if __name__ == '__main__':
     json_data['model_id'] = model_id
     json_data = json.dumps(json_data, cls=NpEncoder)
     requests.post('http://127.0.0.1:8000/api/finishgrouptestrelation', data=json_data)
+
+
+
+
+

@@ -49,7 +49,8 @@ urlpatterns = [
     url('getirongarbage', views.getIronGarbage),  # 获取废钢铁数据
     url('geteconomycity', views.geteconomydata_city, name='geteconomycity'),  # 请求城市经济表
     url('getpopulationcity', views.getpopulation_city, name='getpopulationcity'),  # 请求城市人口表
-    url('getgarbagecity', views.getgarbage_city, name='getgarbageinfo'),  # 请求城市生活垃圾表
+    url('getgarbagecity', views.getgarbage_city, name='getgarbageproduction'),  # 请求城市生活垃圾表
+    url('getgarbagecityproduction', views.getgarbage_city_production, name='getgarbageproductioninfo'),  # 请求城市生活垃圾表
     url('inputgarbagecountry', views.InputGarbageCountry),  # 批量导入城镇垃圾产量表
     url('getgarbagecountry', views.getGarbageCountry),  # 获取城镇垃圾产量表
     url('amendgarbagecountry', views.amendGarbageCountry),  # 修改城镇垃圾产量表
