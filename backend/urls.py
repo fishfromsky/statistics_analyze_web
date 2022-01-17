@@ -42,15 +42,15 @@ urlpatterns = [
     url('addgarbageclear', views.addGarbageClear),  # 添加日均清运量
     url('getgarbageclearperday', views.getGarbageClearPerDay),  # 获取垃圾日均清运量
     url('amendgarbageclearperday', views.amendGarbageClearPerDay),  # 修改垃圾日均清运量
-    url('deletegarbageclearperday', views.deleteGarbageClearPerDay),   # 删除垃圾日均清运量
-    url('addsinglerowforgarbageclear', views.addSingleRowforGarbageClear),   # 增加单条垃圾清运量数据
+    url('deletegarbageclearperday', views.deleteGarbageClearPerDay),  # 删除垃圾日均清运量
+    url('addsinglerowforgarbageclear', views.addSingleRowforGarbageClear),  # 增加单条垃圾清运量数据
     url('addirongarbage', views.addirongarbage),  # 增加废钢铁数据
     url('amendirongarbage', views.amendIronGarbage),  # 修改废钢铁数据
     url('getirongarbage', views.getIronGarbage),  # 获取废钢铁数据
     url('geteconomycity', views.geteconomydata_city, name='geteconomycity'),  # 请求城市经济表
     url('getpopulationcity', views.getpopulation_city, name='getpopulationcity'),  # 请求城市人口表
-    url('getgarbagecity', views.getgarbage_city, name='getgarbageproduction'),  # 请求城市生活垃圾表
     url('getgarbagecityproduction', views.getgarbage_city_production, name='getgarbageproductioninfo'),  # 请求城市生活垃圾表
+    url('getgarbagecity', views.getgarbage_city, name='getgarbageproduction'),  # 请求城市生活垃圾表
     url('inputgarbagecountry', views.InputGarbageCountry),  # 批量导入城镇垃圾产量表
     url('getgarbagecountry', views.getGarbageCountry),  # 获取城镇垃圾产量表
     url('amendgarbagecountry', views.amendGarbageCountry),  # 修改城镇垃圾产量表
@@ -66,15 +66,21 @@ urlpatterns = [
     url('amendcitygarbagedata', views.amendgarbagedata_city, name='amendcitygarbagedata'),  # 修改城市生活垃圾表中的数据
     url('deletecitygarbagedata', views.deletegarbagedata_city, name='deletecitygarbagedata'),  # 删除城市生活垃圾表数据
     url('amendcitygarbagedealdata', views.amendgarbagedealdata_city, name='amendcitygarbagedealdata'),  # 修改城市无害化处理厂表数据
-    url('deletecitygarbagedealdata', views.deletegarbagedealdata_city, name='deletecitygarbagedealdata'),  # 删除城市无害化处理厂表数据
-    url('amendcitygarbagecapacitydata', views.amendgarbagecapacitydata_city, name='amendcitygarbagecapacitydata'),  # 修改城市无害化处理能力表数据
-    url('deletecitygarbagecapacitydata', views.deletegarbagecapacitydata_city, name='deletecitygarbagecapacitydata'),  # 删除城市无害化处理能力表数据
-    url('amendcitygarbagevolumedata', views.amendgarbagevolumedata_city, name='amendcitygarbagevolumedata'),  # 修改城市无害化处理量表数据
-    url('deletecitygarbagevolumedata', views.deletegarbagevolumedata_city, name='deletecitygarbagevolumedata'),  # 删除城市无害化处理量表数据
+    url('deletecitygarbagedealdata', views.deletegarbagedealdata_city, name='deletecitygarbagedealdata'),
+    # 删除城市无害化处理厂表数据
+    url('amendcitygarbagecapacitydata', views.amendgarbagecapacitydata_city, name='amendcitygarbagecapacitydata'),
+    # 修改城市无害化处理能力表数据
+    url('deletecitygarbagecapacitydata', views.deletegarbagecapacitydata_city, name='deletecitygarbagecapacitydata'),
+    # 删除城市无害化处理能力表数据
+    url('amendcitygarbagevolumedata', views.amendgarbagevolumedata_city, name='amendcitygarbagevolumedata'),
+    # 修改城市无害化处理量表数据
+    url('deletecitygarbagevolumedata', views.deletegarbagevolumedata_city, name='deletecitygarbagevolumedata'),
+    # 删除城市无害化处理量表数据
     url('addsinglepopulation', views.addsinglepopulation, name='addsinglepopulation'),  # 添加一条人口表数据
     url('addsinglegarbage', views.addsinglegarbageinfocity, name='addsinglegarbage'),  # 添加一条生活垃圾表数据
     url('addsingledealgarbage', views.addsinglegarbagedealcity, name='addsinglegarbagedeal'),  # 添加一条无害化处理厂表数据
-    url('addsinglecapacitygarbage', views.addsinglegarbagedealcapacity, name='addsinglegarbagecapacity'),  # 添加一条无害化处理能力表数据
+    url('addsinglecapacitygarbage', views.addsinglegarbagedealcapacity, name='addsinglegarbagecapacity'),
+    # 添加一条无害化处理能力表数据
     url('addsinglevolumegarbage', views.addsinglegarbagedealvolume, name='addsinglegarbagevolume'),  # 添加一条无害化处理量表数据
     url('addsinglerowdata', views.addsinglerow_cityeconomy, name='addsinglerowdata'),  # 添加一条经济表数据
     url('getgarbagecity', views.getgarbagepropduction_city),
@@ -86,43 +92,43 @@ urlpatterns = [
     url('getnationsolidpollution', views.get_nation_solid_pollution, name='getnationsolidpollution'),  # 爬取国内固废垃圾数据
     url('getworldpm', views.get_world_pm, name='getworldpm'),  # 爬取世界空气污染数据
     url('addcityfactorylist', views.addFactoryListCity, name='addFactoryListCity'),  # 批量导入处理厂信息
-    url('getfactorylist', views.getfacotylist, name='getFactorylist'),     # 获取处理厂信息
-    url('addtransferfactory', views.addTransferFactory, name='addTransferFacory'),   # 批量导入中转站信息
-    url('gettransferfactory', views.getTransferFactory, name='getTransferFactory'),   # 获取垃圾中转站信息
-    url('amendfactorylist', views.amendfactorylist, name='amendFactoryList'),     # 修改无害化处理厂信息表
+    url('getfactorylist', views.getfacotylist, name='getFactorylist'),  # 获取处理厂信息
+    url('addtransferfactory', views.addTransferFactory, name='addTransferFacory'),  # 批量导入中转站信息
+    url('gettransferfactory', views.getTransferFactory, name='getTransferFactory'),  # 获取垃圾中转站信息
+    url('amendfactorylist', views.amendfactorylist, name='amendFactoryList'),  # 修改无害化处理厂信息表
     url('deletefactorylist', views.deletefactorylist, name='deletefactorylist'),  # 删除无害化处理厂信息
-    url('addfactorylist', views.addfactorylistbyrow, name='addfactorylist'),   # 增加无害化处理厂信息
-    url('amendtransferfactory', views.AmendTransferFactory, name='AmendTransferFactory'),   # 修改中转站信息
-    url('deletetransferfactory', views.DeleteTransferFactory, name='DeleteTransferFactory'),   # 删除中转站信息
+    url('addfactorylist', views.addfactorylistbyrow, name='addfactorylist'),  # 增加无害化处理厂信息
+    url('amendtransferfactory', views.AmendTransferFactory, name='AmendTransferFactory'),  # 修改中转站信息
+    url('deletetransferfactory', views.DeleteTransferFactory, name='DeleteTransferFactory'),  # 删除中转站信息
     url('addtransferbyrow', views.addtransferbyrow, name='AddTransferFactoryByRow'),  # 添加中转站信息
-    url('addcollectfactory', views.AddCollectFactory, name='AddCollectFactory'),   # 批量导入收集点数据
-    url('getcollectfactorybyarea', views.GetCollectFactoryByArea, name='GetCollectFactoryByArea'),   # 根据区域获得指定收集点信息
+    url('addcollectfactory', views.AddCollectFactory, name='AddCollectFactory'),  # 批量导入收集点数据
+    url('getcollectfactorybyarea', views.GetCollectFactoryByArea, name='GetCollectFactoryByArea'),  # 根据区域获得指定收集点信息
     url('getcrawlrecord', views.get_crawl_record, name='getcrawlrecord'),  # 获取使用爬虫历史记录
     url('deletecrawldata', views.delete_crawl_data, name='deletecrawldata'),  # 删除爬取的数据
     url('getcrawl_select', views.get_crawl_record_select, name='getcrawl_select'),  # 筛选历史爬虫数据
     url('startpmedianproject', views.start_p_median_project, name='startpmedianproject'),  # 运行p_median项目
 
     url('add_element_garbage', views.input_garbage_element),  # 批量导入垃圾成分数据
-    url('get_element_garbage', views.get_garbage_element),    # 获取垃圾成分表数据
+    url('get_element_garbage', views.get_garbage_element),  # 获取垃圾成分表数据
     url('insert_element_garbage', views.add_garbage_element),  # 新增一条垃圾成分数据
     url('delete_element_garbage', views.delete_garbage_element),  # 删除一条垃圾成分数据
     url('amend_element_garbage', views.amend_element_garbage),  # 修改一条垃圾成分数据
 
     url('geteconomydistrict', views.getEconomyDistrict),  # 获取区级经济信息
-    url('amendeconomydistrict', views.amendEconomyDistrict),   # 修改区级经济信息
+    url('amendeconomydistrict', views.amendEconomyDistrict),  # 修改区级经济信息
     url('inputeconomydistrict', views.InputEconomyDistrict),  # 批量导入区级经济信息
     url('addeconomydistrict', views.addEconomyDistrict),  # 添加一条区级经济信息
     url('deleteeconomydistrict', views.deleteEconomyDistrict),  # 删除区级经济信息
     url('filtereconomydistrict', views.filterEconomyDsitrict),  # 根据行政区筛选经济信息
-    url('filterPieeconomydistrict', views.filterPieDataEconomyDistrict),   # 根据区域和年份筛选区域经济信息
+    url('filterPieeconomydistrict', views.filterPieDataEconomyDistrict),  # 根据区域和年份筛选区域经济信息
     url('filterBareconomydistrict', views.filterBarDataEconomyDistrict),  # 根据年份筛选数据
 
     url('getpopulationdistrict', views.getPopulationDistrict),  # 获取人口区域信息
     url('inputpopulationdistrict', views.InputPopulationDistrict),  # 批量导入人口区域信息表
-    url('addpopulationdistrict', views.addPopulationDistrict),   # 添加人口区域信息表
+    url('addpopulationdistrict', views.addPopulationDistrict),  # 添加人口区域信息表
     url('amendpopulationdistrict', views.amendPopulationDistrict),  # 修改人口区域信息表
     url('deletepopulationdistrict', views.deletePopulationDistrict),  # 删除人口区域信息表
-    url('filterlinepopulationdistrict', views.filterLinepopulationDistrict),   # 根据地区筛选人口数据
+    url('filterlinepopulationdistrict', views.filterLinepopulationDistrict),  # 根据地区筛选人口数据
     url('filterbarpopulationdistrict', views.filterBarPopulationDistrict),  # 根据年份筛选人口数据
 
     url('startgrouptestregression', views.grouptest_regression),  # 开始多元回归算法
@@ -193,7 +199,7 @@ urlpatterns = [
     url('add_algorithm_list', views.add_algorithm_list),  # 添加算法模型列表
     url('delete_algorithm_list', views.delete_algorithm_list),  # 删除算法模型列表
     url('get_idlist_algorithm', views.get_algorithm_idlist),  # 获取算法模型ID列表
-    url('getbyid_algorithm', views.getbyid_algorithm),   # 根据ID获取模型
+    url('getbyid_algorithm', views.getbyid_algorithm),  # 根据ID获取模型
     url('getrelationexcelresult', views.getRelaionExcelResultList),  # 获取关联分析excel
     url('deleterelationexcel', views.DeleteRelationExcelResult),  # 删除关联分析excel
     url('finishgrouptestrelation', views.grouptest_finish_relation),  # 完成关联分析
@@ -316,10 +322,12 @@ urlpatterns = [
         name='pmedianoutputcomx_upload_post'),
     url('pmedianoutputcomx/clear', pmedianoutputcostmatrixviews.pmedianoutputcomx_clear_post,
         name='pmedianoutputcomx_clear_post'),
-    url('pmedianoutputcomx/cost', pmedianoutputcostmatrixviews.pmedianoutputcomx_get_cost, name='pmedianoutputcomx_get_cost'),
+    url('pmedianoutputcomx/cost', pmedianoutputcostmatrixviews.pmedianoutputcomx_get_cost,
+        name='pmedianoutputcomx_get_cost'),
 
     url('pmedianreccen/list', pmedianrecyclingcenterviews.pmedianreccen_list_get, name='pmedianreccen_list_get'),
-    url('pmedianreccen/download', pmedianrecyclingcenterviews.pmedianreccen_download_get,name='pmedianreccen_create_get'),
+    url('pmedianreccen/download', pmedianrecyclingcenterviews.pmedianreccen_download_get,
+        name='pmedianreccen_create_get'),
     url('pmedianreccen/create', pmedianrecyclingcenterviews.pmedianreccen_create_post,
         name='pmedianreccen_create_post'),
     url('pmedianreccen/update', pmedianrecyclingcenterviews.pmedianreccen_update_post,
@@ -337,6 +345,5 @@ urlpatterns = [
     url('pmediants/delete', pmediantransferstationviews.pmediants_delete_post, name='pmediants_delete_post'),
     url('pmediants/upload', pmediantransferstationviews.pmediants_upload_post, name='pmediants_upload_post'),
     url('pmediants/clear', pmediantransferstationviews.pmediants_clear_post, name='pmediants_clear_post'),
-
 
 ]

@@ -982,6 +982,7 @@ def getgarbage_city_production(request):
     response = {'code': 20000, 'message': 'success'}
     data = Garbage_City_Production.objects.all()
     response['data'] = []
+    print('data:',data)
     for list in data:
         response['data'].append(to_dict(list))
     return JsonResponse(response, safe=False)
@@ -994,8 +995,10 @@ def getgarbage_city(request):
     response = {'code': 20000, 'message': 'success'}
     data = Garbage_Info_City.objects.all()
     response['data'] = []
+    print('response',data)
     for list in data:
         response['data'].append(to_dict(list))
+        print(list)
     return JsonResponse(response, safe=False)
 
 
