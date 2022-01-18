@@ -201,7 +201,7 @@ export const constantRoutes = [
           {
             path: 'district',
             name: 'plastic_district',
-            component: () => import('@/views/plastic/Country/index'),
+            component: () => import('@/views/plastic/District/index'),
             meta: { title: '各区情况' }
           },
           {
@@ -263,6 +263,32 @@ export const constantRoutes = [
             meta: { title: '城镇情况' }
           }
         ]
+      },
+      {
+        path: 'medal',
+        name: 'medal',
+        component: () => import('@/views/medal/index'),
+        meta: { title: '金属' },
+        children: [
+          {
+            path: 'city',
+            name: 'medal_city',
+            component: () => import('@/views/medal/City/index'),
+            meta: { title: '全市情况' }
+          },
+          {
+            path: 'district',
+            name: 'medal_district',
+            component: () => import('@/views/medal/District/index'),
+            meta: { title: '各区情况' }
+          },
+          {
+            path: 'country',
+            name: 'medal_country',
+            component: () => import('@/views/medal/Country/index'),
+            meta: { title: '城镇情况' }
+          }
+        ]
       }
     ]
   },
@@ -297,11 +323,7 @@ export const constantRoutes = [
     path: '/repository',
     component: Layout,
     redirect: '/repository/p_median',
-<<<<<<< HEAD
-    meta: { title: '决策模型', icon: 'algo'},
-=======
     meta: { title: '模型仓库', icon: 'algo'},
->>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
     children: [
       {
         path: 'p_median',
@@ -387,7 +409,6 @@ export const constantRoutes = [
         ]
       },
       {
-<<<<<<< HEAD
         path: 'greenHouse',
         name: 'greenHouse',
         redirect: '/repository/greenHouse',
@@ -429,8 +450,6 @@ export const constantRoutes = [
         ]
       },
       {
-=======
->>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
         path: 'lstmModel',
         name: 'lstmModel',
         redirect: '/repository/lstmModel',
@@ -451,7 +470,6 @@ export const constantRoutes = [
           }
         ]
       },
-<<<<<<< HEAD
        {
         path: 'linearregression',
         name: 'linearregression',
@@ -473,8 +491,6 @@ export const constantRoutes = [
           }
         ]
       },
-=======
->>>>>>> 2631d8157f89278e7815f7180ddaee1ee7f70f90
       {
         path: 'linearregression',
         name: 'linearregression',
@@ -616,7 +632,7 @@ export const asyncRoutes = [
         path: 'board',
         name: 'board',
         component: () => import('@/views/project/board/index'),
-        meta: { 
+        meta: {
           title: '算法列表',
           roles: ['超级管理员', '教师']
         }
@@ -625,7 +641,7 @@ export const asyncRoutes = [
         path: 'select',
         name: 'select',
         component: () => import('@/views/project/edit/index'),
-        meta: { 
+        meta: {
           title: '编辑算法',
           roles: ['超级管理员', '教师']
         }

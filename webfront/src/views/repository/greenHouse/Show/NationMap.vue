@@ -10,12 +10,9 @@
             <div class="div_any_title">各省份情况</div>
             <div id="proEmission" style="width: 100%;height: 60%;border: 1px solid #344b58;margin: 0 auto;"></div>
             <div id="proPie" style="width: 100%;height: 40%;border: 1px solid #344b58;margin: 0 auto;"></div>
-        
-        </div> 
-      </div>      
-            
-     
 
+        </div>
+      </div>
 </template>
 
 <script src="echarts.min.js"></script>
@@ -171,7 +168,7 @@ let option={
         itemWidth: 10,
         itemHeight: 10,
     },
-    
+
     series: [{
                 type: 'map',
                 roam: false,
@@ -182,7 +179,7 @@ let option={
                             color: '#FFFF00',
                             fontSize:16,
                             fontWeight:'bold'
-                            
+
                         }
                     },
                 },
@@ -218,11 +215,11 @@ let option={
                 zoom: 1.1,
                 map: 'china', //使用
                  data:mapdata,
-            }, 
+            },
         ]
 };
-    chart.setOption(option);   
-    let that = this;  
+    chart.setOption(option);
+    let that = this;
 	chart.on('click', function(params){
             that.SelectPro=params.name
             console.log("地图"+that.SelectPro)
@@ -244,7 +241,7 @@ showchart_right(){
       return data;
     }();
     let option = {
-     
+
       "title": {
         "text": this_.SelectPro+"温室气体排放-处理情况",
         x: "4%",
@@ -419,7 +416,7 @@ showchart_right(){
         },
         "data":this.bioNet,
       },
-      
+
       {
         "name": "焚烧净排",
         "type": "bar",
@@ -437,7 +434,7 @@ showchart_right(){
           }
         },
         "data":this.burnNet
-      }, 
+      },
       ]
     };
     myChart.setOption(option);
@@ -455,7 +452,7 @@ showchart_right_bottom(){
           fontSize: '22'
         },
     },
-    
+
 
     tooltip: {
         trigger: 'item',
@@ -476,8 +473,8 @@ showchart_right_bottom(){
         radius: '80%',
         center: ['50%', '50%'],
         color: [ 'rgb(131,249,103)','#FE5050','#FBFE27','#1DB7E5', , ], //'#FBFE27','rgb(11,228,96)','#FE5050'
-        data: [           
-          
+        data: [
+
              {
                 value: 274,
                 name: '生物排放'
@@ -569,7 +566,7 @@ showchart_right_bottom(){
      background-color:  rgb(8, 15, 62);
      display: flex;
     flex-direction: row;
-    
+
 }
 .div_any_title{
     background-image: url('./images/边框.png') ;
