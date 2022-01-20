@@ -46,7 +46,17 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      chartData
+    }
+  },
+  watch:{
+     chartData: {
+        deep: true,
+        handler(val) {
+        this.setOptions(val)
+                }
+      }
   },
   mounted() {
     let this_ = this;
@@ -96,7 +106,7 @@ export default {
         x: '4%',
         top: '8%',
         textStyle: {
-          color: '#90979c',
+          color: '#FFF0F5',
         },
         "data": ['填埋排放','焚烧排放','焚烧净排','焚烧抵消', '生物排放', '生物净排', '生物抵消','总排放','总净排', '总抵消']
       },

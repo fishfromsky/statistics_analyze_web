@@ -22,7 +22,7 @@
 <script>
 import XLSX from 'xlsx'
 import { mapGetters } from 'vuex'
-import { getcityeconomydata } from '@/api/model'
+import {} from '@/api/model'
 import emission from './components/emission'
 import emissionOut from './components/emissionOut'
 import { parse } from 'path-to-regexp'

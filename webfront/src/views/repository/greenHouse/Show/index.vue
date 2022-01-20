@@ -129,28 +129,6 @@ export default {
   },
   mounted() {
     let that = this;
-    getcityeconomydata().then(res => {
-      if (res.code === 20000) {
-        let result = res.data
-        result.sort(function (a, b) {
-          return parseInt(a.year) > parseInt(b.year) ? 1 : -1
-        })
-        for (let i = 0; i < result.length; i++) {
-          that.BasicInfo.GDPData.total.push(parseFloat(result[i]['gdp']))
-          that.BasicInfo.GDPData.rate.push(result[i]['gdp_growth_rate'])
-          that.BasicInfo.GDPData.year.push(result[i]['year'])
-          that.BasicInfo.CapitaGDP.capita_gdp.push(parseFloat(result[i]['gdp_per_capita']))
-          that.BasicInfo.CapitaGDP.year.push(result[i]['year'])
-          that.BasicInfo.Rate.economy_rate.push(parseFloat(result[i]['gdp_growth_rate']))
-          that.BasicInfo.Rate.year.push(result[i]['year'])
-          that.BasicInfo.Industry.year.push(result[i]['year'])
-          let sum = result[i]['gdp_first_industry'] + result[i]['gdp_second_industry'] + result[i]['gdp_third_industry']
-          that.BasicInfo.Industry.first.push((result[i]['gdp_first_industry'] / sum).toFixed(2))
-          that.BasicInfo.Industry.second.push((result[i]['gdp_second_industry'] / sum).toFixed(2))
-          that.BasicInfo.Industry.third.push((result[i]['gdp_third_industry'] / sum).toFixed(2))
-        }
-      }
-    })
   }
 }
 </script>
