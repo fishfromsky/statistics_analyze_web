@@ -4,13 +4,16 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import random
 
 from scrapy import signals
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import scrapy
 import os
+from twisted.internet.error import TimeoutError
 import time
+
 class CrawldataSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
@@ -57,7 +60,6 @@ class CrawldataSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
-
 
 class CrawldataDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -117,3 +119,45 @@ class AreaSpiderMiddleware(object):
             html = driver.page_source
             driver.quit()
             return scrapy.http.HtmlResponse(url=request.url, body=html.encode('utf-8'), encoding='utf-8', request=request)
+
+# class ProxyMiddleWare(object):
+#     """docstring for ProxyMiddleWare"""
+#     def process_request(self,request, spider):
+#         '''对request对象加上proxy'''
+#         proxy = self.get_random_proxy()
+#         print("this is request ip:"+proxy)
+#         request.meta['proxy'] = proxy
+#
+#
+#     def process_response(self, request, response, spider):
+#         '''对返回的response处理'''
+#         # 如果返回的response状态不是200，重新生成当前request对象
+#         if response.status != 200:
+#             proxy = self.get_random_proxy()
+#             print("this is response ip:"+proxy)
+#             # 对当前reque加上代理
+#             request.meta['proxy'] = proxy
+#             return request
+#         return response
+#
+#     def get_random_proxy(self):
+#         '''随机从文件中读取proxy'''
+#         while 1:
+#             with open('proxies.txt', 'r') as f:
+#                 proxies = f.readlines()
+#                 if proxies:
+#                     break
+#                 else:
+#                     time.sleep(1)
+#         proxy = random.choice(proxies).strip()
+#         return proxy
+#
+#     def process_exception(self, request, exception, spider):
+#         # Called when a download handler or a process_request()
+#         # (from other downloader middleware) raises an exception.
+#         # Must either:
+#         # - return None: continue processing this exception
+#         # - return a Response object: stops process_exception() chain
+#         # - return a Request object: stops process_exception() chain
+#         if isinstance(exception, TimeoutError):
+#             return request

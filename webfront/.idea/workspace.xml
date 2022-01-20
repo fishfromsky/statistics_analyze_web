@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6e73ae68-0d9a-4c65-9f5e-00bef528a72a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/views/dinner/Country/components/map.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/dinner/Country/components/mapdata/shanghai.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/dinner/Country/components/mapdata/shi.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/dinner/Country/components/mixins/resize.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/drypaper/Country/components/map.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/drypaper/Country/components/mapdata/gan.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/drypaper/Country/components/mapdata/shanghai.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/drypaper/Country/components/mixins/resize.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/medal/City/index.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/medal/Country/components/map.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/medal/Country/components/mapdata/medal.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/medal/Country/components/mapdata/shanghai.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/medal/Country/components/mixins/resize.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/medal/Country/index.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/medal/District/index.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/medal/index.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/paper/Country/components/map.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/paper/Country/components/mapdata/shanghai.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/paper/Country/components/mapdata/zhi.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/paper/Country/components/mixins/resize.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/paper/Country/index.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/plastic/Country/components/map.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/plastic/Country/components/mapdata/shanghai.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/plastic/Country/components/mapdata/xiang.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/plastic/Country/components/mixins/resize.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/plastic/Country/index.vue" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1mFCpfWUvFA6n0htmMeH4lZb0RE" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/views/plastic/Country/components/mapdata" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\projectsAll\statistics_analyze_web_2\webfront\src\views\plastic\Country\components\mapdata" />
+      <recent name="D:\projectsAll\statistics_analyze_web_2\webfront\src\views\drypaper\Country\components\mapdata" />
+      <recent name="D:\projectsAll\statistics_analyze_web_2\webfront\src\views\medal\Country\components\mapdata" />
+      <recent name="D:\projectsAll\statistics_analyze_web_2\webfront\src\views\dinner\Country\components\mapdata" />
+      <recent name="D:\projectsAll\statistics_analyze_web_2\webfront\src\views" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\projectsAll\statistics_analyze_web_2\webfront\src\views\paper\Country\components\mapdata" />
+      <recent name="D:\projectsAll\statistics_analyze_web_2\webfront\src\views\medal" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JavaScript Debug.index.html">
+    <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63343/webfront/public/index.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript Debug.index.html" />
+        <item itemvalue="npm.dev" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6e73ae68-0d9a-4c65-9f5e-00bef528a72a" name="Default Changelist" comment="" />
+      <created>1609080136231</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1609080136231</updated>
+      <workItem from="1609080140288" duration="1890000" />
+      <workItem from="1609083805169" duration="3689000" />
+      <workItem from="1609141870945" duration="5880000" />
+      <workItem from="1609158697415" duration="2921000" />
+      <workItem from="1609172714784" duration="1025000" />
+      <workItem from="1609203769898" duration="1098000" />
+      <workItem from="1634050945458" duration="480000" />
+      <workItem from="1634052225074" duration="4149000" />
+      <workItem from="1634309948930" duration="2282000" />
+      <workItem from="1640499060357" duration="3810000" />
+      <workItem from="1640506087804" duration="9608000" />
+      <workItem from="1640566547999" duration="1642000" />
+      <workItem from="1640568722439" duration="609000" />
+      <workItem from="1640585841235" duration="997000" />
+      <workItem from="1640588170937" duration="1018000" />
+      <workItem from="1640619591286" duration="594000" />
+      <workItem from="1641217946530" duration="5011000" />
+      <workItem from="1641266620191" duration="40000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+</project>

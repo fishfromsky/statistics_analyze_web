@@ -101,7 +101,7 @@ class NationalSolidPollutionPipeline(object):
 
     def close_spider(self, spider):
         date = datetime.date.today().strftime('%y%m%d')
-        path = os.path.join("static/国内固体废物数据/" + '国内固体废物实时数据.xlsx')
+        path = os.path.join("/static/国内固体废物数据/" + '国内固体废物实时数据.xlsx')
         p1 = os.path.exists(path)
         if p1:
             writer = pd.ExcelWriter(path,engine='openpyxl')
@@ -109,6 +109,7 @@ class NationalSolidPollutionPipeline(object):
             writer.book = book
             self.national_solidpollution.to_excel(writer,'固体废弃物-全国',index=None)
         else:
+            print(os.path)
             writer = pd.ExcelWriter(path)
             self.national_solidpollution.to_excel(writer, '固体废弃物-全国', index=None)
         writer.save()

@@ -221,6 +221,15 @@ export function getcitypopulationdata() {
     method: 'get'
   })
 }
+
+// 请求城市生活垃圾表
+export function getcitygarbageproductiondata() {
+  return request({
+    url: '/getgarbagecityproduction',
+    method: 'get'
+  })
+}
+
 // 请求城市生活垃圾表
 export function getcitygarbagedata() {
   return request({

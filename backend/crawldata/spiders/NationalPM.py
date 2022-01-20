@@ -2,6 +2,7 @@ import scrapy
 from ..items import NationalPMItem
 import re
 import urllib
+from urllib.parse import urljoin
 import collections
 class NationalPMSpider(scrapy.Spider):
     name = 'nationalpm'
@@ -13,10 +14,10 @@ class NationalPMSpider(scrapy.Spider):
         'LOG_LEVEL': 'INFO',
         'RETRY_TIMES': 15,
         'DEFAULT_REQUEST_HEADERS': {
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
             'accept-encoding': 'gzip, deflate',
             'accept-language': 'zh-CN,zh;q=0.9',
-            'cache-control': 'max-age=0',
+            'cache-control': 'no-cache, private',
         },
         'ITEM_PIPELINES': {
             'crawldata.pipelines.NationalPMPipeline': 301,
@@ -29,11 +30,10 @@ class NationalPMSpider(scrapy.Spider):
             :param response:
             :return: detail response
             """
-     allcitydiv = response.xpath('//div[@class="all"]')[0]
+     allcitydiv = response.xpath('//div[@class="hot"]')[1]
      allcityurls = allcitydiv.xpath('.//li/a/@href').extract()
      for url in allcityurls:
-        url = urllib.parse.urljoin(response.url,url)
-        # print("22222222222")
+        url = urljoin(response.url,url)
         yield scrapy.FormRequest(url=url, method='get', callback=self.parsedata)
 
     def parsedata(self, response):
