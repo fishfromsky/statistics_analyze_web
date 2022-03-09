@@ -23,7 +23,7 @@ from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 import numpy as np
 import threading
 
-BASE_ROOT = 'http://localhost:8000/'
+BASE_ROOT = 'http://101.133.238.216:8000/'
 
 
 def to_dict(self, fields=None, exclude=None):
