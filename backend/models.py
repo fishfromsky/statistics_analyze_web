@@ -237,9 +237,39 @@ class kmeans_project(models.Model):
     add_time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=255, default='未运行')
 
+class svm_project(models.Model):
+    project_id = models.CharField(max_length=255, null=False, primary_key=True)
+    name = models.CharField(max_length=255, null=False)
+    add_time = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=255, default='未运行')
+
+class xgboost_project(models.Model):
+    project_id = models.CharField(max_length=255, null=False, primary_key=True)
+    name = models.CharField(max_length=255, null=False)
+    add_time = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=255, default='未运行')
+
 
 class kmeans_result(models.Model):
     project_id = models.ForeignKey(to="kmeans_project", on_delete=models.CASCADE)
+    xaxis = models.FloatField(null=False)
+    yaxis = models.FloatField(null=False)
+    label = models.IntegerField(null=False, default=0)
+    district = models.CharField(max_length=255, default='')
+    time = models.DateTimeField(auto_now_add=True)
+    sort = models.IntegerField(default=1)
+
+class svm_result(models.Model):
+    project_id = models.ForeignKey(to="svm_project", on_delete=models.CASCADE)
+    xaxis = models.FloatField(null=False)
+    yaxis = models.FloatField(null=False)
+    label = models.IntegerField(null=False, default=0)
+    district = models.CharField(max_length=255, default='')
+    time = models.DateTimeField(auto_now_add=True)
+    sort = models.IntegerField(default=1)
+
+class xgboost_result(models.Model):
+    project_id = models.ForeignKey(to="xgboost_project", on_delete=models.CASCADE)
     xaxis = models.FloatField(null=False)
     yaxis = models.FloatField(null=False)
     label = models.IntegerField(null=False, default=0)
@@ -361,6 +391,11 @@ class ModelRegressionFile(models.Model):
 class ModelKmeansFile(models.Model):
     file_url = models.FileField("文件", upload_to="static/modelfile/kmeans/%Y/%m/%d")
 
+class ModelsvmFile(models.Model):
+    file_url = models.FileField("文件", upload_to="static/modelfile/svm/%Y/%m/%d")
+
+class ModelxgboostFile(models.Model):
+    file_url = models.FileField("文件", upload_to="static/modelfile/xgboost/%Y/%m/%d")
 
 class ModelRelationFile(models.Model):
     file_url = models.FileField("文件", upload_to="static/modelfile/relation/%Y/%m/%d")

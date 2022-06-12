@@ -138,6 +138,12 @@ urlpatterns = [
     url('startgrouptestkmeans', views.grouptest_kmeans),  # 开始模型实验kmeans算法
     url('getkmeansexcelresult', views.getKMeansExcelResult),  # 获取模型实验kmeans算法
 
+    url('startgrouptestsvm', views.grouptest_svm),  # 开始模型实验svm算法
+    url('getsvmexcelresult', views.getsvmExcelResult),  # 获取模型实验svm算法
+
+    url('startgrouptestxgboost', views.grouptest_xgboost),  # 开始模型实验xgboost算法
+    url('getxgboostexcelresult', views.getxgboostExcelResult),  # 获取模型实验xgboost算法
+
     url('getlstmproject', views.get_lstm_project, name='getlstmproject'),  # 获取lstm项目
     url('addlstmproject', views.add_lstm_project, name='addlstmproject'),  # 添加lstm项目
     url('amendlstmproject', views.amend_lstm_project, name='amendlstmproject'),  # 修改lstm项目
@@ -171,6 +177,24 @@ urlpatterns = [
     url('get_result_kmeans', views.get_result_kmeans),  # 获得kmeans实验结果
     url('get_id_kmeans', views.get_idlist_kmeans),  # 获取kmeans所有项目编号
     url('get_kmeans_testreport', views.getKMeansTestReport),  # 获取kmeans报告
+
+    url('add_svm_project', views.add_svm_project),  # 添加svm项目
+    url('get_svm_project', views.get_svm_project),  # 获取svm项目
+    url('amend_svm_project', views.amend_svm_project),  # 修改svm项目
+    url('start_svm', views.start_svm),  # 开始svm试验
+    url('finish_svm', views.stop_svm),  # 结束svm算法
+    url('get_result_svm', views.get_result_svm),  # 获得svm实验结果
+    url('get_id_svm', views.get_idlist_svm),  # 获取svm所有项目编号
+    url('get_svm_testreport', views.getsvmTestReport),  # 获取svm报告
+
+    url('add_xgboost_project', views.add_xgboost_project),  # 添加xgboost项目
+    url('get_xgboost_project', views.get_xgboost_project),  # 获取xgboost项目
+    url('amend_xgboost_project', views.amend_xgboost_project),  # 修改xgboost项目
+    url('start_xgboost', views.start_xgboost),  # 开始xgboost试验
+    url('finish_xgboost', views.stop_xgboost),  # 结束xgboost算法
+    url('get_result_xgboost', views.get_result_xgboost),  # 获得xgboost实验结果
+    url('get_id_xgboost', views.get_idlist_xgboost),  # 获取xgboost所有项目编号
+    url('get_xgboost_testreport', views.getxgboostTestReport),  # 获取xgboost报告
 
     url('add_relation_project', views.add_relation_project),  # 添加关联分析项目
     url('get_relation_project', views.get_relation_project),  # 获得关联分析项目
@@ -237,6 +261,14 @@ urlpatterns = [
     url('uploadkmeansfile', views.uploadKMeansFile),  # 上传kmeans数据文件
     url('getkmeansfilelist', views.getmodelkmeansfilelist),  # 获取kmeans数据文件
     url('getkmeansmodelresult', views.getKmeansModelResult),  # 获取kmeans模型结果
+
+    url('uploadsvmfile', views.uploadsvmFile),  # 上传svm数据文件
+    url('getsvmfilelist', views.getmodelsvmfilelist),  # 获取svm数据文件
+    url('getsvmmodelresult', views.getsvmModelResult),  # 获取svm模型结果
+
+    url('uploadxgboostfile', views.uploadxgboostFile),  # 上传xgboost数据文件
+    url('getxgboostfilelist', views.getmodelxgboostfilelist),  # 获取xgboost数据文件
+    url('getxgboostmodelresult', views.getxgboostModelResult),  # 获取xgboost模型结果
 
     url('uploadrelationfile', views.uploadRelationFile),  # 上传关联分析数据文件
     url('getrelationfilelist', views.getmodelrelationfilelist),  # 获取关联分析数据文件

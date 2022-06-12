@@ -69,8 +69,16 @@
                         text: val.district+'第二产业生产总值(GDP)'
                     },
                     grid:{
-                   
+
                     },
+                   toolbox:{
+            show:true, //是否显示
+            feature: { //要显示的具体功能
+              saveAsImage:{ //保存图片
+                    show:true
+                },
+            }
+          },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {

@@ -2,6 +2,7 @@ import request from '@/utils/request'
 import da from 'element-ui/src/locale/lang/da'
 import { expr } from 'jquery'
 
+
 export function getmodel() {
   return request({
     url: '/getmodel',
@@ -739,6 +740,280 @@ export function getparameterkmeans(data){
   })
 }
 
+// 开始kmeans算法
+export function grouptestkmeans(data){
+  return request({
+    url: '/startgrouptestkmeans',
+    method: 'post',
+    data
+  })
+}
+
+// 获取kmeansexcel结果
+export function getkmeansexcelresult(data){
+  return request({
+    url: '/getkmeansexcelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取kmeans聚类报告
+export function getkmenastestreport(data){
+  return request({
+    url: '/get_kmeans_testreport',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取聚类数据文件
+export function getkmeansfilelist(){
+  return request({
+    url: '/getkmeansfilelist',
+    method: 'get'
+  })
+}
+
+// 获取kmeans模型结果文件
+export function getkmeansmodelresult(data){
+  return request({
+    url: '/getkmeansmodelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 添加svm算法模型
+
+
+export function addsvmproject(data){
+  return request({
+    url: '/add_svm_project',
+    method: 'post',
+    data
+  })
+}
+
+// 获得svm模型
+export function getsvmrpoject(){
+  return request({
+    url: '/get_svm_project',
+    method: 'get'
+  })
+}
+
+// 修改svm模型
+export function amendsvmproject(data){
+  return request({
+    url: '/amend_svm_project',
+    method: 'post',
+    data
+  })
+}
+
+// 开始svm试验
+export function startsvm(data){
+  return request({
+    url: '/start_svm',
+    method: 'post',
+    data
+  })
+}
+
+// 获得svm实验结果
+export function getsvmresult(data){
+  return request({
+    url: '/get_result_svm',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获得svm实验项目编号
+export function getidlistsvm(){
+  return request({
+    url: '/get_id_svm',
+    method: 'get'
+  })
+}
+
+// 输入svm实验数据
+export function parametersvm(data){
+  return request({
+    url: '/input_parameter_svm',
+    method: 'post',
+    data
+  })
+}
+
+export function getparametersvm(data){
+  return request({
+    url: '/get_parameter_svm',
+    method: 'get',
+    params: data
+  })
+}
+
+// 开始svm算法
+export function grouptestsvm(data){
+  return request({
+    url: '/startgrouptestsvm',
+    method: 'post',
+    data
+  })
+}
+
+// 获取svmexcel结果
+export function getsvmexcelresult(data){
+  return request({
+    url: '/getsvmexcelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取svm聚类报告
+export function getsvmtestreport(data){
+  return request({
+    url: '/get_svm_testreport',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取聚类数据文件
+export function getsvmfilelist(){
+  return request({
+    url: '/getsvmfilelist',
+    method: 'get'
+  })
+}
+
+// 获取svm模型结果文件
+export function getsvmmodelresult(data){
+  return request({
+    url: '/getsvmmodelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+
+
+
+export function addxgboostproject(data){
+  return request({
+    url: '/add_xgboost_project',
+    method: 'post',
+    data
+  })
+}
+
+// 获得xgboost模型
+export function getxgboostrpoject(){
+  return request({
+    url: '/get_xgboost_project',
+    method: 'get'
+  })
+}
+
+// 修改xgboost模型
+export function amendxgboostproject(data){
+  return request({
+    url: '/amend_xgboost_project',
+    method: 'post',
+    data
+  })
+}
+
+// 开始xgboost试验
+export function startxgboost(data){
+  return request({
+    url: '/start_xgboost',
+    method: 'post',
+    data
+  })
+}
+
+// 获得xgboost实验结果
+export function getxgboostresult(data){
+  return request({
+    url: '/get_result_xgboost',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获得xgboost实验项目编号
+export function getidlistxgboost(){
+  return request({
+    url: '/get_id_xgboost',
+    method: 'get'
+  })
+}
+
+// 输入xgboost实验数据
+export function parameterxgboost(data){
+  return request({
+    url: '/input_parameter_xgboost',
+    method: 'post',
+    data
+  })
+}
+
+export function getparameterxgboost(data){
+  return request({
+    url: '/get_parameter_xgboost',
+    method: 'get',
+    params: data
+  })
+}
+
+// 开始xgboost算法
+export function grouptestxgboost(data){
+  return request({
+    url: '/startgrouptestxgboost',
+    method: 'post',
+    data
+  })
+}
+
+// 获取xgboostexcel结果
+export function getxgboostexcelresult(data){
+  return request({
+    url: '/getxgboostexcelresult',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取xgboost聚类报告
+export function getxgboosttestreport(data){
+  return request({
+    url: '/get_xgboost_testreport',
+    method: 'get',
+    params: data
+  })
+}
+
+// 获取聚类数据文件
+export function getxgboostfilelist(){
+  return request({
+    url: '/getxgboostfilelist',
+    method: 'get'
+  })
+}
+
+// 获取xgboost模型结果文件
+export function getxgboostmodelresult(data){
+  return request({
+    url: '/getxgboostmodelresult',
+    method: 'get',
+    params: data
+  })
+}
+
 // 获取算法模型列表
 export function getalgorithmlist(data){
   return request({
@@ -1315,23 +1590,7 @@ export function deleteregressionexcelresult(data){
   })
 }
 
-// 开始kmeans算法
-export function grouptestkmeans(data){
-  return request({
-    url: '/startgrouptestkmeans',
-    method: 'post',
-    data
-  })
-}
 
-// 获取kmeansexcel结果
-export function getkmeansexcelresult(data){
-  return request({
-    url: '/getkmeansexcelresult',
-    method: 'get',
-    params: data
-  })
-}
 
 // 获取多元线性回归项目
 export function getlinearregressionproject(){
@@ -1502,14 +1761,7 @@ export function filtergarbagedistrictbyyear(data){
   })
 }
 
-// 获取kmeans聚类报告
-export function getkmenastestreport(data){
-  return request({
-    url: '/get_kmeans_testreport',
-    method: 'get',
-    params: data
-  })
-}
+
 
 // 获取lstm数据文件
 export function getlstmmodelfile(){
@@ -1590,22 +1842,7 @@ export function getregressionmodelresult(data){
   })
 }
 
-// 获取聚类数据文件
-export function getkmeansfilelist(){
-  return request({
-    url: '/getkmeansfilelist',
-    method: 'get'
-  })
-}
 
-// 获取kmeans模型结果文件
-export function getkmeansmodelresult(data){
-  return request({
-    url: '/getkmeansmodelresult',
-    method: 'get',
-    params: data
-  })
-}
 
 // 获取关联分析数据文件
 export function getrelationfilelist(){

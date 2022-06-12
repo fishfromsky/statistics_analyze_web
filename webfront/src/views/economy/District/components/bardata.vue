@@ -72,6 +72,14 @@
                     legend: {
                         data: ['GDP', '第一产业GDP', '第二产业GDP', '第三产业GDP']
                     },
+                   toolbox:{
+            show:true, //是否显示
+            feature: { //要显示的具体功能
+              saveAsImage:{ //保存图片
+                    show:true
+                },
+            }
+          },
                     xAxis: [
                         {
                             type: 'category',

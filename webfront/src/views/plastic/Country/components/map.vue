@@ -93,6 +93,14 @@ export default {
             opacity: 0
           }
         },
+         toolbox:{
+            show:true, //是否显示
+            feature: { //要显示的具体功能
+              saveAsImage:{ //保存图片
+                    show:true
+                },
+            }
+          },
         series: [
           {
             type: 'custom',

@@ -450,6 +450,13 @@ export const constantRoutes = [
         ]
       },
       {
+        path: 'pre_models',
+        name: 'pre_models',
+        redirect: '/repository/pre_models',
+        meta: { title: '垃圾产量预测模型' },
+        component: () => import('@/views/repository/index'),
+        children: [
+          {
         path: 'lstmModel',
         name: 'lstmModel',
         redirect: '/repository/lstmModel',
@@ -470,137 +477,163 @@ export const constantRoutes = [
           }
         ]
       },
-       {
-        path: 'linearregression',
-        name: 'linearregression',
-        redirect: '/repository/linearregression',
-        meta: { title: '多元线性回归' },
-        component: () => import('@/views/repository/index'),
-        children: [
           {
-            path: 'manage',
-            name: 'linearregressionmanage',
-            component: () => import('@/views/repository/linearregression/manage/index'),
-            meta: { title: '管理项目' }
-          },
-          {
-            path: 'result',
-            name: 'linearregressionresult',
-            component: () => import('@/views/repository/linearregression/result/index'),
-            meta: { title: '结果查询' }
-          }
-        ]
-      },
-      {
-        path: 'linearregression',
-        name: 'linearregression',
-        redirect: '/repository/linearregression',
-        meta: { title: '多元线性回归' },
-        component: () => import('@/views/repository/index'),
-        children: [
-          {
-            path: 'manage',
-            name: 'linearregressionmanage',
-            component: () => import('@/views/repository/linearregression/manage/index'),
-            meta: { title: '管理项目' }
-          },
-          {
-            path: 'result',
-            name: 'linearregressionresult',
-            component: () => import('@/views/repository/linearregression/result/index'),
-            meta: { title: '结果查询' }
-          }
-        ]
-      },
-      {
-        path: 'multiregression',
-        name: 'multiregression',
-        redirect: '/repository/regression',
-        meta: { title: '多元非线性回归' },
-        component: () => import('@/views/repository/index'),
-        children: [
-          {
-            path: 'manage',
-            name: 'manage',
-            component: () => import('@/views/repository/regression/programe/index'),
-            meta: { title: '管理项目' }
-          },
-          {
-            path: 'experiment',
-            name: 'experiment',
-            component: () => import('@/views/repository/regression/result/index'),
-            meta: { title: '结果查询' }
-          }
-        ]
-      },
-      {
-        path: 'kmeans',
-        name: 'kmeans',
-        redirect: '/repository/kmeans',
-        meta: { title: 'KMEANS聚类' },
-        component: () => import('@/views/repository/index'),
-        children: [
-          {
-            path: 'manage',
-            name: 'manage',
-            component: () => import('@/views/repository/kmeans/manage/index'),
-            meta: { title: '项目管理' }
-          },
-          {
-            path: 'result',
-            name: 'result',
-            component: () => import('@/views/repository/kmeans/result/index'),
-            meta: { title: '结果查询' }
-          }
-        ]
-      },
-      {
-        path: 'relation',
-        name: 'relation',
-        redirect: '/repository/relation',
-        meta: { title: '关联分析' },
-        component: () => import('@/views/repository/index'),
-        children: [
-          {
-            path: 'manage',
-            name: 'manage',
-            component: () => import('@/views/repository/relation/manage/index'),
-            meta: { title: '项目管理' }
-          },
-          {
-            path: 'result',
-            name: 'result',
+            path: 'linearregression',
+            name: 'linearregression',
+            redirect: '/repository/linearregression',
+            meta: { title: '多元线性回归' },
             component: () => import('@/views/repository/index'),
-            meta: { title: '结果查询' },
             children: [
               {
-                path: 'hotmatrix',
-                name: 'hotmatrix',
-                component: () => import('@/views/repository/relation/result/hotmatrix/index'),
-                meta: { title: '相关系数'}
+                path: 'manage',
+                name: 'linearregressionmanage',
+                component: () => import('@/views/repository/linearregression/manage/index'),
+                meta: { title: '管理项目' }
               },
               {
-                path: 'rf',
-                name: 'rf',
-                component: () => import('@/views/repository/relation/result/RF/index'),
-                meta: { title: '随机森林' }
+                path: 'result',
+                name: 'linearregressionresult',
+                component: () => import('@/views/repository/linearregression/result/index'),
+                meta: { title: '结果查询' }
+              }
+            ]
+          },
+          {
+            path: 'multiregression',
+            name: 'multiregression',
+            redirect: '/repository/regression',
+            meta: { title: '多元非线性回归' },
+            component: () => import('@/views/repository/index'),
+            children: [
+              {
+                path: 'manage',
+                name: 'manage',
+                component: () => import('@/views/repository/regression/programe/index'),
+                meta: { title: '管理项目' }
               },
               {
-                path: 'grey',
-                name: 'grey',
-                component: () => import('@/views/repository/relation/result/greyrelation/index'),
-                meta: { title: '灰色关联度' }
+                path: 'experiment',
+                name: 'experiment',
+                component: () => import('@/views/repository/regression/result/index'),
+                meta: { title: '结果查询' }
+              }
+            ]
+          },
+          //svm
+          {
+            path: 'svm',
+            name: 'svm',
+            redirect: '/repository/svm',
+            meta: { title: 'svm' },
+            component: () => import('@/views/repository/index'),
+            children: [
+              {
+                path: 'manage',
+                name: 'manage',
+                component: () => import('@/views/repository/svm/manage/index'),
+                meta: { title: '项目管理' }
               },
               {
-                path: 'pearson',
-                name: 'pearson',
-                component: () => import('@/views/repository/relation/result/pearson/index'),
-                meta: { title: '皮尔逊系数' }
+                path: 'result',
+                name: 'result',
+                component: () => import('@/views/repository/svm/result/index'),
+                meta: { title: '结果查询' }
+              }
+            ]
+          },
+          //xgboost
+          {
+            path: 'xgboost',
+            name: 'xgboost',
+            redirect: '/repository/xgboost',
+            meta: { title: 'xgboost' },
+            component: () => import('@/views/repository/index'),
+            children: [
+              {
+                path: 'manage',
+                name: 'manage',
+                component: () => import('@/views/repository/xgboost/manage/index'),
+                meta: { title: '项目管理' }
+              },
+              {
+                path: 'result',
+                name: 'result',
+                component: () => import('@/views/repository/xgboost/result/index'),
+                meta: { title: '结果查询' }
+              }
+            ]
+          },
+          {
+            path: 'kmeans',
+            name: 'kmeans',
+            redirect: '/repository/kmeans',
+            meta: { title: 'KMEANS聚类' },
+            component: () => import('@/views/repository/index'),
+            children: [
+              {
+                path: 'manage',
+                name: 'manage',
+                component: () => import('@/views/repository/kmeans/manage/index'),
+                meta: { title: '项目管理' }
+              },
+              {
+                path: 'result',
+                name: 'result',
+                component: () => import('@/views/repository/kmeans/result/index'),
+                meta: { title: '结果查询' }
+              }
+            ]
+          },
+          {
+            path: 'relation',
+            name: 'relation',
+            redirect: '/repository/relation',
+            meta: { title: '关联分析' },
+            component: () => import('@/views/repository/index'),
+            children: [
+              {
+                path: 'manage',
+                name: 'manage',
+                component: () => import('@/views/repository/relation/manage/index'),
+                meta: { title: '项目管理' }
+              },
+              {
+                path: 'result',
+                name: 'result',
+                component: () => import('@/views/repository/index'),
+                meta: { title: '结果查询' },
+                children: [
+                  {
+                    path: 'hotmatrix',
+                    name: 'hotmatrix',
+                    component: () => import('@/views/repository/relation/result/hotmatrix/index'),
+                    meta: { title: '相关系数'}
+                  },
+                  {
+                    path: 'rf',
+                    name: 'rf',
+                    component: () => import('@/views/repository/relation/result/RF/index'),
+                    meta: { title: '随机森林' }
+                  },
+                  {
+                    path: 'grey',
+                    name: 'grey',
+                    component: () => import('@/views/repository/relation/result/greyrelation/index'),
+                    meta: { title: '灰色关联度' }
+                  },
+                  {
+                    path: 'pearson',
+                    name: 'pearson',
+                    component: () => import('@/views/repository/relation/result/pearson/index'),
+                    meta: { title: '皮尔逊系数' }
+                  }
+                ]
               }
             ]
           }
         ]
-      }
+      },
+
     ]
   },
   {

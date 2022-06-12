@@ -75,6 +75,14 @@ export default {
       this.chart = echarts.init(this.$refs.map)
       this.chart.setOption({
         tooltip: {},
+         toolbox:{
+            show:true, //是否显示
+            feature: { //要显示的具体功能
+              saveAsImage:{ //保存图片
+                    show:true
+                },
+            }
+          },
         visualMap: {
           type: 'continuous',
           itemWidth: 40,

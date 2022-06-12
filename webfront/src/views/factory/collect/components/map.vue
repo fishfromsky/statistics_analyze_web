@@ -23,7 +23,7 @@ export default {
       bmap: {},
       mapZoom: 10,
       chart: echarts.ECharts,
-      data: [], 
+      data: [],
       geoCoordMap: {},
       labelstatus: false,
       centrl_geo: [121.477665, 31.226048],
@@ -81,6 +81,14 @@ export default {
           left: "20",
           top: "20",
         },
+         toolbox:{
+            show:true, //是否显示
+            feature: { //要显示的具体功能
+              saveAsImage:{ //保存图片
+                    show:true
+                },
+            }
+          },
         legend:{
             data: ['中转站'],
             top: '100',

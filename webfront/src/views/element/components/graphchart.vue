@@ -67,6 +67,14 @@ export default {
                 trigger: 'item',
                 formatter: '{a} <br/>{b}: {c} ({d}%)'
             },
+           toolbox:{
+            show:true, //是否显示
+            feature: { //要显示的具体功能
+              saveAsImage:{ //保存图片
+                    show:true
+                },
+            }
+          },
             legend: {
                 orient: 'vertical',
                 left: 10,

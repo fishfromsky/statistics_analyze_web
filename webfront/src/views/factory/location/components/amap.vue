@@ -26,7 +26,7 @@ export default {
       data0: [], // 其他
       data1: [], //焚烧厂
       data2: [], //填埋场
-      data3: [], 
+      data3: [],
       data4: [],
       geoCoordMap: {},
       labelstatus: false,
@@ -71,7 +71,7 @@ export default {
               that.data3.push({ name: f_name, value: f_value });
             } else if (fac_data[i]["typeId"] === 4){
               that.data4.push({ name: f_name, value: f_value });
-            } 
+            }
             that.geoCoordMap[f_name] = [f_longitude, f_latitude];
           }
           that.initChart();
@@ -94,6 +94,14 @@ export default {
           left: "20",
           top: "20",
         },
+         toolbox:{
+            show:true, //是否显示
+            feature: { //要显示的具体功能
+              saveAsImage:{ //保存图片
+                    show:true
+                },
+            }
+          },
         legend:{
             data: ['其他(万吨)', '填埋厂', '焚烧场', '预处理+厌氧处理', '预处理+好氧处理'],
             top: '100',
