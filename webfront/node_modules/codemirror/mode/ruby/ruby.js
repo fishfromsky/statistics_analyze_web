@@ -11,28 +11,24 @@
 })(function(CodeMirror) {
 "use strict";
 
-function wordObj(words) {
-  var o = {};
-  for (var i = 0, e = words.length; i < e; ++i) o[words[i]] = true;
-  return o;
-}
-
-var keywordList = [
-  "alias", "and", "BEGIN", "begin", "break", "case", "class", "def", "defined?", "do", "else",
-  "elsif", "END", "end", "ensure", "false", "for", "if", "in", "module", "next", "not", "or",
-  "redo", "rescue", "retry", "return", "self", "super", "then", "true", "undef", "unless",
-  "until", "when", "while", "yield", "nil", "raise", "throw", "catch", "fail", "loop", "callcc",
-  "caller", "lambda", "proc", "public", "protected", "private", "require", "load",
-  "require_relative", "extend", "autoload", "__END__", "__FILE__", "__LINE__", "__dir__"
-], keywords = wordObj(keywordList);
-
-var indentWords = wordObj(["def", "class", "case", "for", "while", "until", "module", "then",
-                           "catch", "loop", "proc", "begin"]);
-var dedentWords = wordObj(["end", "until"]);
-var opening = {"[": "]", "{": "}", "(": ")"};
-var closing = {"]": "[", "}": "{", ")": "("};
-
 CodeMirror.defineMode("ruby", function(config) {
+  function wordObj(words) {
+    var o = {};
+    for (var i = 0, e = words.length; i < e; ++i) o[words[i]] = true;
+    return o;
+  }
+  var keywords = wordObj([
+    "alias", "and", "BEGIN", "begin", "break", "case", "class", "def", "defined?", "do", "else",
+    "elsif", "END", "end", "ensure", "false", "for", "if", "in", "module", "next", "not", "or",
+    "redo", "rescue", "retry", "return", "self", "super", "then", "true", "undef", "unless",
+    "until", "when", "while", "yield", "nil", "raise", "throw", "catch", "fail", "loop", "callcc",
+    "caller", "lambda", "proc", "public", "protected", "private", "require", "load",
+    "require_relative", "extend", "autoload", "__END__", "__FILE__", "__LINE__", "__dir__"
+  ]);
+  var indentWords = wordObj(["def", "class", "case", "for", "while", "until", "module", "then",
+                             "catch", "loop", "proc", "begin"]);
+  var dedentWords = wordObj(["end", "until"]);
+  var matching = {"[": "]", "{": "}", "(": ")"};
   var curPunc;
 
   function chain(newtok, stream, state) {
@@ -62,12 +58,12 @@ CodeMirror.defineMode("ruby", function(config) {
       else if (stream.eat(/[wxq]/)) { style = "string"; embed = false; }
       var delim = stream.eat(/[^\w\s=]/);
       if (!delim) return "operator";
-      if (opening.propertyIsEnumerable(delim)) delim = opening[delim];
+      if (matching.propertyIsEnumerable(delim)) delim = matching[delim];
       return chain(readQuoted(delim, style, embed, true), stream, state);
     } else if (ch == "#") {
       stream.skipToEnd();
       return "comment";
-    } else if (ch == "<" && (m = stream.match(/^<([-~])[\`\"\']?([a-zA-Z_?]\w*)[\`\"\']?(?:;|$)/))) {
+    } else if (ch == "<" && (m = stream.match(/^<(-)?[\`\"\']?([a-zA-Z_?]\w*)[\`\"\']?(?:;|$)/))) {
       return chain(readHereDoc(m[2], m[1]), stream, state);
     } else if (ch == "0") {
       if (stream.eat("x")) stream.eatWhile(/[\da-fA-F]/);
@@ -284,9 +280,9 @@ CodeMirror.defineMode("ruby", function(config) {
       if (state.tokenize[state.tokenize.length-1] != tokenBase) return CodeMirror.Pass;
       var firstChar = textAfter && textAfter.charAt(0);
       var ct = state.context;
-      var closed = ct.type == closing[firstChar] ||
+      var closing = ct.type == matching[firstChar] ||
         ct.type == "keyword" && /^(?:end|until|else|elsif|when|rescue)\b/.test(textAfter);
-      return ct.indented + (closed ? 0 : config.indentUnit) +
+      return ct.indented + (closing ? 0 : config.indentUnit) +
         (state.continuedLine ? config.indentUnit : 0);
     },
 
@@ -297,7 +293,5 @@ CodeMirror.defineMode("ruby", function(config) {
 });
 
 CodeMirror.defineMIME("text/x-ruby", "ruby");
-
-CodeMirror.registerHelper("hintWords", "ruby", keywordList);
 
 });

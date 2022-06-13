@@ -1,0 +1,228 @@
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+[12/Jun/2022 18:05:14] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:05:14] "GET /static/css/chunk-libs.e853d151.css HTTP/1.1" 304 0
+[12/Jun/2022 18:05:14] "GET /static/css/chunk-elementUI.717c90ab.css HTTP/1.1" 304 0
+[12/Jun/2022 18:05:14] "GET /static/css/app.ae083d58.css HTTP/1.1" 304 0
+[12/Jun/2022 18:05:14] "GET /static/js/chunk-libs.00af9eba.js HTTP/1.1" 304 0
+[12/Jun/2022 18:05:14] "GET /static/js/app.b498cb22.js HTTP/1.1" 304 0
+[12/Jun/2022 18:05:15] "GET /static/css/chunk-661f0db8.b7ebd290.css HTTP/1.1" 304 0
+[12/Jun/2022 18:05:15] "GET /static/js/chunk-661f0db8.6be27e30.js HTTP/1.1" 304 0
+[12/Jun/2022 18:05:17] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:05:45] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:05:54] "GET / HTTP/1.1" 200 10396
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+[12/Jun/2022 18:08:58] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:10:57] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:10:57] "GET /static/css/chunk-elementUI.717c90ab.css HTTP/1.1" 304 0
+[12/Jun/2022 18:10:57] "GET /static/css/app.ae083d58.css HTTP/1.1" 304 0
+[12/Jun/2022 18:10:57] "GET /static/css/chunk-libs.e853d151.css HTTP/1.1" 304 0
+[12/Jun/2022 18:10:57] "GET /static/js/app.b498cb22.js HTTP/1.1" 304 0
+[12/Jun/2022 18:10:57] "GET /static/js/chunk-libs.00af9eba.js HTTP/1.1" 304 0
+[12/Jun/2022 18:10:58] "GET /static/js/chunk-661f0db8.6be27e30.js HTTP/1.1" 304 0
+[12/Jun/2022 18:10:58] "GET /static/css/chunk-661f0db8.b7ebd290.css HTTP/1.1" 304 0
+Watching for file changes with StatReloader
+[12/Jun/2022 18:14:18] "GET / HTTP/1.1" 200 10396
+Watching for file changes with StatReloader
+[12/Jun/2022 18:19:02] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:19:03] "GET /static/css/chunk-libs.e853d151.css HTTP/1.1" 304 0
+[12/Jun/2022 18:19:03] "GET /static/js/chunk-libs.00af9eba.js HTTP/1.1" 304 0
+[12/Jun/2022 18:19:03] "GET /static/css/app.ae083d58.css HTTP/1.1" 304 0
+[12/Jun/2022 18:19:03] "GET /static/js/app.b498cb22.js HTTP/1.1" 304 0
+[12/Jun/2022 18:19:03] "GET /static/css/chunk-elementUI.717c90ab.css HTTP/1.1" 304 0
+[12/Jun/2022 18:19:03] "GET /static/css/chunk-661f0db8.b7ebd290.css HTTP/1.1" 304 0
+[12/Jun/2022 18:19:03] "GET /static/js/chunk-661f0db8.6be27e30.js HTTP/1.1" 304 0
+[12/Jun/2022 18:19:19] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:19:21] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:19:22] "GET / HTTP/1.1" 200 10396
+[12/Jun/2022 18:19:25] "GET / HTTP/1.1" 200 10396
+Watching for file changes with StatReloader
+[12/Jun/2022 18:21:18] "GET / HTTP/1.1" 200 10396
+Watching for file changes with StatReloader
+[12/Jun/2022 19:09:38] "GET / HTTP/1.1" 200 10340
+[12/Jun/2022 19:09:38] "GET /static/css/chunk-libs.f22c819a.css HTTP/1.1" 200 3540
+[12/Jun/2022 19:09:38] "GET /static/js/app.e0606209.js HTTP/1.1" 200 104766
+[12/Jun/2022 19:09:39] "GET /static/css/chunk-elementUI.717c90ab.css HTTP/1.1" 200 233352
+[12/Jun/2022 19:09:39] "GET /static/css/app.ae083d58.css HTTP/1.1" 200 247765
+[12/Jun/2022 19:09:40] "GET /static/js/chunk-libs.2c8ea825.js HTTP/1.1" 200 1111097
+[12/Jun/2022 19:09:44] "GET / HTTP/1.1" 200 10340
+[12/Jun/2022 19:09:45] "GET / HTTP/1.1" 200 10340
+[12/Jun/2022 19:09:46] "GET / HTTP/1.1" 200 10340
+[12/Jun/2022 19:09:48] "GET /static/css/app.ae083d58.css HTTP/1.1" 304 0
+[12/Jun/2022 19:09:48] "GET /static/css/chunk-libs.f22c819a.css HTTP/1.1" 304 0
+[12/Jun/2022 19:09:48] "GET /static/css/chunk-elementUI.717c90ab.css HTTP/1.1" 304 0
+[12/Jun/2022 19:09:50] "GET / HTTP/1.1" 200 10340
+[12/Jun/2022 19:09:50] "GET /static/js/chunk-libs.2c8ea825.js HTTP/1.1" 304 0
+[12/Jun/2022 19:09:50] "GET /static/js/app.e0606209.js HTTP/1.1" 304 0
+[12/Jun/2022 19:13:16] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:16] "GET /static/css/chunk-libs.3dfb7769.css HTTP/1.1" 200 3568
+[12/Jun/2022 19:13:16] "GET /static/js/app.1731d5b2.js HTTP/1.1" 200 98852
+[12/Jun/2022 19:13:16] "GET /static/css/chunk-elementUI.ded27da0.css HTTP/1.1" 200 233320
+[12/Jun/2022 19:13:16] "GET /static/js/chunk-libs.3157e504.js HTTP/1.1" 200 253311
+[12/Jun/2022 19:13:16] "GET /static/css/app.447c08b0.css HTTP/1.1" 200 247053
+Watching for file changes with StatReloader
+[12/Jun/2022 19:13:41] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:41] "GET /static/css/chunk-elementUI.ded27da0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:13:41] "GET /static/css/chunk-libs.3dfb7769.css HTTP/1.1" 304 0
+[12/Jun/2022 19:13:41] "GET /static/css/app.447c08b0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:13:41] "GET /static/js/chunk-libs.3157e504.js HTTP/1.1" 304 0
+[12/Jun/2022 19:13:41] "GET /static/js/app.1731d5b2.js HTTP/1.1" 304 0
+[12/Jun/2022 19:13:43] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:43] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:43] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:44] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:48] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:48] "GET /static/css/chunk-elementUI.ded27da0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:13:48] "GET /static/js/chunk-libs.3157e504.js HTTP/1.1" 304 0
+[12/Jun/2022 19:13:48] "GET /static/css/app.447c08b0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:13:48] "GET /static/css/chunk-libs.3dfb7769.css HTTP/1.1" 304 0
+[12/Jun/2022 19:13:48] "GET /static/js/app.1731d5b2.js HTTP/1.1" 304 0
+[12/Jun/2022 19:13:49] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:51] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:13:51] "GET / HTTP/1.1" 200 8837
+Watching for file changes with StatReloader
+[12/Jun/2022 19:30:09] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:30:09] "GET /static/css/chunk-elementUI.ded27da0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:30:09] "GET /static/css/chunk-libs.3dfb7769.css HTTP/1.1" 304 0
+[12/Jun/2022 19:30:09] "GET /static/js/app.1731d5b2.js HTTP/1.1" 304 0
+[12/Jun/2022 19:30:09] "GET /static/js/chunk-libs.3157e504.js HTTP/1.1" 304 0
+[12/Jun/2022 19:30:09] "GET /static/css/app.447c08b0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:30:16] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:30:17] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:30:17] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:30:18] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:30:18] "GET / HTTP/1.1" 200 8837
+Watching for file changes with StatReloader
+[12/Jun/2022 19:38:00] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:38:00] "GET /static/css/chunk-elementUI.ded27da0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:38:00] "GET /static/css/chunk-libs.3dfb7769.css HTTP/1.1" 304 0
+[12/Jun/2022 19:38:00] "GET /static/css/app.447c08b0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:38:00] "GET /static/js/chunk-libs.3157e504.js HTTP/1.1" 304 0
+[12/Jun/2022 19:38:00] "GET /static/js/app.1731d5b2.js HTTP/1.1" 304 0
+[12/Jun/2022 19:38:01] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:38:02] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:38:02] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:38:03] "GET / HTTP/1.1" 200 8837
+Watching for file changes with StatReloader
+[12/Jun/2022 19:40:38] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:40:38] "GET /static/css/chunk-elementUI.ded27da0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:40:38] "GET /static/css/chunk-libs.3dfb7769.css HTTP/1.1" 304 0
+[12/Jun/2022 19:40:38] "GET /static/css/app.447c08b0.css HTTP/1.1" 304 0
+[12/Jun/2022 19:40:38] "GET /static/js/chunk-libs.3157e504.js HTTP/1.1" 304 0
+[12/Jun/2022 19:40:38] "GET /static/js/app.1731d5b2.js HTTP/1.1" 304 0
+[12/Jun/2022 19:40:39] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:40:39] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:40:39] "GET / HTTP/1.1" 200 8837
+[12/Jun/2022 19:40:41] "GET / HTTP/1.1" 200 8837
+Watching for file changes with StatReloader
+[13/Jun/2022 11:10:49] "GET /api/login HTTP/1.1" 200 50
+Not Found: /favicon.ico
+[13/Jun/2022 11:10:49] "GET /favicon.ico HTTP/1.1" 404 2312
+[13/Jun/2022 11:10:55] "POST /api/login HTTP/1.1" 200 186
+[13/Jun/2022 11:10:55] "GET /api/info?token=5d38c56cf57a3eda864b47d99f97bca7f0d6882f HTTP/1.1" 200 186
+[13/Jun/2022 11:10:55] "GET /api/gettransferfactory HTTP/1.1" 200 8489
+[13/Jun/2022 11:10:55] "GET /api/getfactorylist HTTP/1.1" 200 6504
+[13/Jun/2022 11:10:55] "GET /api/getcrawlrecord?type=%E5%9B%BD%E5%86%85%E7%A9%BA%E6%B0%94%E6%B1%A1%E6%9F%93%E6%95%B0%E6%8D%AE HTTP/1.1" 200 12197
+[13/Jun/2022 11:10:56] "GET /api/getgarbagecountry HTTP/1.1" 200 36953
+[13/Jun/2022 11:10:56] "GET /api/api/utputallocation/allist?project_id=p001&p_value=6 HTTP/1.1" 200 64046
+[13/Jun/2022 11:11:00] "GET / HTTP/1.1" 200 10340
+[13/Jun/2022 11:11:00] "GET /static/css/chunk-libs.f22c819a.css HTTP/1.1" 200 3540
+[13/Jun/2022 11:11:00] "GET /static/js/app.e0606209.js HTTP/1.1" 200 104766
+[13/Jun/2022 11:11:00] "GET /static/css/chunk-elementUI.717c90ab.css HTTP/1.1" 200 233352
+[13/Jun/2022 11:11:01] "GET /static/css/app.ae083d58.css HTTP/1.1" 200 247765
+[13/Jun/2022 11:11:03] "GET /static/js/chunk-elementUI.ca2635ac.js HTTP/1.1" 200 668736
+[13/Jun/2022 11:11:03] "GET /static/js/chunk-libs.2c8ea825.js HTTP/1.1" 200 1111097
+[13/Jun/2022 11:11:03] "GET /static/css/chunk-661f0db8.b7ebd290.css HTTP/1.1" 200 1831
+[13/Jun/2022 11:11:03] "GET /static/js/chunk-661f0db8.26b0e0ca.js HTTP/1.1" 200 4188
+[13/Jun/2022 11:11:04] "GET /api/info?token=5d38c56cf57a3eda864b47d99f97bca7f0d6882f HTTP/1.1" 200 186
+Not Found: /favicon.ico
+[13/Jun/2022 11:11:04] "GET /favicon.ico HTTP/1.1" 404 2318
+[13/Jun/2022 11:11:04] "GET /api/gettransferfactory HTTP/1.1" 200 8489
+[13/Jun/2022 11:11:04] "GET /api/getfactorylist HTTP/1.1" 200 6504
+[13/Jun/2022 11:11:04] "GET /api/getcrawlrecord?type=%E5%9B%BD%E5%86%85%E7%A9%BA%E6%B0%94%E6%B1%A1%E6%9F%93%E6%95%B0%E6%8D%AE HTTP/1.1" 200 12197
+[13/Jun/2022 11:11:04] "GET /api/getgarbagecountry HTTP/1.1" 200 36953
+[13/Jun/2022 11:11:05] "GET /api/api/utputallocation/allist?project_id=p001&p_value=6 HTTP/1.1" 200 64046
+[13/Jun/2022 11:11:05] "GET /static/fonts/element-icons.535877f5.woff HTTP/1.1" 200 28200
+[13/Jun/2022 11:11:09] "GET /api/info?token=5d38c56cf57a3eda864b47d99f97bca7f0d6882f HTTP/1.1" 200 186
+[13/Jun/2022 11:11:09] "GET /api/getfactorylist HTTP/1.1" 200 6504
+[13/Jun/2022 11:11:09] "GET /api/getcrawlrecord?type=%E5%9B%BD%E5%86%85%E7%A9%BA%E6%B0%94%E6%B1%A1%E6%9F%93%E6%95%B0%E6%8D%AE HTTP/1.1" 200 12197
+[13/Jun/2022 11:11:09] "GET /api/gettransferfactory HTTP/1.1" 200 8489
+[13/Jun/2022 11:11:09] "GET /api/getgarbagecountry HTTP/1.1" 200 36953
+[13/Jun/2022 11:11:10] "GET /api/api/utputallocation/allist?project_id=p001&p_value=6 HTTP/1.1" 200 64046
+[13/Jun/2022 11:11:11] "GET / HTTP/1.1" 200 10340
+[13/Jun/2022 11:11:13] "POST /api/logout?token=5d38c56cf57a3eda864b47d99f97bca7f0d6882f HTTP/1.1" 200 28
+[13/Jun/2022 11:11:15] "POST /api/login HTTP/1.1" 200 186
+[13/Jun/2022 11:11:15] "GET /api/info?token=95c021eba06ebde971762ba2549f03778b057c74 HTTP/1.1" 200 186
+[13/Jun/2022 11:11:16] "GET /api/getfactorylist HTTP/1.1" 200 6504
+[13/Jun/2022 11:11:16] "GET /api/getcrawlrecord?type=%E5%9B%BD%E5%86%85%E7%A9%BA%E6%B0%94%E6%B1%A1%E6%9F%93%E6%95%B0%E6%8D%AE HTTP/1.1" 200 12197
+[13/Jun/2022 11:11:16] "GET /api/gettransferfactory HTTP/1.1" 200 8489
+[13/Jun/2022 11:11:16] "GET /api/getgarbagecountry HTTP/1.1" 200 36953
+[13/Jun/2022 11:11:16] "GET /api/api/utputallocation/allist?project_id=p001&p_value=6 HTTP/1.1" 200 64046
+[13/Jun/2022 11:11:27] "GET /api/geteconomycity HTTP/1.1" 200 4115
+[13/Jun/2022 11:11:33] "GET /api/getpopulationcity HTTP/1.1" 200 3247
+[13/Jun/2022 11:11:34] "GET / HTTP/1.1" 200 10340
+[13/Jun/2022 11:11:34] "GET /static/css/chunk-libs.f22c819a.css HTTP/1.1" 200 3540
+[13/Jun/2022 11:11:34] "GET /static/js/app.e0606209.js HTTP/1.1" 200 104766
+[13/Jun/2022 11:11:34] "GET /static/css/chunk-elementUI.717c90ab.css HTTP/1.1" 200 233352
+[13/Jun/2022 11:11:35] "GET /static/css/app.ae083d58.css HTTP/1.1" 200 247765
+[13/Jun/2022 11:11:35] "GET /api/filterlinepopulationdistrict?district=%E6%B5%A6%E4%B8%9C%E6%96%B0%E5%8C%BA HTTP/1.1" 200 533
+[13/Jun/2022 11:11:35] "GET /api/filterbarpopulationdistrict?year=2017 HTTP/1.1" 200 1756
+[13/Jun/2022 11:11:35] "GET /api/getpopulationdistrict HTTP/1.1" 200 9665
+[13/Jun/2022 11:11:36] "GET /static/js/chunk-elementUI.ca2635ac.js HTTP/1.1" 200 668736
+Not Found: /favicon.ico
+[13/Jun/2022 11:11:37] "GET /favicon.ico HTTP/1.1" 404 2318
+[13/Jun/2022 11:11:37] "GET /static/js/chunk-libs.2c8ea825.js HTTP/1.1" 200 1111097
+[13/Jun/2022 11:11:38] "GET /static/css/chunk-661f0db8.b7ebd290.css HTTP/1.1" 200 1831
+[13/Jun/2022 11:11:38] "GET /static/js/chunk-661f0db8.26b0e0ca.js HTTP/1.1" 200 4188
+[13/Jun/2022 11:11:49] "GET / HTTP/1.1" 200 10340
+[13/Jun/2022 11:11:49] "GET /api/get_element_garbage HTTP/1.1" 200 2901
+[13/Jun/2022 11:11:49] "GET /api/getgarbageclearperday HTTP/1.1" 200 511
+[13/Jun/2022 11:11:54] "GET /static/fonts/element-icons.535877f5.woff HTTP/1.1" 200 28200
+[13/Jun/2022 11:12:02] "GET /api/getfactorylist HTTP/1.1" 200 6504
+[13/Jun/2022 11:12:08] "GET /api/gettransferfactory HTTP/1.1" 200 8489
+[13/Jun/2022 11:12:22] "POST /api/logout?token=95c021eba06ebde971762ba2549f03778b057c74 HTTP/1.1" 200 28
+[13/Jun/2022 11:13:10] "GET / HTTP/1.1" 200 10340
+[13/Jun/2022 11:13:10] "GET /static/css/chunk-libs.f22c819a.css HTTP/1.1" 200 3540
+[13/Jun/2022 11:13:10] "GET /static/js/app.e0606209.js HTTP/1.1" 200 104766
+[13/Jun/2022 11:13:10] "GET /static/css/chunk-elementUI.717c90ab.css HTTP/1.1" 200 233352
+[13/Jun/2022 11:13:10] "GET /static/css/app.ae083d58.css HTTP/1.1" 200 247765
+[13/Jun/2022 11:13:11] "GET /static/js/chunk-elementUI.ca2635ac.js HTTP/1.1" 200 668736
+[13/Jun/2022 11:13:12] "GET /static/js/chunk-libs.2c8ea825.js HTTP/1.1" 200 1111097
+[13/Jun/2022 11:13:12] "GET /static/css/chunk-661f0db8.b7ebd290.css HTTP/1.1" 200 1831
+[13/Jun/2022 11:13:12] "GET /static/js/chunk-661f0db8.26b0e0ca.js HTTP/1.1" 200 4188
+Not Found: /favicon.ico
+[13/Jun/2022 11:13:13] "GET /favicon.ico HTTP/1.1" 404 2318
+[13/Jun/2022 11:13:19] "GET / HTTP/1.1" 200 10340
+[13/Jun/2022 11:13:43] "GET /static/fonts/element-icons.535877f5.woff HTTP/1.1" 200 28200
+[13/Jun/2022 11:16:35] "OPTIONS /api/login HTTP/1.1" 200 0
+[13/Jun/2022 11:16:35] "POST /api/login HTTP/1.1" 200 186
+[13/Jun/2022 11:16:35] "GET /api/info?token=24f4b7f4744f3461f85b9fe5774e08300b13afce HTTP/1.1" 200 186
+[13/Jun/2022 11:16:36] "GET /api/gettransferfactory HTTP/1.1" 200 8489
+[13/Jun/2022 11:16:36] "GET /api/getfactorylist HTTP/1.1" 200 6504
+[13/Jun/2022 11:16:36] "GET /api/getcrawlrecord?type=%E5%9B%BD%E5%86%85%E7%A9%BA%E6%B0%94%E6%B1%A1%E6%9F%93%E6%95%B0%E6%8D%AE HTTP/1.1" 200 12197
+[13/Jun/2022 11:16:36] "GET /api/getgarbagecountry HTTP/1.1" 200 36953
+[13/Jun/2022 11:16:37] "GET /api/api/utputallocation/allist?project_id=p001&p_value=6 HTTP/1.1" 200 64046
+Watching for file changes with StatReloader
+[13/Jun/2022 11:18:32] "POST /api/logout?token=24f4b7f4744f3461f85b9fe5774e08300b13afce HTTP/1.1" 200 28
+Watching for file changes with StatReloader
+[13/Jun/2022 11:24:29] "POST /api/logout?token=e1ca8b0b53294ee1ced72a17833d6c6deed5826e HTTP/1.1" 200 28
+[13/Jun/2022 11:24:33] "POST /api/login HTTP/1.1" 200 186
+[13/Jun/2022 11:24:33] "GET /api/info?token=163131774f5f0307a8346b1971f65cb4d1594639 HTTP/1.1" 200 186
+[13/Jun/2022 11:24:33] "GET /api/gettransferfactory HTTP/1.1" 200 8489
+[13/Jun/2022 11:24:33] "GET /api/getfactorylist HTTP/1.1" 200 6504
+[13/Jun/2022 11:24:33] "GET /api/getcrawlrecord?type=%E5%9B%BD%E5%86%85%E7%A9%BA%E6%B0%94%E6%B1%A1%E6%9F%93%E6%95%B0%E6%8D%AE HTTP/1.1" 200 12197
+[13/Jun/2022 11:24:33] "GET /api/getgarbagecountry HTTP/1.1" 200 36953
+[13/Jun/2022 11:24:34] "GET /api/api/utputallocation/allist?project_id=p001&p_value=6 HTTP/1.1" 200 64046
+[13/Jun/2022 11:24:40] "POST /api/logout?token=163131774f5f0307a8346b1971f65cb4d1594639 HTTP/1.1" 200 28
+Watching for file changes with StatReloader
+[13/Jun/2022 11:25:06] "POST /api/login HTTP/1.1" 200 186
+[13/Jun/2022 11:25:06] "GET /api/info?token=3b35f700cdeb5ac043ff769fd1d2d3caaf85798f HTTP/1.1" 200 186
+[13/Jun/2022 11:25:07] "GET /api/gettransferfactory HTTP/1.1" 200 8489
+[13/Jun/2022 11:25:07] "GET /api/getfactorylist HTTP/1.1" 200 6504
+[13/Jun/2022 11:25:07] "GET /api/getcrawlrecord?type=%E5%9B%BD%E5%86%85%E7%A9%BA%E6%B0%94%E6%B1%A1%E6%9F%93%E6%95%B0%E6%8D%AE HTTP/1.1" 200 12197
+[13/Jun/2022 11:25:07] "GET /api/getgarbagecountry HTTP/1.1" 200 36953
+[13/Jun/2022 11:25:07] "GET /api/api/utputallocation/allist?project_id=p001&p_value=6 HTTP/1.1" 200 64046

@@ -72,6 +72,11 @@
                             type: 'shadow'
                         }
                     },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
                     xAxis: [
                         {
                             type: 'category',
